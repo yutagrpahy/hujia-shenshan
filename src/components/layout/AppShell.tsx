@@ -4,7 +4,10 @@ import {
   LayoutDashboard,
   Shield,
 } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { useApp } from '../../context/AppContext'
+import { useCollapsingHeader } from '../../hooks/useCollapsingHeader'
+import { useElementHeight } from '../../hooks/useElementHeight'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { getMemberAvatarUrl } from '../../utils/avatars'
 import { BrandHeader } from '../common/BrandHeader'
@@ -27,6 +30,62 @@ const TAB_TITLES: Record<AppTab, string> = {
 
 interface AppShellProps {
   children: React.ReactNode
+}
+
+function MobileShell({
+  scrollResetKey,
+  memberCount,
+  avatarButton,
+  navItems,
+  children,
+}: {
+  scrollResetKey: string
+  memberCount: number
+  avatarButton: React.ReactNode
+  navItems: React.ReactNode
+  children: React.ReactNode
+}) {
+  const scrollRef = useRef<HTMLElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+  const headerVisible = useCollapsingHeader(scrollRef, 1000, scrollResetKey)
+  const headerHeight = useElementHeight(headerRef, [headerVisible])
+
+  useEffect(() => {
+    const root = scrollRef.current?.closest('.app-layout--mobile') as HTMLElement | null
+    if (root && headerHeight > 0) {
+      root.style.setProperty('--mobile-header-height', `${headerHeight}px`)
+    }
+  }, [headerHeight])
+
+  return (
+    <div className="app-layout app-layout--mobile min-h-dvh flex flex-col">
+      <header
+        ref={headerRef}
+        className={`m3-app-bar m3-app-bar--mobile-fixed warm-header w-full max-w-full min-w-0 ${
+          headerVisible ? '' : 'm3-app-bar--hidden'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-2 min-w-0 w-full">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <BrandLogo size={36} className="shrink-0 shadow-sm" />
+            <BrandHeader memberCount={memberCount} variant="mobile" compact />
+          </div>
+          <div className="shrink-0">{avatarButton}</div>
+        </div>
+      </header>
+
+      <main
+        ref={scrollRef}
+        className="main-content main-content--mobile main-content--mobile-scroll flex-1 min-h-0 min-w-0 w-full"
+      >
+        <div className="content-container content-container--wide min-w-0 w-full">
+          {children}
+        </div>
+      </main>
+
+      <nav className="m3-bottom-nav">{navItems}</nav>
+    </div>
+  )
 }
 
 export function AppShell({ children }: AppShellProps) {
@@ -93,26 +152,14 @@ export function AppShell({ children }: AppShellProps) {
 
   if (isMobile) {
     return (
-      <div className="app-layout app-layout--mobile min-h-dvh flex flex-col">
-        <header className="m3-app-bar warm-header w-full max-w-full min-w-0">
-          <div className="flex items-center justify-between gap-2 min-w-0 w-full">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <BrandLogo size={40} className="shrink-0 shadow-sm" />
-              <BrandHeader memberCount={memberCount} variant="mobile" />
-            </div>
-            <div className="shrink-0">{avatarButton}</div>
-          </div>
-          <h2 className="text-lg font-semibold text-gray-800 mt-3 truncate">{pageTitle}</h2>
-        </header>
-
-        <main className="main-content main-content--mobile flex-1 relative min-w-0 w-full">
-          <div className="content-container content-container--wide min-w-0 w-full">
-            {children}
-          </div>
-        </main>
-
-        <nav className="m3-bottom-nav">{navItems}</nav>
-      </div>
+      <MobileShell
+        scrollResetKey={`${currentTab}-${isProfileView}`}
+        memberCount={memberCount}
+        avatarButton={avatarButton}
+        navItems={navItems}
+      >
+        {children}
+      </MobileShell>
     )
   }
 
