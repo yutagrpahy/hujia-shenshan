@@ -94,19 +94,19 @@ export function AppShell({ children }: AppShellProps) {
   if (isMobile) {
     return (
       <div className="app-layout app-layout--mobile min-h-dvh flex flex-col">
-        <header className="m3-app-bar warm-header">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+        <header className="m3-app-bar warm-header w-full max-w-full min-w-0">
+          <div className="flex items-center justify-between gap-2 min-w-0 w-full">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <BrandLogo size={40} className="shrink-0 shadow-sm" />
               <BrandHeader memberCount={memberCount} variant="mobile" />
             </div>
-            {avatarButton}
+            <div className="shrink-0">{avatarButton}</div>
           </div>
-          <h2 className="text-lg font-semibold text-gray-800 mt-3">{pageTitle}</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mt-3 truncate">{pageTitle}</h2>
         </header>
 
-        <main className="main-content main-content--mobile flex-1 relative">
-          <div className="content-container content-container--wide">
+        <main className="main-content main-content--mobile flex-1 relative min-w-0 w-full">
+          <div className="content-container content-container--wide min-w-0 w-full">
             {children}
           </div>
         </main>
