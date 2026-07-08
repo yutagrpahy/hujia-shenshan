@@ -68,16 +68,28 @@ export function TodoCalendarPanel({
     if (dayTodos.length === 1) setSelectedTodo(dayTodos[0])
   }
 
-  const renderDot = (day: Date) => {
+  const renderTodoBadge = (day: Date) => {
     const dayTodos = todosByDate.get(toDateKey(day))
     if (!dayTodos?.length) return null
     const urgent = dayTodos.some((t) => t.urgency === 'high')
     return (
       <span
-        className={`absolute top-1 right-1 w-2 h-2 rounded-full ${urgent ? 'bg-red-500' : 'bg-red-400'}`}
+        className={`calendar-day-badge ${urgent ? 'calendar-day-badge--high' : 'calendar-day-badge--normal'}`}
         aria-label="有待辦"
       />
     )
+  }
+
+  const circleClass = (day: Date) => {
+    const isSelected = isSameDay(day, selectedDay)
+    const isToday = isSameDay(day, CALENDAR_TODAY)
+    return [
+      'calendar-day-circle',
+      isSelected ? 'calendar-day-circle--selected' : '',
+      !isSelected && isToday ? 'calendar-day-circle--today' : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
   }
 
   return (
@@ -131,28 +143,19 @@ export function TodoCalendarPanel({
         {viewMode === 'week' && (
           <div className="calendar-grid-7 mb-3">
             {weekDays.map((day, i) => {
-              const isToday = isSameDay(day, CALENDAR_TODAY)
-              const isSelected = isSameDay(day, selectedDay)
               const hasTodos = todosByDate.has(toDateKey(day))
               return (
                 <button
                   key={toDateKey(day)}
                   type="button"
                   onClick={() => handleDaySelect(day)}
-                  className={`relative flex flex-col items-center py-2 rounded-xl transition-colors min-w-0 w-full ${
-                    isSelected
-                      ? 'bg-teal-500 text-white'
-                      : isToday
-                        ? 'bg-teal-50 text-teal-700 ring-1 ring-teal-200'
-                        : 'hover:bg-sand-50 text-gray-700'
-                  }`}
+                  className="calendar-day-cell"
                 >
-                  <span className="text-[10px] opacity-70">{WEEKDAY_LABELS[i]}</span>
-                  <span className="text-sm font-semibold mt-0.5">{day.getDate()}</span>
-                  {hasTodos && !isSelected && renderDot(day)}
-                  {hasTodos && isSelected && (
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-white/90" />
-                  )}
+                  <span className="calendar-day-weekday">{WEEKDAY_LABELS[i]}</span>
+                  <span className={circleClass(day)}>
+                    {day.getDate()}
+                    {hasTodos && renderTodoBadge(day)}
+                  </span>
                 </button>
               )
             })}
@@ -175,16 +178,12 @@ export function TodoCalendarPanel({
                     key={toDateKey(day)}
                     type="button"
                     onClick={() => handleDaySelect(day)}
-                    className={`relative aspect-square flex items-center justify-center rounded-lg text-xs ${
-                      isSameDay(day, selectedDay)
-                        ? 'bg-teal-500 text-white font-semibold'
-                        : isSameDay(day, CALENDAR_TODAY)
-                          ? 'bg-teal-50 text-teal-700'
-                          : 'hover:bg-sand-50 text-gray-600'
-                    }`}
+                    className="calendar-month-cell"
                   >
-                    {day.getDate()}
-                    {todosByDate.has(toDateKey(day)) && !isSameDay(day, selectedDay) && renderDot(day)}
+                    <span className={circleClass(day)}>
+                      {day.getDate()}
+                      {todosByDate.has(toDateKey(day)) && renderTodoBadge(day)}
+                    </span>
                   </button>
                 ) : (
                   <div key={`empty-${i}`} />

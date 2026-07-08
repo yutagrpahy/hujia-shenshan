@@ -20,7 +20,8 @@ import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { DocumentVault } from '../common/DocumentVault'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
-import { formatCurrency } from '../../utils/calculations'
+import { countMemberPolicies, formatCurrency } from '../../utils/calculations'
+import { AllPoliciesPanel } from './AllPoliciesPanel'
 import type {
   EventFrequency,
   EventType,
@@ -41,6 +42,28 @@ const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
   savings: '年金',
   disability: '失能',
   critical: '重大疾病',
+}
+
+type ProtectionSubTab = 'members' | 'policies'
+
+function SegmentTab({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean
+  label: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`m3-segment-btn w-full ${active ? 'active' : ''}`}
+    >
+      {label}
+    </button>
+  )
 }
 
 const EMPTY_POLICY_INPUT: NewPolicyInput = {
@@ -68,7 +91,9 @@ export function ProtectionPage() {
     uiState,
   } = useApp()
 
+  const [subTab, setSubTab] = useState<ProtectionSubTab>('members')
   const [showAddMember, setShowAddMember] = useState(false)
+  const totalPolicies = countMemberPolicies(members)
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
   const [newPolicy, setNewPolicy] = useState<NewPolicyInput>(EMPTY_POLICY_INPUT)
@@ -327,49 +352,62 @@ export function ProtectionPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full min-w-0">
       {uiState === 'success' && <SuccessBanner />}
 
-      <section>
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">
-          保障成員
-        </h3>
-
-      <div className="space-y-2 protection-grid">
-        {members.map((member) => (
-          <button
-            key={member.id}
-            onClick={() => setSelectedMemberId(member.id)}
-            className="m3-card p-4 w-full flex items-center gap-3 active:bg-sand-50"
-          >
-            <MemberAvatar
-              name={member.name}
-              seed={member.avatarSeed}
-              index={members.indexOf(member)}
-            />
-            <div className="flex-1 text-left min-w-0">
-              <p className="text-sm font-semibold">{member.name}</p>
-              <p className="text-xs text-gray-400">
-                {member.age} 歲 · {ROLE_LABELS[member.role]} · {member.policies.length} 張保單
-              </p>
-            </div>
-            <div className="flex items-center gap-1">
-              <Shield className="w-4 h-4 text-teal-400" />
-              <ChevronRight className="w-4 h-4 text-gray-300" />
-            </div>
-          </button>
-        ))}
-        <Button
-          fullWidth
-          size="lg"
-          className="btn-accent btn-cta protection-grid--full"
-          onPress={() => setShowAddMember(true)}
-        >
-          <Plus className="w-5 h-5" />
-          新增成員
-        </Button>
+      <div className="m3-segment">
+        <SegmentTab
+          active={subTab === 'members'}
+          label="保障成員"
+          onClick={() => setSubTab('members')}
+        />
+        <SegmentTab
+          active={subTab === 'policies'}
+          label={`所有保單 (${totalPolicies})`}
+          onClick={() => setSubTab('policies')}
+        />
       </div>
-      </section>
+
+      {subTab === 'members' && (
+        <section className="w-full max-w-full min-w-0">
+          <div className="space-y-2 protection-grid">
+            {members.map((member) => (
+              <button
+                key={member.id}
+                onClick={() => setSelectedMemberId(member.id)}
+                className="m3-card p-4 w-full flex items-center gap-3 active:bg-sand-50"
+              >
+                <MemberAvatar
+                  name={member.name}
+                  seed={member.avatarSeed}
+                  index={members.indexOf(member)}
+                />
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-sm font-semibold">{member.name}</p>
+                  <p className="text-xs text-gray-400">
+                    {member.age} 歲 · {ROLE_LABELS[member.role]} · {member.policies.length} 張保單
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="w-4 h-4 text-teal-400" />
+                  <ChevronRight className="w-4 h-4 text-gray-300" />
+                </div>
+              </button>
+            ))}
+            <Button
+              fullWidth
+              size="lg"
+              className="btn-accent btn-cta protection-grid--full"
+              onPress={() => setShowAddMember(true)}
+            >
+              <Plus className="w-5 h-5" />
+              新增成員
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {subTab === 'policies' && <AllPoliciesPanel members={members} />}
 
       <Modal.Backdrop isOpen={showAddMember} onOpenChange={setShowAddMember}>
         <Modal.Container placement={isMobile ? 'bottom' : 'center'}>

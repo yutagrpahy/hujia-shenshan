@@ -114,6 +114,19 @@ export interface AdvisorRecommendation {
   reason: string
 }
 
+export interface PolicyWithMember {
+  policy: Policy
+  memberId: string
+  memberName: string
+  avatarSeed: string
+}
+
+export interface PolicyCategoryGroup {
+  category: string
+  gapKey: CoverageGap['gapKey'] | 'other'
+  policies: PolicyWithMember[]
+}
+
 export interface CoverageGap {
   category: string
   gapKey: 'death' | 'medical' | 'longterm' | 'disability' | 'critical'

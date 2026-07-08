@@ -626,6 +626,94 @@ body {
   min-width: 0;
 }
 
+.calendar-day-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 0;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.calendar-day-cell:active {
+  opacity: 0.85;
+}
+
+.calendar-day-weekday {
+  font-size: 0.625rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1;
+}
+
+.calendar-day-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.calendar-day-cell:hover .calendar-day-circle:not(.calendar-day-circle--selected) {
+  background: var(--color-sand-100);
+}
+
+.calendar-day-circle--today {
+  background: var(--color-teal-50);
+  color: var(--color-teal-500);
+  box-shadow: inset 0 0 0 1px rgba(45, 122, 112, 0.22);
+}
+
+.calendar-day-circle--selected {
+  background: var(--color-teal-500);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(45, 122, 112, 0.28);
+}
+
+.calendar-day-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+}
+
+.calendar-day-badge--high {
+  background: #ef4444;
+}
+
+.calendar-day-badge--normal {
+  background: #f87171;
+}
+
+.calendar-month-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 2px;
+}
+
 @media (min-width: 600px) {
   .content-container--overview { max-width: var(--content-wide); }
   .overview-grid { grid-template-columns: 1fr 1fr; }
@@ -840,5 +928,15 @@ body {
 
   .app-layout--mobile .overflow-x-auto {
     max-width: 100%;
+  }
+
+  .calendar-day-weekday {
+    font-size: 0.875rem;
+  }
+
+  .calendar-day-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.0625rem;
   }
 }

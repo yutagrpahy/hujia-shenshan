@@ -7,6 +7,8 @@ import type {
   CoverageSummary,
   FamilyMember,
   GapBreakdownDisplay,
+  PolicyCategoryGroup,
+  PolicyWithMember,
   ProductRecommendation,
   ProtectionLifeProfile,
   ScenarioEventType,
@@ -82,6 +84,49 @@ function getTargetValue(
     disability: profile.targets.disabilityMonthly,
   }
   return map[gapKey]
+}
+
+/** 依總覽保障缺口分類，彙整全家保單（每張保單僅歸入一類） */
+export function groupPoliciesByGapCategory(members: FamilyMember[]): PolicyCategoryGroup[] {
+  const buckets = new Map<CoverageGap['gapKey'] | 'other', PolicyWithMember[]>()
+  for (const { gapKey } of GAP_DEFS) {
+    buckets.set(gapKey, [])
+  }
+  buckets.set('other', [])
+
+  for (const member of members) {
+    for (const policy of member.policies) {
+      const item: PolicyWithMember = {
+        policy,
+        memberId: member.id,
+        memberName: member.name,
+        avatarSeed: member.avatarSeed,
+      }
+      const def = GAP_DEFS.find((d) => d.policyTypes.includes(policy.type))
+      if (def) {
+        buckets.get(def.gapKey)!.push(item)
+      } else {
+        buckets.get('other')!.push(item)
+      }
+    }
+  }
+
+  const groups: PolicyCategoryGroup[] = GAP_DEFS.map(({ gapKey, category }) => ({
+    gapKey,
+    category,
+    policies: buckets.get(gapKey) ?? [],
+  }))
+
+  const other = buckets.get('other') ?? []
+  if (other.length > 0) {
+    groups.push({ gapKey: 'other', category: '其他保障', policies: other })
+  }
+
+  return groups
+}
+
+export function countMemberPolicies(members: FamilyMember[]): number {
+  return members.reduce((total, member) => total + member.policies.length, 0)
 }
 
 function computeGapFromMembers(
