@@ -1,0 +1,28 @@
+import { getMemberAvatarUrl } from '../../utils/avatars'
+
+interface MemberAvatarProps {
+  name: string
+  seed: string
+  index?: number
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  className?: string
+}
+
+const SIZES = {
+  xs: 'w-5 h-5',
+  sm: 'w-9 h-9',
+  md: 'w-11 h-11',
+  lg: 'w-14 h-14',
+  xl: 'w-20 h-20',
+}
+
+export function MemberAvatar({ name, seed, index = 0, size = 'md', className = '' }: MemberAvatarProps) {
+  return (
+    <img
+      src={getMemberAvatarUrl(seed, index)}
+      alt={`${name} 的頭像`}
+      className={`${SIZES[size]} rounded-2xl object-cover bg-teal-50 ring-2 ring-white shadow-sm ${className}`}
+      loading="lazy"
+    />
+  )
+}
