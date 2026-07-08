@@ -55,7 +55,7 @@ export function OverviewPage() {
     members.find((m) => m.name === name)
 
   return (
-    <div className="space-y-4 overview-grid">
+    <div className="space-y-4 overview-grid w-full max-w-full min-w-0">
       <div className="hero-banner overview-grid--hero">
         <div className="hero-banner__mask" aria-hidden>
           <img
@@ -86,7 +86,7 @@ export function OverviewPage() {
         </div>
       )}
 
-      <section className="m3-card p-4 md:p-6">
+      <section className="m3-card p-4 md:p-6 w-full max-w-full min-w-0">
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
           家庭保障總覽
         </h3>
@@ -113,7 +113,7 @@ export function OverviewPage() {
               </span>
             </div>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-sm md:text-base font-semibold text-gray-800">保障健康度</p>
             <p className="text-xs text-gray-400 mt-0.5">
               依「{coverage.healthTierLabel}」分級計算 ·{' '}
@@ -153,7 +153,7 @@ export function OverviewPage() {
         <AccidentPayoutPanel items={coverage.accidentPayouts} members={members} />
       </section>
 
-      <section>
+      <section className="w-full max-w-full min-w-0">
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
           保障缺口
         </h3>
@@ -171,9 +171,9 @@ export function OverviewPage() {
 
             const cardContent = (
               <>
-                <div className="flex justify-between items-start gap-3 mb-1.5">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-medium text-gray-700">{gap.category}</span>
+                <div className="flex justify-between items-start gap-2 mb-1.5 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-xs font-medium text-gray-700 truncate">{gap.category}</span>
                     {achieved ? (
                       <span className="m3-chip gap-achieved-badge shrink-0">
                         <Trophy className="w-3 h-3" />

@@ -81,7 +81,7 @@ export function TodoCalendarPanel({
   }
 
   return (
-    <section className="overview-grid--full w-full">
+    <section className="overview-grid--full w-full max-w-full min-w-0">
       <div className="flex items-center justify-between mb-2 px-1">
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
           待辦事件
@@ -89,9 +89,9 @@ export function TodoCalendarPanel({
         <span className="text-[10px] text-gray-400">{pending.length} 項待處理</span>
       </div>
 
-      <div className="m3-card p-4 w-full">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex gap-1">
+      <div className="m3-card p-4 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-2 mb-3 min-w-0">
+          <div className="flex gap-1 shrink-0">
             {VIEW_MODES.map(({ id, label }) => (
               <button
                 key={id}
@@ -105,16 +105,16 @@ export function TodoCalendarPanel({
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 min-w-0 w-full justify-end">
             <button
               type="button"
               onClick={() => setAnchor((a) => shiftAnchor(a, viewMode, -1))}
-              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-sand-100"
+              className="w-7 h-7 shrink-0 rounded-lg flex items-center justify-center hover:bg-sand-100"
               aria-label="上一段"
             >
               <ChevronLeft className="w-4 h-4 text-gray-500" />
             </button>
-            <span className="text-xs font-medium text-gray-700 min-w-[88px] text-center">
+            <span className="text-xs font-medium text-gray-700 min-w-0 flex-1 text-center truncate px-1">
               {formatPeriodLabel(anchor, viewMode)}
             </span>
             <button
@@ -129,7 +129,7 @@ export function TodoCalendarPanel({
         </div>
 
         {viewMode === 'week' && (
-          <div className="grid grid-cols-7 gap-1 mb-3">
+          <div className="calendar-grid-7 mb-3">
             {weekDays.map((day, i) => {
               const isToday = isSameDay(day, CALENDAR_TODAY)
               const isSelected = isSameDay(day, selectedDay)
@@ -139,7 +139,7 @@ export function TodoCalendarPanel({
                   key={toDateKey(day)}
                   type="button"
                   onClick={() => handleDaySelect(day)}
-                  className={`relative flex flex-col items-center py-2 rounded-xl transition-colors ${
+                  className={`relative flex flex-col items-center py-2 rounded-xl transition-colors min-w-0 w-full ${
                     isSelected
                       ? 'bg-teal-500 text-white'
                       : isToday
@@ -161,14 +161,14 @@ export function TodoCalendarPanel({
 
         {viewMode === 'month' && (
           <div className="mb-3">
-            <div className="grid grid-cols-7 gap-1 mb-1">
+            <div className="calendar-grid-7 mb-1">
               {WEEKDAY_LABELS.map((label) => (
-                <span key={label} className="text-[10px] text-center text-gray-400 py-1">
+                <span key={label} className="text-[10px] text-center text-gray-400 py-1 min-w-0">
                   {label}
                 </span>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-1">
+            <div className="calendar-grid-7">
               {monthGrid.flat().map((day, i) =>
                 day ? (
                   <button

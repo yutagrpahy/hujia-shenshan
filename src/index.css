@@ -289,6 +289,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
   padding: 8px 10px;
@@ -299,6 +300,7 @@ body {
   font-weight: 600;
   color: var(--color-accent);
   transition: background 0.2s, border-color 0.2s;
+  min-width: 0;
 }
 
 .gap-achieved-badge {
@@ -590,7 +592,21 @@ body {
 }
 
 /* ── Responsive grids ── */
-.overview-grid { display: grid; gap: 16px; }
+.overview-grid {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.calendar-grid-7 {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
 
 @media (min-width: 600px) {
   .content-container--overview { max-width: var(--content-wide); }
@@ -665,6 +681,24 @@ body {
 
   .content-container--wide {
     max-width: 100%;
+  }
+
+  /* 總覽：Grid 子項預設 min-width:auto 會撐破寬度，強制滿版且不溢出 */
+  .overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .overview-grid > *,
+  .overview-grid .m3-card,
+  .hero-banner {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .hero-banner__art {
+    max-width: 38%;
   }
 
   /* Tailwind 任意小字級 → 依 1.4× 比例放大 */
