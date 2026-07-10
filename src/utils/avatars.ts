@@ -1,3 +1,5 @@
+import { publicAsset } from './publicAsset'
+
 /** DiceBear 開源頭像（MIT）— https://www.dicebear.com */
 const DICEBEAR_BASE = 'https://api.dicebear.com/9.x/adventurer/svg'
 
@@ -10,7 +12,7 @@ export function getMemberAvatarUrl(seed: string, index = 0): string {
 
 /** 護家神山品牌圖示 */
 export function getFamilyMascotUrl(): string {
-  return '/app-icon.png'
+  return publicAsset('/app-icon.png')
 }
 
 export function getAdvisorAvatarUrl(): string {

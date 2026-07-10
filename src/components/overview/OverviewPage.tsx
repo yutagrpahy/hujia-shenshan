@@ -10,6 +10,7 @@ import {
   Users,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { publicAsset } from '../../utils/publicAsset'
 import { FamilyCoverageOverview } from './FamilyCoverageOverview'
 import { GapRecommendationModal } from './GapRecommendationModal'
 import { TodoCalendarPanel } from './TodoCalendarPanel'
@@ -73,7 +74,7 @@ export function OverviewPage() {
       <div className="hero-banner overview-grid--hero">
         <div className="hero-banner__mask" aria-hidden>
           <img
-            src="/hero-mountain-nobg.png"
+            src={publicAsset('/hero-mountain-nobg.png')}
             alt=""
             className="hero-banner__art"
           />

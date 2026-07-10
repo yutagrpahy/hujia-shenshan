@@ -1,4 +1,6 @@
-const APP_ICON = '/app-icon.png'
+import { publicAsset } from '../../utils/publicAsset'
+
+const APP_ICON = publicAsset('/app-icon.png')
 
 interface BrandLogoProps {
   size?: number
