@@ -3,23 +3,29 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
 import { defaultProtectionProfile } from '../data/healthProfile'
 import {
+  archivedNotifications,
   educationContents,
   initialDocuments,
   initialFamilyEvents,
   initialHistoryTodos,
   initialMembers,
-  initialNotifications,
   initialTodos,
 } from '../data/mockData'
+import {
+  deriveNotifications,
+  deriveSystemTodos,
+  mergeTodos,
+  resolveTodoCompletion,
+} from '../services/rulesEngine'
 import { computeCoverageSummary } from '../utils/calculations'
 import type {
   AppTab,
-  ReminderSubTab,
   ChatMessage,
   FamilyEvent,
   FamilyMember,
@@ -32,16 +38,26 @@ import type {
   SecureDocument,
   TodoItem,
   UiState,
+  UpdateMemberProfileInput,
+  UpdateTodoInput,
 } from '../types'
+
+function unionPoliciesForMember(member: FamilyMember) {
+  return member.policies.filter((policy) => policy.source === 'union')
+}
+
+const initialUnionPolicyBackups = Object.fromEntries(
+  initialMembers
+    .map((member) => [member.id, unionPoliciesForMember(member)] as const)
+    .filter(([, policies]) => policies.length > 0),
+)
 
 interface AppContextValue {
   hasFamily: boolean
   setupFamily: () => void
   currentTab: AppTab
   setCurrentTab: (tab: AppTab) => void
-  reminderSubTab: ReminderSubTab
-  setReminderSubTab: (tab: ReminderSubTab) => void
-  navigateToReminders: (subTab?: ReminderSubTab) => void
+  navigateToMember: (memberId: string) => void
   isProfileView: boolean
   navigateToProfile: () => void
   closeProfileView: () => void
@@ -59,9 +75,16 @@ interface AppContextValue {
   uiState: UiState
   setUiState: (state: UiState) => void
   completeTodo: (id: string) => void
+  completeFamilyEvent: (eventId: string) => void
   addFamilyEvent: (event: NewEventInput) => void
+  updateFamilyEvent: (eventId: string, input: NewEventInput) => void
+  updateTodo: (id: string, input: UpdateTodoInput) => void
   addMember: (member: NewMemberInput) => void
+  updateMemberProfile: (memberId: string, input: UpdateMemberProfileInput) => void
   addManualPolicy: (memberId: string, input: NewPolicyInput) => void
+  unionSyncEnabled: boolean
+  unionPolicyCount: number
+  setUnionSyncEnabled: (enabled: boolean) => void
   markNotificationRead: (id: string) => void
   selectedMemberId: string | null
   setSelectedMemberId: (id: string | null) => void
@@ -77,43 +100,81 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [hasFamily, setHasFamily] = useState(true)
   const [currentTab, setCurrentTabState] = useState<AppTab>('overview')
   const [isProfileView, setIsProfileView] = useState(false)
-  const [reminderSubTab, setReminderSubTab] = useState<ReminderSubTab>('notifications')
+
+  const currentUserId = 'm1'
+
   const [members, setMembers] = useState<FamilyMember[]>(initialMembers)
-  const [todos, setTodos] = useState<TodoItem[]>(initialTodos)
+  const [unionSyncByMember, setUnionSyncByMember] = useState<Record<string, boolean>>({
+    [currentUserId]: true,
+  })
+  const [unionPolicyBackups, setUnionPolicyBackups] = useState<Record<string, Policy[]>>(
+    initialUnionPolicyBackups,
+  )
+  const [persistedTodos, setPersistedTodos] = useState<TodoItem[]>(initialTodos)
   const [historyTodos, setHistoryTodos] = useState<TodoItem[]>(initialHistoryTodos)
-  const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications)
+  const [dismissedRuleIds, setDismissedRuleIds] = useState<Set<string>>(new Set())
+  const [notificationReadIds, setNotificationReadIds] = useState<Set<string>>(
+    () => new Set(archivedNotifications.filter((item) => item.read).map((item) => item.id)),
+  )
   const [familyEvents, setFamilyEvents] = useState<FamilyEvent[]>(initialFamilyEvents)
   const [documents] = useState<SecureDocument[]>(initialDocuments)
   const [protectionProfile, setProtectionProfile] =
     useState<ProtectionLifeProfile>(defaultProtectionProfile)
   const [uiState, setUiState] = useState<UiState>('idle')
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content:
-        '您好！我是護家神山 AI 保障顧問。我可以根據您家庭的保單與人生規劃，提供個人化的保障建議。您也可以使用情境模擬選單快速分析。',
-      timestamp: new Date(),
-    },
-  ])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
-  const currentUserId = 'm1'
   const memberCount = members.length
+  const unionSyncEnabled = unionSyncByMember[currentUserId] ?? true
+  const unionPolicyCount = unionPolicyBackups[currentUserId]?.length ?? 0
   const coverage = useMemo(
     () => computeCoverageSummary(members, protectionProfile),
     [members, protectionProfile],
   )
+
+  const systemTodos = useMemo(
+    () => deriveSystemTodos(members, protectionProfile, dismissedRuleIds),
+    [members, protectionProfile, dismissedRuleIds],
+  )
+
+  const todos = useMemo(
+    () => mergeTodos(systemTodos, persistedTodos),
+    [systemTodos, persistedTodos],
+  )
+
+  const notifications = useMemo(() => {
+    const live = deriveNotifications(members)
+    const merged = [...live, ...archivedNotifications]
+    return merged.map((item) => ({
+      ...item,
+      read: notificationReadIds.has(item.id),
+    }))
+  }, [members, notificationReadIds])
+
+  const engineStateRef = useRef({
+    persistedTodos,
+    members,
+    protectionProfile,
+    dismissedRuleIds,
+    todos,
+  })
+  engineStateRef.current = {
+    persistedTodos,
+    members,
+    protectionProfile,
+    dismissedRuleIds,
+    todos,
+  }
 
   const setCurrentTab = useCallback((tab: AppTab) => {
     setIsProfileView(false)
     setCurrentTabState(tab)
   }, [])
 
-  const navigateToReminders = useCallback((subTab: ReminderSubTab = 'notifications') => {
+  const navigateToMember = useCallback((memberId: string) => {
     setIsProfileView(false)
-    setReminderSubTab(subTab)
-    setCurrentTabState('reminders')
+    setSelectedMemberId(memberId)
+    setCurrentTabState('protection')
   }, [])
 
   const navigateToProfile = useCallback(() => {
@@ -138,17 +199,129 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const completeTodo = useCallback((id: string) => {
-    setTodos((prev) => {
-      const item = prev.find((t) => t.id === id)
-      if (!item) return prev
+    const {
+      persistedTodos: currentPersisted,
+      members: currentMembers,
+      protectionProfile: currentProfile,
+      dismissedRuleIds: currentDismissed,
+    } = engineStateRef.current
+
+    const result = resolveTodoCompletion(
+      id,
+      currentPersisted,
+      currentMembers,
+      currentProfile,
+      currentDismissed,
+    )
+    if (!result?.completed) return
+
+    const completed: TodoItem = {
+      ...result.completed,
+      completed: true,
+      completedAt: new Date().toISOString().split('T')[0],
+    }
+
+    setPersistedTodos(result.persistedTodos)
+    setMembers(result.members)
+    setDismissedRuleIds(result.dismissedRuleIds)
+    setHistoryTodos((history) => [completed, ...history])
+
+    if (completed.eventId) {
+      setFamilyEvents((events) => events.filter((event) => event.id !== completed.eventId))
+    }
+
+    setUiState('success')
+    setTimeout(() => setUiState('idle'), 2000)
+  }, [])
+
+  const completeFamilyEvent = useCallback(
+    (eventId: string) => {
+      const linkedTodo = engineStateRef.current.todos.find((todo) => todo.eventId === eventId)
+      if (linkedTodo) {
+        completeTodo(linkedTodo.id)
+        return
+      }
+
+      const event = familyEvents.find((item) => item.id === eventId)
+      if (!event) return
+
+      const memberId = event.memberIds[0] ?? currentUserId
+      const memberName = members.find((member) => member.id === memberId)?.name ?? '家庭'
       const completed: TodoItem = {
-        ...item,
+        id: `hist-${eventId}-${Date.now()}`,
+        title: event.name,
+        memberId,
+        memberName,
+        urgency: event.urgency,
+        dueDate: event.date,
         completed: true,
         completedAt: new Date().toISOString().split('T')[0],
+        source: 'event',
+        eventId: event.id,
       }
-      setHistoryTodos((h) => [completed, ...h])
-      return prev.filter((t) => t.id !== id)
-    })
+
+      setHistoryTodos((history) => [completed, ...history])
+      setFamilyEvents((events) => events.filter((item) => item.id !== eventId))
+      setUiState('success')
+      setTimeout(() => setUiState('idle'), 2000)
+    },
+    [completeTodo, currentUserId, familyEvents, members],
+  )
+
+  const updateFamilyEvent = useCallback(
+    (eventId: string, input: NewEventInput) => {
+      setFamilyEvents((prev) =>
+        prev.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                name: input.name,
+                type: input.type,
+                date: input.date,
+                frequency: input.frequency,
+                fundsNeeded: input.fundsNeeded,
+                urgency: input.urgency,
+                description: input.description,
+                memberIds: input.memberIds,
+              }
+            : event,
+        ),
+      )
+
+      setPersistedTodos((prev) =>
+        prev.map((todo) => {
+          if (todo.eventId !== eventId) return todo
+          const memberId = input.memberIds[0] ?? todo.memberId
+          const memberName = members.find((member) => member.id === memberId)?.name ?? todo.memberName
+          return {
+            ...todo,
+            title: input.name,
+            memberId,
+            memberName,
+            urgency: input.urgency,
+            dueDate: input.date,
+          }
+        }),
+      )
+      setUiState('success')
+      setTimeout(() => setUiState('idle'), 2000)
+    },
+    [members],
+  )
+
+  const updateTodo = useCallback((id: string, input: UpdateTodoInput) => {
+    setPersistedTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              title: input.title,
+              dueDate: input.dueDate,
+              urgency: input.urgency,
+            }
+          : todo,
+      ),
+    )
     setUiState('success')
     setTimeout(() => setUiState('idle'), 2000)
   }, [])
@@ -172,10 +345,81 @@ export function AppProvider({ children }: { children: ReactNode }) {
       source: 'event',
       eventId: event.id,
     }
-    setTodos((prev) => [...prev, todo])
+    setPersistedTodos((prev) => [...prev, todo])
     setUiState('success')
     setTimeout(() => setUiState('idle'), 2000)
   }, [members, currentUserId])
+
+  const updateMemberProfile = useCallback(
+    (memberId: string, input: UpdateMemberProfileInput) => {
+      setMembers((prev) =>
+        prev.map((member) =>
+          member.id === memberId
+            ? {
+                ...member,
+                name: input.name,
+                age: input.age,
+                occupation: input.occupation,
+                phone: input.phone,
+                email: input.email,
+                monthlyIncome: input.monthlyIncome,
+                monthlyExpense: input.monthlyExpense,
+              }
+            : member,
+        ),
+      )
+      setPersistedTodos((prev) =>
+        prev.map((todo) =>
+          todo.memberId === memberId ? { ...todo, memberName: input.name } : todo,
+        ),
+      )
+      setUiState('success')
+      setTimeout(() => setUiState('idle'), 2000)
+    },
+    [],
+  )
+
+  const setUnionSyncEnabled = useCallback(
+    (enabled: boolean) => {
+      const memberId = currentUserId
+      setUnionSyncByMember((prev) => ({ ...prev, [memberId]: enabled }))
+
+      if (!enabled) {
+        setMembers((prev) =>
+          prev.map((member) => {
+            if (member.id !== memberId) return member
+            const unionPolicies = unionPoliciesForMember(member)
+            if (unionPolicies.length > 0) {
+              setUnionPolicyBackups((backups) => ({ ...backups, [memberId]: unionPolicies }))
+            }
+            return {
+              ...member,
+              policies: member.policies.filter((policy) => policy.source !== 'union'),
+            }
+          }),
+        )
+      } else {
+        setUnionPolicyBackups((backups) => {
+          const backup = backups[memberId] ?? []
+          setMembers((prev) =>
+            prev.map((member) => {
+              if (member.id !== memberId) return member
+              const manualPolicies = member.policies.filter((policy) => policy.source === 'manual')
+              const mergedUnion = backup.filter(
+                (policy) => !manualPolicies.some((manual) => manual.id === policy.id),
+              )
+              return { ...member, policies: [...mergedUnion, ...manualPolicies] }
+            }),
+          )
+          return backups
+        })
+      }
+
+      setUiState('success')
+      setTimeout(() => setUiState('idle'), 2000)
+    },
+    [currentUserId],
+  )
 
   const addMember = useCallback((input: NewMemberInput) => {
     const colors = ['#2d7a70', '#3d9b8f', '#1f5f57', '#6b8cae', '#4a8f85']
@@ -224,9 +468,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const markNotificationRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    )
+    setNotificationReadIds((prev) => {
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
   }, [])
 
   const addChatMessage = useCallback((content: string, role: 'user' | 'assistant') => {
@@ -248,9 +494,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setupFamily,
       currentTab,
       setCurrentTab,
-      reminderSubTab,
-      setReminderSubTab,
-      navigateToReminders,
+      navigateToMember,
       isProfileView,
       navigateToProfile,
       closeProfileView,
@@ -268,9 +512,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       uiState,
       setUiState,
       completeTodo,
+      completeFamilyEvent,
       addFamilyEvent,
+      updateFamilyEvent,
+      updateTodo,
       addMember,
+      updateMemberProfile,
       addManualPolicy,
+      unionSyncEnabled,
+      unionPolicyCount,
+      setUnionSyncEnabled,
       markNotificationRead,
       selectedMemberId,
       setSelectedMemberId,
@@ -284,8 +535,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setupFamily,
       currentTab,
       setCurrentTab,
-      reminderSubTab,
-      navigateToReminders,
+      navigateToMember,
       isProfileView,
       navigateToProfile,
       closeProfileView,
@@ -301,8 +551,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateProtectionProfile,
       uiState,
       completeTodo,
+      completeFamilyEvent,
       addFamilyEvent,
+      updateFamilyEvent,
+      updateTodo,
       addMember,
+      updateMemberProfile,
+      unionSyncEnabled,
+      unionPolicyCount,
+      setUnionSyncEnabled,
       addManualPolicy,
       markNotificationRead,
       selectedMemberId,

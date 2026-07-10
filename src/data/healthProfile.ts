@@ -40,7 +40,7 @@ export const PROTECTION_TIER_OPTIONS: TierOption[] = [
     tier: 3,
     label: '穩健守護',
     subtitle: '事業高峰，平衡保障與預算',
-    description: '王建國家庭目前選擇的等級。兼顧身故、醫療、長照與失能替代，適合多代同堂。',
+    description: '兼顧身故、醫療、長照與失能替代，適合事業穩定、需照護父母的多代家庭。',
     targets: {
       deathCoverage: 500,
       medicalCoverage: 200,

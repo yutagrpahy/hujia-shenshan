@@ -30,10 +30,10 @@ const URGENCY_DOT: Record<string, string> = {
 
 export function TodoCalendarPanel({
   todos,
-  onViewAll,
+  onViewMember,
 }: {
   todos: TodoItem[]
-  onViewAll: () => void
+  onViewMember: (memberId: string) => void
 }) {
   const [viewMode, setViewMode] = useState<CalendarViewMode>('week')
   const [anchor, setAnchor] = useState(CALENDAR_TODAY)
@@ -261,7 +261,11 @@ export function TodoCalendarPanel({
         todo={selectedTodo}
         isOpen={!!selectedTodo}
         onOpenChange={(open) => !open && setSelectedTodo(null)}
-        onViewAll={onViewAll}
+        onViewMember={
+          selectedTodo
+            ? () => onViewMember(selectedTodo.memberId)
+            : undefined
+        }
       />
     </section>
   )

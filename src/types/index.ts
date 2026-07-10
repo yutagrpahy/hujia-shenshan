@@ -1,6 +1,31 @@
-export type AppTab = 'overview' | 'reminders' | 'advisor' | 'protection'
+export type AppTab = 'overview' | 'claims' | 'advisor' | 'protection'
 
-export type ReminderSubTab = 'notifications' | 'todos' | 'history'
+export type ClaimStatus =
+  | 'in_review'
+  | 'pending_docs'
+  | 'approved'
+  | 'rejected'
+  | 'paid'
+  | 'renewal'
+
+export interface ClaimRecord {
+  id: string
+  policyId: string
+  memberId: string
+  memberName: string
+  avatarSeed: string
+  policyName: string
+  insurer: string
+  eventLabel: string
+  eventType: string
+  claimStatus: ClaimStatus
+  progress: number
+  statusLabel: string
+  statusSummary: string
+  updatedAt: string
+  amount?: number
+  isError: boolean
+}
 
 export type ProtectionTier = 1 | 2 | 3 | 4 | 5
 
@@ -99,6 +124,62 @@ export interface AccidentPayoutGroup {
   items: AccidentPayoutItem[]
 }
 
+export interface NonAccidentCoverageItem {
+  id: string
+  memberName: string
+  insurer: string
+  policyName: string
+  categoryType: string
+  categoryLabel: string
+  amount: number
+  isMonthly: boolean
+}
+
+export interface NonAccidentCoverageGroup {
+  categoryType: string
+  categoryLabel: string
+  totalAmount: number
+  isMonthly: boolean
+  memberNames: string[]
+  items: NonAccidentCoverageItem[]
+}
+
+export type FamilyCoverageDomain = 'life' | 'medical'
+
+export interface FamilyCoveragePolicyItem {
+  id: string
+  memberId: string
+  memberName: string
+  insurer: string
+  policyName: string
+  subcategoryType: string
+  subcategoryLabel: string
+  amount: number
+  isMonthly: boolean
+}
+
+export interface FamilyCoverageSubcategory {
+  subcategoryType: string
+  subcategoryLabel: string
+  totalAmount: number
+  isMonthly: boolean
+  memberNames: string[]
+  items: FamilyCoveragePolicyItem[]
+}
+
+export interface FamilyCoverageDomainSummary {
+  domain: FamilyCoverageDomain
+  label: string
+  description: string
+  headlineAmount: number
+  headlineUnit: string
+  policyCount: number
+  memberCount: number
+  memberNames: string[]
+  activeClaimCount: number
+  subcategories: FamilyCoverageSubcategory[]
+}
+
 export interface CoverageSummary {
   healthScore: number
   healthTierLabel: string
@@ -142,6 +223,8 @@ export interface TodoItem {
   memberId: string
   memberName: string
   policyId?: string
+  /** 規則引擎穩定識別碼，例如 renewal:p2、gap:critical */
+  ruleId?: string
   urgency: TodoUrgency
   dueDate?: string
   completed: boolean
@@ -243,6 +326,22 @@ export interface NewMemberInput {
   phone: string
   email: string
   occupation: string
+}
+
+export interface UpdateMemberProfileInput {
+  name: string
+  age: number
+  occupation: string
+  phone: string
+  email: string
+  monthlyIncome: number
+  monthlyExpense: number
+}
+
+export interface UpdateTodoInput {
+  title: string
+  dueDate?: string
+  urgency: TodoUrgency
 }
 
 export interface NewEventInput {

@@ -1,9 +1,10 @@
 import { AppProvider, useApp } from './context/AppContext'
 import { AppShell } from './components/layout/AppShell'
 import { OverviewPage } from './components/overview/OverviewPage'
-import { RemindersPage } from './components/reminders/RemindersPage'
+
 import { AdvisorPage } from './components/advisor/AdvisorPage'
 import { ProtectionPage } from './components/protection/ProtectionPage'
+import { ClaimsPage } from './components/claims/ClaimsPage'
 import { ProfilePage } from './components/profile/ProfilePage'
 import { EmptyState, ErrorBanner, LoadingOverlay } from './components/common/StateViews'
 
@@ -25,7 +26,7 @@ function AppContent() {
 
   const pages = {
     overview: <OverviewPage />,
-    reminders: <RemindersPage />,
+    claims: <ClaimsPage />,
     advisor: <AdvisorPage />,
     protection: <ProtectionPage />,
   }

@@ -1,0 +1,369 @@
+import { Button } from '@heroui/react'
+import { ChevronRight, Plus } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useApp } from '../../context/AppContext'
+import {
+  EVENT_TYPE_LABELS,
+  FREQUENCY_LABELS,
+  URGENCY_LABELS,
+} from '../../data/mockData'
+import { EventFormModal } from '../common/EventFormModal'
+import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
+import { TodoEditModal } from '../common/TodoEditModal'
+import { TodoDetailModal } from '../overview/TodoDetailModal'
+import { formatCurrency } from '../../utils/calculations'
+import type { FamilyEvent, FamilyMember, NewEventInput, TodoItem, TodoUrgency } from '../../types'
+import { EventDetailModal } from './EventDetailModal'
+import { MemberCompletedEventsModal } from './MemberCompletedEventsModal'
+
+const URGENCY_RANK: Record<TodoUrgency, number> = {
+  high: 0,
+  medium: 1,
+  low: 2,
+}
+
+const URGENCY_STYLES = {
+  high: 'bg-red-50 text-red-600',
+  medium: 'bg-amber-50 text-amber-600',
+  low: 'bg-sand-100 text-gray-500',
+}
+
+const SOURCE_LABELS: Record<TodoItem['source'], string> = {
+  system: '系統提醒',
+  event: '保障規劃',
+  manual: '手動新增',
+}
+
+const EMPTY_EVENT_INPUT: NewEventInput = {
+  name: '',
+  type: undefined,
+  date: '',
+  frequency: 'once',
+  fundsNeeded: 0,
+  urgency: 'medium',
+  description: '',
+  memberIds: [],
+}
+
+type PlanningItem =
+  | { kind: 'todo'; urgency: TodoUrgency; sortDate?: string; data: TodoItem }
+  | { kind: 'event'; urgency: TodoUrgency; sortDate?: string; data: FamilyEvent }
+
+function buildPlanningItems(todos: TodoItem[], events: FamilyEvent[]): PlanningItem[] {
+  const eventIdsWithTodo = new Set(
+    todos.map((todo) => todo.eventId).filter((id): id is string => !!id),
+  )
+  const standaloneEvents = events.filter((event) => !eventIdsWithTodo.has(event.id))
+
+  const items: PlanningItem[] = [
+    ...todos.map((todo) => ({
+      kind: 'todo' as const,
+      urgency: todo.urgency,
+      sortDate: todo.dueDate,
+      data: todo,
+    })),
+    ...standaloneEvents.map((event) => ({
+      kind: 'event' as const,
+      urgency: event.urgency,
+      sortDate: event.date,
+      data: event,
+    })),
+  ]
+
+  return items.sort((a, b) => {
+    const urgencyDiff = URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency]
+    if (urgencyDiff !== 0) return urgencyDiff
+    if (a.sortDate && b.sortDate) return a.sortDate.localeCompare(b.sortDate)
+    if (a.sortDate) return -1
+    if (b.sortDate) return 1
+    const titleA = a.kind === 'todo' ? a.data.title : a.data.name
+    const titleB = b.kind === 'todo' ? b.data.title : b.data.name
+    return titleA.localeCompare(titleB, 'zh-TW')
+  })
+}
+
+function eventToInput(event: FamilyEvent): NewEventInput {
+  return {
+    name: event.name,
+    type: event.type,
+    date: event.date,
+    frequency: event.frequency,
+    fundsNeeded: event.fundsNeeded,
+    urgency: event.urgency,
+    description: event.description,
+    memberIds: event.memberIds,
+  }
+}
+
+export function MemberTodosSection({
+  member,
+  todos,
+  historyTodos,
+  events,
+  onAdd,
+  onCompleteTodo,
+}: {
+  member: FamilyMember
+  members?: FamilyMember[]
+  todos: TodoItem[]
+  historyTodos: TodoItem[]
+  events: FamilyEvent[]
+  onAdd: () => void
+  onCompleteTodo: (id: string) => void
+}) {
+  const {
+    members: allMembers,
+    familyEvents,
+    updateFamilyEvent,
+    updateTodo,
+    completeFamilyEvent,
+  } = useApp()
+
+  const memberHistory = historyTodos.filter((todo) => todo.memberId === member.id)
+  const items = useMemo(() => buildPlanningItems(todos, events), [todos, events])
+
+  const [pendingCompleteTodo, setPendingCompleteTodo] = useState<TodoItem | null>(null)
+  const [pendingCompleteEvent, setPendingCompleteEvent] = useState<FamilyEvent | null>(null)
+  const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<FamilyEvent | null>(null)
+  const [showCompleted, setShowCompleted] = useState(false)
+  const [editingEventId, setEditingEventId] = useState<string | null>(null)
+  const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null)
+  const [eventFormInput, setEventFormInput] = useState<NewEventInput>(EMPTY_EVENT_INPUT)
+
+  const handleConfirmCompleteTodo = () => {
+    if (!pendingCompleteTodo) return
+    onCompleteTodo(pendingCompleteTodo.id)
+    setPendingCompleteTodo(null)
+  }
+
+  const handleConfirmCompleteEvent = () => {
+    if (!pendingCompleteEvent) return
+    completeFamilyEvent(pendingCompleteEvent.id)
+    setPendingCompleteEvent(null)
+  }
+
+  const openEditForTodo = (todo: TodoItem) => {
+    setSelectedTodo(null)
+    if (todo.eventId) {
+      const event = familyEvents.find((item) => item.id === todo.eventId)
+      if (!event) return
+      setEditingEventId(event.id)
+      setEventFormInput(eventToInput(event))
+      return
+    }
+    setEditingTodo(todo)
+  }
+
+  const openEditForEvent = (event: FamilyEvent) => {
+    setSelectedEvent(null)
+    setEditingEventId(event.id)
+    setEventFormInput(eventToInput(event))
+  }
+
+  const handleSaveEvent = () => {
+    if (!editingEventId || !eventFormInput.name.trim()) return
+    updateFamilyEvent(editingEventId, eventFormInput)
+    setEditingEventId(null)
+    setEventFormInput(EMPTY_EVENT_INPUT)
+  }
+
+  const handleSaveTodo = (input: Parameters<typeof updateTodo>[1]) => {
+    if (!editingTodo) return
+    updateTodo(editingTodo.id, input)
+    setEditingTodo(null)
+  }
+
+  return (
+    <section>
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <div className="min-w-0">
+          <h4 className="text-xs font-semibold text-gray-400 uppercase">個人待辦</h4>
+          <p className="text-[10px] text-gray-400 mt-0.5">待辦提醒與保障規劃事件</p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowCompleted(true)}
+            className="text-xs font-medium text-teal-600 hover:underline whitespace-nowrap"
+          >
+            已完成事件
+          </button>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="border-teal-200 text-teal-700 shrink-0"
+            onPress={onAdd}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            新增
+          </Button>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <p className="text-sm text-gray-400 m3-card p-4 bg-sand-50/80">尚無待辦或規劃事件</p>
+      ) : (
+        <div className="space-y-2">
+          {items.map((item) =>
+            item.kind === 'todo' ? (
+              <div
+                key={`todo-${item.data.id}`}
+                className="m3-card p-4 bg-sand-50/50 flex items-start gap-3"
+              >
+                <button
+                  type="button"
+                  onClick={() => setPendingCompleteTodo(item.data)}
+                  className="w-6 h-6 rounded-full border-2 border-teal-400 flex items-center justify-center shrink-0 mt-0.5 active:bg-teal-50"
+                  aria-label="標記完成"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSelectedTodo(item.data)}
+                  className="flex-1 min-w-0 text-left"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-semibold text-gray-700">{item.data.title}</p>
+                    <ChevronRight className="w-4 h-4 text-gray-300 shrink-0 mt-0.5" />
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[10px] text-gray-400 mt-2">
+                    {item.data.dueDate && <span>📅 {item.data.dueDate}</span>}
+                    <span className={`m3-chip ${URGENCY_STYLES[item.data.urgency]}`}>
+                      {URGENCY_LABELS[item.data.urgency]}
+                    </span>
+                    <span className="m3-chip bg-white text-gray-500 border border-sand-200">
+                      {SOURCE_LABELS[item.data.source]}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            ) : (
+              <div
+                key={`event-${item.data.id}`}
+                className="m3-card p-4 bg-sand-50/50 flex items-start gap-3"
+              >
+                <button
+                  type="button"
+                  onClick={() => setPendingCompleteEvent(item.data)}
+                  className="w-6 h-6 rounded-full border-2 border-teal-400 flex items-center justify-center shrink-0 mt-0.5 active:bg-teal-50"
+                  aria-label="標記完成"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSelectedEvent(item.data)}
+                  className="flex-1 min-w-0 text-left"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <p className="text-sm font-semibold text-gray-700">{item.data.name}</p>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {item.data.type && (
+                        <span className="m3-chip bg-teal-50 text-teal-600">
+                          {EVENT_TYPE_LABELS[item.data.type]}
+                        </span>
+                      )}
+                      <ChevronRight className="w-4 h-4 text-gray-300" />
+                    </div>
+                  </div>
+                  {item.data.description && (
+                    <p className="text-xs text-gray-500 mb-2 line-clamp-2">{item.data.description}</p>
+                  )}
+                  <div className="flex flex-wrap gap-2 text-[10px] text-gray-400">
+                    {item.data.date && <span>📅 {item.data.date}</span>}
+                    <span>🔄 {FREQUENCY_LABELS[item.data.frequency]}</span>
+                    {item.data.fundsNeeded > 0 && (
+                      <span>💰 {formatCurrency(item.data.fundsNeeded)}</span>
+                    )}
+                    <span className={`m3-chip ${URGENCY_STYLES[item.data.urgency]}`}>
+                      {URGENCY_LABELS[item.data.urgency]}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            ),
+          )}
+        </div>
+      )}
+
+      <TodoCompleteConfirmModal
+        todo={pendingCompleteTodo}
+        isOpen={!!pendingCompleteTodo}
+        onOpenChange={(open) => !open && setPendingCompleteTodo(null)}
+        onConfirm={handleConfirmCompleteTodo}
+      />
+
+      <TodoCompleteConfirmModal
+        todo={
+          pendingCompleteEvent
+            ? {
+                id: pendingCompleteEvent.id,
+                title: pendingCompleteEvent.name,
+                memberId: member.id,
+                memberName: member.name,
+                urgency: pendingCompleteEvent.urgency,
+                dueDate: pendingCompleteEvent.date,
+                completed: false,
+                source: 'event',
+              }
+            : null
+        }
+        heading="確認完成規劃事件？"
+        description="完成後將移至已完成事件，並通知相關家人。確定要標記以下事項為已完成嗎？"
+        isOpen={!!pendingCompleteEvent}
+        onOpenChange={(open) => !open && setPendingCompleteEvent(null)}
+        onConfirm={handleConfirmCompleteEvent}
+      />
+
+      <TodoDetailModal
+        todo={selectedTodo}
+        isOpen={!!selectedTodo}
+        onOpenChange={(open) => !open && setSelectedTodo(null)}
+        onEdit={
+          selectedTodo
+            ? () => openEditForTodo(selectedTodo)
+            : undefined
+        }
+      />
+
+      <EventDetailModal
+        event={selectedEvent}
+        members={allMembers}
+        isOpen={!!selectedEvent}
+        onOpenChange={(open) => !open && setSelectedEvent(null)}
+        onEdit={
+          selectedEvent
+            ? () => openEditForEvent(selectedEvent)
+            : undefined
+        }
+      />
+
+      <MemberCompletedEventsModal
+        items={memberHistory}
+        memberName={member.name}
+        isOpen={showCompleted}
+        onOpenChange={setShowCompleted}
+      />
+
+      <EventFormModal
+        isOpen={!!editingEventId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingEventId(null)
+            setEventFormInput(EMPTY_EVENT_INPUT)
+          }
+        }}
+        members={allMembers}
+        eventInput={eventFormInput}
+        setEventInput={setEventFormInput}
+        onSubmit={handleSaveEvent}
+        mode="edit"
+      />
+
+      <TodoEditModal
+        todo={editingTodo}
+        isOpen={!!editingTodo}
+        onOpenChange={(open) => !open && setEditingTodo(null)}
+        onSave={handleSaveTodo}
+      />
+    </section>
+  )
+}

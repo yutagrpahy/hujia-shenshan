@@ -7,6 +7,13 @@ import type {
   CoverageSummary,
   FamilyMember,
   GapBreakdownDisplay,
+  FamilyCoverageDomain,
+  FamilyCoverageDomainSummary,
+  FamilyCoveragePolicyItem,
+  FamilyCoverageSubcategory,
+  NonAccidentCoverageGroup,
+  NonAccidentCoverageItem,
+  Policy,
   PolicyCategoryGroup,
   PolicyWithMember,
   ProductRecommendation,
@@ -163,6 +170,248 @@ function computeGapFromMembers(
       unit,
       coveredMembers: [...coveredMembers],
     }
+  })
+}
+
+const LIFE_DOMAIN_DEFS: {
+  subcategoryType: string
+  subcategoryLabel: string
+  policyTypes: Policy['type'][]
+  useMonthly: boolean
+}[] = [
+  { subcategoryType: 'death', subcategoryLabel: '身故保障', policyTypes: ['life'], useMonthly: false },
+  {
+    subcategoryType: 'disability',
+    subcategoryLabel: '失能月給付',
+    policyTypes: ['disability'],
+    useMonthly: true,
+  },
+  {
+    subcategoryType: 'longterm',
+    subcategoryLabel: '長照月給付',
+    policyTypes: ['longterm'],
+    useMonthly: true,
+  },
+  {
+    subcategoryType: 'annuity',
+    subcategoryLabel: '年金月給付',
+    policyTypes: ['savings'],
+    useMonthly: true,
+  },
+]
+
+const MEDICAL_DOMAIN_DEFS: {
+  subcategoryType: string
+  subcategoryLabel: string
+  policyTypes: Policy['type'][]
+  useMonthly: boolean
+}[] = [
+  {
+    subcategoryType: 'hospital',
+    subcategoryLabel: '住院／實支實付',
+    policyTypes: ['health'],
+    useMonthly: false,
+  },
+  {
+    subcategoryType: 'critical',
+    subcategoryLabel: '重大疾病',
+    policyTypes: ['critical'],
+    useMonthly: false,
+  },
+]
+
+function getPolicyDisplayAmount(policy: Policy, useMonthly: boolean): number {
+  return useMonthly ? policy.monthlyPayout : policy.coverage
+}
+
+function buildFamilyCoverageDomain(
+  members: FamilyMember[],
+  domain: FamilyCoverageDomain,
+  label: string,
+  description: string,
+  defs: typeof LIFE_DOMAIN_DEFS,
+  headlineFromSubcategory: string | 'total',
+): FamilyCoverageDomainSummary {
+  const buckets = new Map<string, FamilyCoveragePolicyItem[]>()
+
+  for (const member of members) {
+    for (const policy of member.policies) {
+      const def = defs.find((entry) => entry.policyTypes.includes(policy.type))
+      if (!def) continue
+
+      const amount = getPolicyDisplayAmount(policy, def.useMonthly)
+      const listZeroCoverage =
+        amount <= 0 && ['active', 'expiring', 'pending'].includes(policy.status)
+      if (amount <= 0 && !listZeroCoverage) continue
+
+      const item: FamilyCoveragePolicyItem = {
+        id: policy.id,
+        memberId: member.id,
+        memberName: member.name,
+        insurer: policy.insurer,
+        policyName: policy.name,
+        subcategoryType: def.subcategoryType,
+        subcategoryLabel: def.subcategoryLabel,
+        amount,
+        isMonthly: def.useMonthly,
+      }
+
+      const list = buckets.get(def.subcategoryType) ?? []
+      list.push(item)
+      buckets.set(def.subcategoryType, list)
+    }
+  }
+
+  const subcategories: FamilyCoverageSubcategory[] = defs
+    .filter((def) => buckets.has(def.subcategoryType))
+    .map((def) => {
+      const items = [...(buckets.get(def.subcategoryType) ?? [])].sort(
+        (a, b) => b.amount - a.amount,
+      )
+      return {
+        subcategoryType: def.subcategoryType,
+        subcategoryLabel: def.subcategoryLabel,
+        isMonthly: def.useMonthly,
+        totalAmount: items.reduce((sum, item) => sum + item.amount, 0),
+        memberNames: [...new Set(items.map((item) => item.memberName))],
+        items,
+      }
+    })
+
+  const allItems = subcategories.flatMap((group) => group.items)
+  const memberNames = [...new Set(allItems.map((item) => item.memberName))]
+  const headlineGroup =
+    headlineFromSubcategory === 'total'
+      ? null
+      : subcategories.find((group) => group.subcategoryType === headlineFromSubcategory)
+  const headlineAmount =
+    headlineFromSubcategory === 'total'
+      ? subcategories
+          .filter((group) => !group.isMonthly)
+          .reduce((sum, group) => sum + group.totalAmount, 0)
+      : (headlineGroup?.totalAmount ?? 0)
+
+  return {
+    domain,
+    label,
+    description,
+    headlineAmount,
+    headlineUnit:
+      headlineFromSubcategory === 'total' || !headlineGroup?.isMonthly ? '元' : '元/月',
+    policyCount: allItems.length,
+    memberCount: memberNames.length,
+    memberNames,
+    activeClaimCount: 0,
+    subcategories,
+  }
+}
+
+export function computeFamilyCoverageDomains(
+  members: FamilyMember[],
+): Record<FamilyCoverageDomain, FamilyCoverageDomainSummary> {
+  return {
+    life: buildFamilyCoverageDomain(
+      members,
+      'life',
+      '壽險保障',
+      '身故、失能、長照與年金等人壽保險約定給付。',
+      LIFE_DOMAIN_DEFS,
+      'death',
+    ),
+    medical: buildFamilyCoverageDomain(
+      members,
+      'medical',
+      '醫療保障',
+      '住院醫療、實支實付與重大疾病等健康保險保障。',
+      MEDICAL_DOMAIN_DEFS,
+      'total',
+    ),
+  }
+}
+
+/** 依主管機關人身保險險種分類（壽險公會通報），非意外保障不含傷害保險 */
+const NON_ACCIDENT_GROUP_DEFS: {
+  categoryType: string
+  categoryLabel: string
+  policyTypes: Policy['type'][]
+  useMonthly: boolean
+}[] = [
+  { categoryType: 'life', categoryLabel: '人壽保險', policyTypes: ['life'], useMonthly: false },
+  { categoryType: 'health', categoryLabel: '健康保險（醫療）', policyTypes: ['health'], useMonthly: false },
+  {
+    categoryType: 'critical',
+    categoryLabel: '健康保險（重大疾病）',
+    policyTypes: ['critical'],
+    useMonthly: false,
+  },
+  {
+    categoryType: 'longterm',
+    categoryLabel: '健康保險（長期照護）',
+    policyTypes: ['longterm'],
+    useMonthly: true,
+  },
+  {
+    categoryType: 'disability',
+    categoryLabel: '健康保險（失能給付）',
+    policyTypes: ['disability'],
+    useMonthly: true,
+  },
+  { categoryType: 'savings', categoryLabel: '年金保險', policyTypes: ['savings'], useMonthly: false },
+]
+
+const NON_ACCIDENT_GROUP_ORDER = NON_ACCIDENT_GROUP_DEFS.map((def) => def.categoryType)
+
+function getNonAccidentPolicyAmount(policy: Policy, useMonthly: boolean): number {
+  return useMonthly ? policy.monthlyPayout : policy.coverage
+}
+
+export function groupNonAccidentCoverage(members: FamilyMember[]): NonAccidentCoverageGroup[] {
+  const buckets = new Map<string, NonAccidentCoverageItem[]>()
+
+  for (const member of members) {
+    for (const policy of member.policies) {
+      if (policy.type === 'accident') continue
+
+      const def = NON_ACCIDENT_GROUP_DEFS.find((entry) => entry.policyTypes.includes(policy.type))
+      if (!def) continue
+
+      const amount = getNonAccidentPolicyAmount(policy, def.useMonthly)
+      if (amount <= 0) continue
+
+      const item: NonAccidentCoverageItem = {
+        id: policy.id,
+        memberName: member.name,
+        insurer: policy.insurer,
+        policyName: policy.name,
+        categoryType: def.categoryType,
+        categoryLabel: def.categoryLabel,
+        amount,
+        isMonthly: def.useMonthly,
+      }
+
+      const list = buckets.get(def.categoryType) ?? []
+      list.push(item)
+      buckets.set(def.categoryType, list)
+    }
+  }
+
+  const buildGroup = (
+    categoryType: string,
+    categoryLabel: string,
+    isMonthly: boolean,
+    groupItems: NonAccidentCoverageItem[],
+  ): NonAccidentCoverageGroup => ({
+    categoryType,
+    categoryLabel,
+    isMonthly,
+    totalAmount: groupItems.reduce((sum, item) => sum + item.amount, 0),
+    memberNames: [...new Set(groupItems.map((item) => item.memberName))],
+    items: [...groupItems].sort((a, b) => b.amount - a.amount),
+  })
+
+  return NON_ACCIDENT_GROUP_ORDER.filter((type) => buckets.has(type)).map((type) => {
+    const def = NON_ACCIDENT_GROUP_DEFS.find((entry) => entry.categoryType === type)!
+    return buildGroup(type, def.categoryLabel, def.useMonthly, buckets.get(type)!)
   })
 }
 

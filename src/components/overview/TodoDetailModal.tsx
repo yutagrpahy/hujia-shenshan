@@ -1,5 +1,5 @@
 import { Button, Modal } from '@heroui/react'
-import { Calendar, ChevronRight, User } from 'lucide-react'
+import { Calendar, Pencil, User } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
 import type { TodoItem } from '../../types'
@@ -20,12 +20,14 @@ export function TodoDetailModal({
   todo,
   isOpen,
   onOpenChange,
-  onViewAll,
+  onViewMember,
+  onEdit,
 }: {
   todo: TodoItem | null
   isOpen: boolean
   onOpenChange: (open: boolean) => void
-  onViewAll: () => void
+  onViewMember?: () => void
+  onEdit?: () => void
 }) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
 
@@ -64,18 +66,33 @@ export function TodoDetailModal({
               </div>
             )}
           </Modal.Body>
-          <Modal.Footer className="flex flex-col gap-2">
-            <Button
-              fullWidth
-              className="btn-accent"
-              onPress={() => {
-                onOpenChange(false)
-                onViewAll()
-              }}
-            >
-              前往提醒頁查看
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
+          <Modal.Footer>
+            {onEdit ? (
+              <>
+                <Button slot="close" variant="secondary">
+                  關閉
+                </Button>
+                <Button variant="secondary" className="border-teal-200 text-teal-700" onPress={onEdit}>
+                  <Pencil className="w-3.5 h-3.5" />
+                  編輯
+                </Button>
+              </>
+            ) : onViewMember ? (
+              <Button
+                fullWidth
+                className="btn-accent"
+                onPress={() => {
+                  onOpenChange(false)
+                  onViewMember()
+                }}
+              >
+                前往成員待辦
+              </Button>
+            ) : (
+              <Button slot="close" fullWidth variant="secondary">
+                關閉
+              </Button>
+            )}
           </Modal.Footer>
         </Modal.Dialog>
       </Modal.Container>

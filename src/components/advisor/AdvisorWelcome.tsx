@@ -1,80 +1,89 @@
-import { FlaskConical, MessageCircle, Sparkles } from 'lucide-react'
+import { ArrowRight, FlaskConical, MessageSquare } from 'lucide-react'
 import { getAdvisorAvatarUrl } from '../../utils/avatars'
-import { AI_SUGGESTIONS, SCENARIO_LABELS } from '../../data/mockData'
-import type { ScenarioEventType } from '../../types'
-import { SCENARIO_OPTIONS, ScenarioQuickCards } from './ScenarioSimulatorSheet'
 
-const SCENARIO_HINTS: Record<ScenarioEventType, string> = {
-  disability: '估算失能後每月缺口',
-  'longterm-care': '檢視長照月給付是否足夠',
-  death: '試算身故保額與家庭支出',
-  accident: '評估意外理賠覆蓋率',
-  retirement: '預覽退休後收入替代',
-}
+const CHAT_FEATURES = [
+  '即時問答保障疑問',
+  '個人化保單建議',
+  '稅務、長照、遺產',
+]
+
+const SIMULATE_FEATURES = [
+  '失能、長照、身故',
+  '試算缺口與月給付',
+  '選成員一鍵分析',
+]
 
 export function AdvisorWelcome({
-  onSelectScenario,
-  onSuggest,
+  onEnterChat,
+  onEnterSimulate,
 }: {
-  onSelectScenario: (event: ScenarioEventType) => void
-  onSuggest: (text: string) => void
+  onEnterChat: () => void
+  onEnterSimulate: () => void
 }) {
   return (
-    <div className="flex flex-col items-center py-6 px-2 max-w-lg mx-auto w-full">
+    <div className="flex flex-col items-center py-4 px-1 max-w-lg mx-auto w-full min-h-0">
       <img
         src={getAdvisorAvatarUrl()}
         alt="AI 顧問"
-        className="w-14 h-14 rounded-2xl ring-4 ring-teal-50 mb-4"
+        className="w-12 h-12 rounded-2xl ring-4 ring-teal-50 mb-3"
       />
       <h3 className="text-base font-bold text-gray-800 mb-1">護家神山 AI 保障顧問</h3>
-      <p className="text-xs text-gray-500 text-center leading-relaxed mb-6">
-        分析家庭保障缺口、模擬人生事件，或隨時提問規劃建議
+      <p className="advisor-landing-intro text-center leading-relaxed mb-5 px-2">
+        選擇功能，快速開始
       </p>
 
-      <div className="w-full advisor-feature-card mb-5">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center shrink-0">
-            <FlaskConical className="w-4 h-4 text-white" />
+      <div className="advisor-landing-grid w-full">
+        <button
+          type="button"
+          onClick={onEnterChat}
+          className="advisor-landing-card advisor-landing-card--chat text-left"
+        >
+          <div className="advisor-landing-card__icon advisor-landing-card__icon--chat">
+            <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-800">情境模擬</p>
-            <p className="text-[10px] text-gray-400">常駐功能 · 選成員與情境即可試算</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
-          {SCENARIO_OPTIONS.slice(0, 4).map((ev) => (
-            <button
-              key={ev}
-              type="button"
-              onClick={() => onSelectScenario(ev)}
-              className="advisor-scenario-card text-left p-3"
-            >
-              <p className="text-xs font-semibold text-teal-700">{SCENARIO_LABELS[ev]}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">{SCENARIO_HINTS[ev]}</p>
-            </button>
-          ))}
-        </div>
-        <ScenarioQuickCards onSelect={onSelectScenario} />
-      </div>
+          <p className="advisor-landing-card__title mt-3">對話</p>
+          <p className="advisor-landing-card__desc mt-1 leading-relaxed">
+            提問釐清保障
+          </p>
+          <ul className="advisor-landing-card__features mt-3 space-y-2 flex-1">
+            {CHAT_FEATURES.map((feature) => (
+              <li key={feature} className="advisor-landing-card__feature flex gap-1.5">
+                <span className="text-teal-500 shrink-0">·</span>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+          <span className="advisor-landing-card__cta mt-3">
+            開始對話
+            <ArrowRight className="advisor-landing-card__cta-icon" />
+          </span>
+        </button>
 
-      <div className="w-full">
-        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-          <MessageCircle className="w-3 h-3" />
-          或從這些問題開始
-        </p>
-        <div className="grid grid-cols-1 gap-2">
-          {AI_SUGGESTIONS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => onSuggest(s)}
-              className="advisor-prompt-card text-left px-3.5 py-3 text-sm text-gray-700"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-teal-500 inline mr-1.5 -mt-0.5" />
-              {s}
-            </button>
-          ))}
-        </div>
+        <button
+          type="button"
+          onClick={onEnterSimulate}
+          className="advisor-landing-card advisor-landing-card--simulate text-left"
+        >
+          <div className="advisor-landing-card__icon advisor-landing-card__icon--simulate">
+            <FlaskConical className="w-5 h-5 text-white" />
+          </div>
+          <p className="advisor-landing-card__title mt-3">情境模擬</p>
+          <p className="advisor-landing-card__desc mt-1 leading-relaxed">
+            試算事件衝擊
+          </p>
+          <ul className="advisor-landing-card__features mt-3 space-y-2 flex-1">
+            {SIMULATE_FEATURES.map((feature) => (
+              <li key={feature} className="advisor-landing-card__feature flex gap-1.5">
+                <span className="text-coral-500 shrink-0">·</span>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+          <span className="advisor-landing-card__cta mt-3">
+            開始模擬
+            <ArrowRight className="advisor-landing-card__cta-icon" />
+          </span>
+        </button>
       </div>
     </div>
   )

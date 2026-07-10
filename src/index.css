@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+/* HeroUI 主題色對齊護家神山品牌青綠（覆蓋預設藍色 accent） */
+:root,
+.light,
+.default,
+[data-theme="light"],
+[data-theme="default"] {
+  --accent: #2d7a70;
+  --accent-foreground: #ffffff;
+  --focus: #2d7a70;
+}
+
 @theme {
   --font-sans: "Noto Sans TC", "Roboto", "PingFang TC", system-ui, sans-serif;
   --color-primary: #2d7a70;
@@ -46,12 +57,11 @@ body {
 }
 
 /* ── 品牌標準字與標語 ── */
-.brand-header__title-row {
+.brand-header-cluster {
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  column-gap: 10px;
-  row-gap: 2px;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .brand-wordmark {
@@ -73,25 +83,12 @@ body {
   white-space: nowrap;
 }
 
-.brand-caption {
-  margin: 2px 0 0;
-  color: var(--color-on-surface-variant);
-  line-height: 1.3;
-}
-
 .brand-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
   min-width: 0;
-}
-
-.brand-header--compact .brand-wordmark {
-  font-size: 1rem;
-  line-height: 1.2;
-}
-
-.brand-header--compact .brand-caption {
-  font-size: 0.75rem;
-  margin-top: 1px;
-  line-height: 1.25;
 }
 
 .brand-header--mobile .brand-wordmark {
@@ -100,10 +97,9 @@ body {
 
 .brand-header--mobile .brand-tagline {
   font-size: 0.6875rem;
-}
-
-.brand-header--mobile .brand-caption {
-  font-size: 0.625rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-header--desktop .brand-wordmark {
@@ -112,16 +108,54 @@ body {
 
 .brand-header--desktop .brand-tagline {
   font-size: 0.8125rem;
+  white-space: nowrap;
 }
 
-.brand-header--desktop .brand-caption {
+.user-header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1px;
+  text-align: right;
+}
+
+.user-header-meta__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-on-surface);
+  line-height: 1.25;
+}
+
+.user-header-meta__family {
+  font-size: 0.625rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.25;
+}
+
+.user-header-meta--compact {
+  max-width: 7.5rem;
+}
+
+.user-header-meta--compact .user-header-meta__name {
   font-size: 0.75rem;
+}
+
+.user-header-meta--compact .user-header-meta__family {
+  font-size: 0.625rem;
 }
 
 @media (max-width: 380px) {
   .brand-header--mobile .brand-tagline {
     white-space: normal;
-    flex-basis: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .user-header-meta--compact {
+    max-width: 5.5rem;
   }
 }
 
@@ -172,7 +206,7 @@ body {
 
 .m3-nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 8px 0 6px; font-size: 11px; font-weight: 500;
+  padding: 8px 0 6px; font-size: 10px; font-weight: 500;
   color: var(--color-on-surface-variant);
   flex: 1; background: none; border: none; cursor: pointer;
   transition: color 0.2s;
@@ -239,6 +273,7 @@ body {
 /* ── Content containers（舒適閱讀寬度）── */
 .main-content--mobile {
   padding: 16px;
+  padding-top: 16px;
   padding-bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
@@ -277,22 +312,22 @@ body {
   border: 2px dashed rgba(217, 112, 85, 0.4);
   background: linear-gradient(135deg, #fffaf7 0%, #fff 55%, #faf9f7 100%);
   box-shadow: 0 4px 16px rgba(217, 112, 85, 0.08);
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
-.gap-card--urgent:hover {
-  border-color: rgba(217, 112, 85, 0.58);
-  box-shadow: 0 6px 20px rgba(217, 112, 85, 0.12);
+.gap-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.gap-card--urgent:hover .gap-urgent-cta {
-  background: rgba(45, 122, 112, 0.14);
-  border-color: rgba(45, 122, 112, 0.35);
+.gap-card {
+  padding: 12px;
 }
 
-.gap-card--urgent:active {
-  transform: scale(0.99);
+.gap-card__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .gap-urgent-badge {
@@ -309,16 +344,35 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
   margin-top: 8px;
   padding: 8px 10px;
   border-radius: 12px;
   background: rgba(45, 122, 112, 0.1);
   border: 1px solid rgba(45, 122, 112, 0.28);
+  font-family: inherit;
   font-size: 11px;
   font-weight: 600;
   color: var(--color-accent);
-  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+  text-align: left;
+  appearance: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
   min-width: 0;
+}
+
+.gap-urgent-cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(45, 122, 112, 0.25);
+}
+
+.gap-urgent-cta:hover {
+  background: rgba(45, 122, 112, 0.14);
+  border-color: rgba(45, 122, 112, 0.35);
+}
+
+.gap-urgent-cta:active {
+  transform: scale(0.99);
 }
 
 .gap-achieved-badge {
@@ -330,14 +384,129 @@ body {
   animation: gap-badge-pop 0.5s ease-out;
 }
 
-.m3-progress-fill--achieved {
-  box-shadow: 0 0 8px rgba(45, 122, 112, 0.35);
+/* ── 保障缺口進度條：粗細一致，以用色區分狀態 ── */
+.gap-progress {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.gap-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.6s ease;
+}
+
+/* 明顯：已達標 */
+.gap-progress--achieved {
+  background: rgba(45, 122, 112, 0.16);
+  box-shadow: inset 0 1px 2px rgba(45, 122, 112, 0.1);
+}
+
+.gap-progress__fill--achieved {
+  background: linear-gradient(90deg, #4eb3a5 0%, #2d7a70 45%, #1a5c54 100%);
+  box-shadow:
+    0 0 10px rgba(45, 122, 112, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* 不明顯：進行中 */
+.gap-progress--in-progress {
+  background: var(--color-sand-100);
+}
+
+.gap-progress__fill--in-progress {
+  background: linear-gradient(90deg, #a8d4cd, #7eb8ae);
+  opacity: 0.75;
+}
+
+.gap-progress--in-progress[data-level='mid'] .gap-progress__fill--in-progress {
+  background: linear-gradient(90deg, #8ec4bc, #6db5a9);
+  opacity: 0.82;
+}
+
+.gap-progress--in-progress[data-level='high'] .gap-progress__fill--in-progress {
+  background: linear-gradient(90deg, #6db5a9, #5a9e96);
+  opacity: 0.88;
+}
+
+/* 空狀態：尚未投保 */
+.gap-progress--urgent {
+  background: repeating-linear-gradient(
+    -45deg,
+    #faf6f3,
+    #faf6f3 4px,
+    #f5eeea 4px,
+    #f5eeea 8px
+  );
+  box-shadow: inset 0 0 0 1px rgba(217, 112, 85, 0.12);
+}
+
+.gap-progress__fill--urgent {
+  background: linear-gradient(90deg, #f0c4b0, #e8917a);
+  opacity: 0.35;
 }
 
 @keyframes gap-badge-pop {
   0% { transform: scale(0.85); opacity: 0.6; }
   70% { transform: scale(1.05); }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── 理賠頁：狀態標籤色彩（取代區塊標題分類）── */
+.claim-card {
+  border-left: 3px solid transparent;
+}
+
+.claim-card--danger {
+  border-left-color: #e57373;
+}
+
+.claim-card--warning {
+  border-left-color: #f0b429;
+}
+
+.claim-card--info {
+  border-left-color: #5a9e96;
+}
+
+.claim-card--success {
+  border-left-color: #2d7a70;
+}
+
+.claim-chip {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+  align-self: center;
+}
+
+.claim-chip--danger {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.22);
+}
+
+.claim-chip--warning {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.22);
+}
+
+.claim-chip--info {
+  background: linear-gradient(135deg, #f0f9f8, #e0f2f1);
+  color: #1f5f57;
+  border-color: rgba(45, 122, 112, 0.22);
+}
+
+.claim-chip--success {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #047857;
+  border-color: rgba(5, 150, 105, 0.22);
 }
 
 /* ── Cards & UI tokens ── */
@@ -354,6 +523,69 @@ body {
   background: linear-gradient(135deg, var(--color-primary-container), #e8f5f3);
   border-radius: 20px;
   border: none;
+}
+
+/* ── 家庭保障總覽：壽險／醫療入口 ── */
+.family-coverage-card {
+  border-radius: 20px;
+  border: none;
+}
+
+.family-coverage-card--life {
+  background: linear-gradient(135deg, var(--color-primary-container), #e8f5f3);
+}
+
+.family-coverage-card--life .family-coverage-card__icon,
+.family-coverage-card--life .family-coverage-card__label,
+.family-coverage-card--life .family-coverage-card__amount {
+  color: var(--color-primary);
+}
+
+.family-coverage-card--life .family-coverage-card__note {
+  color: rgba(45, 122, 112, 0.75);
+}
+
+.family-coverage-card--life .family-coverage-card__claim-badge {
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--color-primary);
+}
+
+.family-coverage-card--medical {
+  background: linear-gradient(135deg, #eef5fa, #f7fafc);
+  border: 1px solid rgba(107, 140, 174, 0.18);
+}
+
+.family-coverage-card--medical .family-coverage-card__icon,
+.family-coverage-card--medical .family-coverage-card__label {
+  color: #4a6f8f;
+}
+
+.family-coverage-card--medical .family-coverage-card__amount {
+  color: #3d5f7c;
+}
+
+.family-coverage-card--medical .family-coverage-card__note {
+  color: rgba(61, 95, 124, 0.72);
+}
+
+.family-coverage-card--medical .family-coverage-card__claim-badge {
+  background: rgba(255, 255, 255, 0.8);
+  color: #4a6f8f;
+}
+
+.family-coverage-modal-summary {
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.family-coverage-modal-summary--life {
+  background: linear-gradient(135deg, #f0f9f8, #fff);
+  color: var(--color-primary);
+}
+
+.family-coverage-modal-summary--medical {
+  background: linear-gradient(135deg, #eef5fa, #fff);
+  color: #3d5f7c;
 }
 
 .m3-card-warm {
@@ -397,15 +629,33 @@ body {
   box-shadow: 0 2px 6px rgba(45, 122, 112, 0.12);
 }
 
-/* ── Accent buttons（綠色系，非 wireframe 中性色）── */
-.btn-accent {
+/* ── 全站主要按鈕：品牌青綠色 ── */
+.button.button--primary {
+  --button-bg: #2d7a70;
+  --button-bg-hover: #1f5f57;
+  --button-bg-pressed: #1f5f57;
+  --button-fg: #ffffff;
+}
+
+.button.btn-accent,
+.button.btn-accent:hover,
+.button.btn-accent[data-hovered="true"] {
   background: linear-gradient(135deg, var(--color-accent), #3d9b8f) !important;
+  background-color: transparent !important;
   color: white !important;
   border: none !important;
   box-shadow: 0 2px 8px rgba(45, 122, 112, 0.25);
 }
-.btn-accent:hover {
+
+.button.btn-accent:active,
+.button.btn-accent[data-pressed="true"] {
   background: linear-gradient(135deg, #1f5f57, var(--color-accent)) !important;
+}
+
+.button.btn-accent:disabled,
+.button.btn-accent[aria-disabled="true"] {
+  opacity: 0.55;
+  box-shadow: none;
 }
 
 .btn-cta {
@@ -472,7 +722,220 @@ body {
   border-radius: 20px 20px 20px 4px;
 }
 
-/* ── AI 顧問：歡迎引導與情境模擬常駐 dock ── */
+/* ── AI 顧問：雙入口引導與情境模擬常駐 dock ── */
+.advisor-landing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.advisor-landing-intro {
+  font-size: 0.875rem;
+  color: var(--color-on-surface-variant);
+}
+
+.advisor-landing-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  line-height: 1.3;
+}
+
+.advisor-landing-card__desc {
+  font-size: 0.875rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+}
+
+.advisor-landing-card__feature {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.advisor-landing-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 16px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--color-outline);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.advisor-landing-card:hover {
+  border-color: rgba(45, 122, 112, 0.3);
+  box-shadow: 0 4px 16px rgba(45, 122, 112, 0.1);
+}
+
+.advisor-landing-card:active {
+  transform: scale(0.98);
+}
+
+.advisor-landing-card--chat:hover {
+  background: linear-gradient(180deg, #f0f9f8 0%, #fff 100%);
+}
+
+.advisor-landing-card--simulate:hover {
+  background: linear-gradient(180deg, #fdf8f3 0%, #fff 100%);
+}
+
+.advisor-landing-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  shrink: 0;
+}
+
+.advisor-landing-card__icon--chat {
+  background: linear-gradient(135deg, var(--color-teal-500), #3d9b8f);
+}
+
+.advisor-landing-card__icon--simulate {
+  background: linear-gradient(135deg, var(--color-coral-500), #e8917a);
+}
+
+.advisor-landing-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  line-height: 1.35;
+}
+
+.advisor-landing-card--simulate .advisor-landing-card__cta {
+  color: var(--color-coral-500);
+}
+
+.advisor-landing-card__cta-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.advisor-typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--color-teal-500);
+  border-radius: 1px;
+  animation: advisor-cursor-blink 0.9s step-end infinite;
+}
+
+/* ── 家庭保險健康分級：五級總覽 ── */
+.health-tier-overview__intro {
+  border: 1px solid rgba(45, 122, 112, 0.12);
+}
+
+.health-tier-card {
+  border: 1px solid var(--color-outline);
+  border-radius: 16px;
+  background: white;
+  padding: 14px;
+}
+
+.health-tier-card--current {
+  border-color: rgba(45, 122, 112, 0.45);
+  background: linear-gradient(180deg, #f0f9f8 0%, #fff 100%);
+  box-shadow: 0 2px 12px rgba(45, 122, 112, 0.08);
+}
+
+.health-tier-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.health-tier-card__level {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.health-tier-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.health-tier-card__subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.health-tier-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--color-teal-50);
+  color: var(--color-primary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.health-tier-card__desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.health-tier-card__targets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.health-tier-card__target {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--color-surface-variant, #f8f7f5);
+}
+
+.health-tier-card--current .health-tier-card__target {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.health-tier-card__target-label {
+  font-size: 0.625rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.3;
+}
+
+.health-tier-card__target-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+@keyframes advisor-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 .advisor-feature-card {
   background: linear-gradient(135deg, #f0f9f8 0%, #fff 50%, #fdf8f3 100%);
   border: 1px solid rgba(45, 122, 112, 0.18);
@@ -508,10 +971,13 @@ body {
 .advisor-dock {
   margin-top: 8px;
   padding: 12px 14px 14px;
-  background: rgba(255, 255, 255, 0.97);
-  border: 1px solid var(--color-outline);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(45, 122, 112, 0.1);
   border-radius: 20px;
-  box-shadow: 0 4px 24px rgba(45, 122, 112, 0.07);
+  box-shadow:
+    0 -2px 8px rgba(45, 122, 112, 0.05),
+    0 8px 28px rgba(45, 122, 112, 0.1),
+    0 20px 48px rgba(28, 48, 44, 0.08);
 }
 
 .advisor-mode-toggle {
@@ -568,6 +1034,93 @@ body {
 
 .advisor-dock-input-row {
   padding-top: 4px;
+}
+
+/* ── 情境模擬：成員窄選單 + 年齡拉桿 ── */
+.scenario-sim-controls {
+  display: grid;
+  grid-template-columns: minmax(3.25rem, 15%) minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+@media (max-width: 599px) {
+  .scenario-sim-controls {
+    grid-template-columns: minmax(4.5rem, 30%) minmax(0, 1fr);
+  }
+}
+
+.scenario-sim-member-select {
+  appearance: none;
+  padding: 10px 1.35rem 10px 8px;
+  border: 1px solid var(--color-outline);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  background:
+    white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 6px center;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-height: 44px;
+}
+
+.scenario-sim-member-select:focus {
+  outline: none;
+  border-color: rgba(45, 122, 112, 0.45);
+  box-shadow: 0 0 0 2px rgba(45, 122, 112, 0.15);
+}
+
+.scenario-age-slider-wrap {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 2px;
+  touch-action: pan-x;
+}
+
+.scenario-age-slider {
+  appearance: none;
+  height: 28px;
+  margin: 0;
+  accent-color: var(--color-teal-500);
+  cursor: pointer;
+}
+
+.scenario-age-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-sand-200);
+}
+
+.scenario-age-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--color-teal-500);
+  box-shadow: 0 1px 4px rgba(45, 122, 112, 0.25);
+}
+
+.scenario-age-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-sand-200);
+}
+
+.scenario-age-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--color-teal-500);
+  box-shadow: 0 1px 4px rgba(45, 122, 112, 0.25);
 }
 
 /* ── Hero banner ── */
@@ -788,16 +1341,15 @@ body {
     pointer-events: none;
   }
 
+  .app-layout--mobile {
+    --mobile-header-content-gap: 12px;
+  }
+
   .main-content--mobile-scroll {
-    padding-top: var(--mobile-header-height, 60px);
-  }
-
-  .brand-header--compact .brand-wordmark {
-    font-size: 1.0625rem;
-  }
-
-  .brand-header--compact .brand-caption {
-    font-size: 0.875rem;
+    padding-top: var(
+      --mobile-content-top,
+      calc(var(--mobile-header-height, 60px) + var(--mobile-header-content-gap, 12px))
+    );
   }
 
   .m3-app-bar,
@@ -851,17 +1403,77 @@ body {
   }
 
   /* 品牌標頭 */
+  .brand-header-cluster {
+    gap: 8px;
+  }
+
   .brand-header--mobile .brand-wordmark {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.15;
   }
 
   .brand-header--mobile .brand-tagline {
-    font-size: 0.9375rem;
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
     white-space: normal;
     max-width: 100%;
   }
 
-  .brand-header--mobile .brand-caption {
+  .user-header-meta--compact {
+    max-width: 6.75rem;
+  }
+
+  .user-header-meta--compact .user-header-meta__name {
+    font-size: 0.8125rem;
+  }
+
+  .user-header-meta--compact .user-header-meta__family {
+    font-size: 0.6875rem;
+  }
+
+  .advisor-landing-intro {
+    font-size: 1rem;
+  }
+
+  .advisor-landing-card {
+    padding: 18px 15px;
+  }
+
+  .advisor-landing-card__title {
+    font-size: 1.125rem;
+  }
+
+  .advisor-landing-card__desc {
+    font-size: 0.9375rem;
+  }
+
+  .advisor-landing-card__feature {
+    font-size: 0.9375rem;
+  }
+
+  .advisor-landing-card__cta {
+    font-size: 1rem;
+  }
+
+  .health-tier-card {
+    padding: 16px;
+  }
+
+  .health-tier-card__title {
+    font-size: 1.0625rem;
+  }
+
+  .health-tier-card__subtitle,
+  .health-tier-card__desc {
+    font-size: 0.8125rem;
+  }
+
+  .health-tier-card__target-label {
+    font-size: 0.6875rem;
+  }
+
+  .health-tier-card__target-value {
     font-size: 0.875rem;
   }
 
@@ -872,6 +1484,12 @@ body {
 
   .m3-chip {
     font-size: 0.9375rem;
+  }
+
+  .claim-chip {
+    font-size: 0.625rem;
+    padding: 2px 7px;
+    line-height: 1.2;
   }
 
   .m3-segment-btn {
@@ -903,6 +1521,23 @@ body {
     --advisor-bottom-nav: calc(84px + env(safe-area-inset-bottom));
   }
 
+  .gap-cards-list {
+    gap: 14px;
+  }
+
+  .gap-card {
+    padding: 14px;
+  }
+
+  .gap-card__title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+
+  .gap-progress {
+    height: 10px;
+  }
+
   .advisor-dock {
     position: fixed;
     left: max(16px, env(safe-area-inset-left));
@@ -910,9 +1545,14 @@ body {
     bottom: var(--advisor-bottom-nav);
     z-index: 45;
     margin-top: 0;
-    transition: bottom 0.2s ease-out;
+    transition: bottom 0.2s ease-out, box-shadow 0.28s ease;
     max-width: none;
     box-sizing: border-box;
+    box-shadow:
+      0 -4px 12px rgba(45, 122, 112, 0.08),
+      0 12px 36px rgba(45, 122, 112, 0.16),
+      0 28px 64px rgba(28, 48, 44, 0.14);
+    border-color: rgba(45, 122, 112, 0.14);
   }
 
   .hero-banner__content {

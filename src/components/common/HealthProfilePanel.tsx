@@ -1,13 +1,63 @@
 import { Button, Modal } from '@heroui/react'
-import { ChevronRight, ClipboardList, Sparkles } from 'lucide-react'
+import { Check, ChevronRight, ClipboardList, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import {
   HEALTH_PROFILE_QUESTIONS,
   PROTECTION_TIER_OPTIONS,
   buildProfileFromAnswers,
+  type TierOption,
 } from '../../data/healthProfile'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type { ProtectionLifeProfile } from '../../types'
+
+const TARGET_LABELS: { key: keyof ProtectionLifeProfile['targets']; label: string; unit: string }[] =
+  [
+    { key: 'deathCoverage', label: '身故保障', unit: '萬元' },
+    { key: 'medicalCoverage', label: '醫療保障', unit: '萬元' },
+    { key: 'criticalCoverage', label: '重大疾病', unit: '萬元' },
+    { key: 'longtermMonthly', label: '長照月給付', unit: '萬元/月' },
+    { key: 'disabilityMonthly', label: '失能收入替代', unit: '萬元/月' },
+  ]
+
+function TierOverviewCard({
+  tier,
+  isCurrent,
+}: {
+  tier: TierOption
+  isCurrent: boolean
+}) {
+  return (
+    <article
+      className={`health-tier-card ${isCurrent ? 'health-tier-card--current' : ''}`}
+      aria-current={isCurrent ? 'true' : undefined}
+    >
+      <div className="health-tier-card__header">
+        <div className="min-w-0 flex-1">
+          <p className="health-tier-card__level">第 {tier.tier} 級</p>
+          <p className="health-tier-card__title">{tier.label}</p>
+          <p className="health-tier-card__subtitle">{tier.subtitle}</p>
+        </div>
+        {isCurrent && (
+          <span className="health-tier-card__badge">
+            <Check className="w-3 h-3" />
+            目前
+          </span>
+        )}
+      </div>
+      <p className="health-tier-card__desc">{tier.description}</p>
+      <div className="health-tier-card__targets">
+        {TARGET_LABELS.map(({ key, label, unit }) => (
+          <div key={key} className="health-tier-card__target">
+            <p className="health-tier-card__target-label">{label}</p>
+            <p className="health-tier-card__target-value">
+              {tier.targets[key]} {unit}
+            </p>
+          </div>
+        ))}
+      </div>
+    </article>
+  )
+}
 
 interface HealthProfileEntryProps {
   profile: ProtectionLifeProfile
@@ -52,12 +102,56 @@ export function HealthProfileEntry({ profile, onOpen, compact }: HealthProfileEn
   )
 }
 
+export type HealthProfileViewScope = 'current' | 'compare'
+
 interface HealthProfileModalProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   profile: ProtectionLifeProfile
   onSave: (profile: ProtectionLifeProfile) => void
   mode?: 'view' | 'onboarding'
+  /** current：僅目前分級；compare：五級完整比較 */
+  viewScope?: HealthProfileViewScope
+}
+
+function CurrentTierDetail({ profile }: { profile: ProtectionLifeProfile }) {
+  const currentTier = PROTECTION_TIER_OPTIONS.find((tier) => tier.tier === profile.tier)
+
+  return (
+    <div className="space-y-4">
+      <div className="m3-card-filled p-4">
+        <p className="text-xs text-teal-600 font-medium mb-1">目前分級</p>
+        <p className="text-xl font-bold text-teal-700">
+          第 {profile.tier} 級 · {profile.tierLabel}
+        </p>
+        {currentTier && (
+          <p className="text-xs text-gray-500 mt-1">{currentTier.subtitle}</p>
+        )}
+        <p className="text-sm text-gray-600 mt-2 leading-relaxed">{profile.tierDescription}</p>
+        <p className="text-[10px] text-gray-400 mt-2">上次填寫：{profile.completedAt}</p>
+      </div>
+
+      <div>
+        <p className="text-xs font-semibold text-gray-400 uppercase mb-2 tracking-wider">
+          滿分保障目標（依此分級計算健康度）
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {TARGET_LABELS.map(({ key, label, unit }) => (
+            <div key={key} className="m3-card p-3">
+              <p className="text-[10px] text-gray-400">{label}</p>
+              <p className="text-sm font-semibold text-teal-700">
+                {profile.targets[key]} {unit}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="text-xs text-gray-500 leading-relaxed">
+        此分級定義您家庭「期望的保障生活」，作為總覽保障健康度的滿分基準。若要與其他分級比較，請點選「查看家庭保險健康分級」。
+      </p>
+    </div>
+  )
 }
 
 export function HealthProfileModal({
@@ -66,6 +160,7 @@ export function HealthProfileModal({
   profile,
   onSave,
   mode = 'view',
+  viewScope = 'current',
 }: HealthProfileModalProps) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const [step, setStep] = useState(0)
@@ -99,49 +194,54 @@ export function HealthProfileModal({
   return (
     <Modal.Backdrop isOpen={isOpen} onOpenChange={handleClose}>
       <Modal.Container placement={isMobile ? 'bottom' : 'center'} scroll="inside">
-        <Modal.Dialog className="max-w-lg">
+        <Modal.Dialog className="health-tier-modal max-w-lg">
           <Modal.CloseTrigger />
           <Modal.Header>
             <Modal.Heading>
-              {editing ? '填寫期望的保障生活' : '家庭保險健康分級'}
+              {editing
+                ? '填寫期望的保障生活'
+                : viewScope === 'compare'
+                  ? '家庭保險健康分級總覽'
+                  : '目前保障分級'}
             </Modal.Heading>
           </Modal.Header>
           <Modal.Body>
-            {!editing ? (
-              <div className="space-y-4">
-                <div className="m3-card-filled p-4">
-                  <p className="text-xs text-teal-600 font-medium mb-1">目前分級</p>
-                  <p className="text-xl font-bold text-teal-700">
-                    第 {profile.tier} 級 · {profile.tierLabel}
+            {!editing && viewScope === 'current' ? (
+              <CurrentTierDetail profile={profile} />
+            ) : !editing ? (
+              <div className="health-tier-overview space-y-4">
+                <div className="health-tier-overview__intro m3-card-filled p-4">
+                  <p className="text-sm font-semibold text-gray-800">什麼是家庭保險健康分級？</p>
+                  <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                    如同投資風險屬性問卷，五級分類定義家庭「期望的保障生活」，作為保障健康度的滿分基準。總覽中的健康度分數，即依您選擇的分級目標計算達成率。
                   </p>
-                  <p className="text-sm text-gray-600 mt-2">{profile.tierDescription}</p>
                   <p className="text-[10px] text-gray-400 mt-2">
                     上次填寫：{profile.completedAt}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                    滿分保障目標（依此分級計算健康度）
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      ['身故保障', `${profile.targets.deathCoverage} 萬元`],
-                      ['醫療保障', `${profile.targets.medicalCoverage} 萬元`],
-                      ['重大疾病保障', `${profile.targets.criticalCoverage} 萬元`],
-                      ['長照月給付', `${profile.targets.longtermMonthly} 萬元/月`],
-                      ['失能收入替代', `${profile.targets.disabilityMonthly} 萬元/月`],
-                    ].map(([label, value]) => (
-                      <div key={label} className="m3-card p-3">
-                        <p className="text-[10px] text-gray-400">{label}</p>
-                        <p className="text-sm font-semibold text-teal-700">{value}</p>
-                      </div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      五級分類總覽
+                    </p>
+                    <span className="text-[10px] text-teal-600 font-medium shrink-0">
+                      第 {profile.tier} 級 · {profile.tierLabel}
+                    </span>
+                  </div>
+                  <div className="health-tier-overview__list space-y-3">
+                    {PROTECTION_TIER_OPTIONS.map((tier) => (
+                      <TierOverviewCard
+                        key={tier.tier}
+                        tier={tier}
+                        isCurrent={tier.tier === profile.tier}
+                      />
                     ))}
                   </div>
                 </div>
 
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  如同投資風險屬性問卷，此分級定義您家庭「期望的保障生活」，作為保障健康度的滿分基準。調整分級後，健康度分數會重新計算。
+                  調整分級後，身故、醫療、重大疾病、長照與失能五類保障目標會同步更新，保障健康度分數亦會重新計算。
                 </p>
               </div>
             ) : (
@@ -194,7 +294,7 @@ export function HealthProfileModal({
           </Modal.Body>
           <Modal.Footer className="flex gap-2">
             {!editing ? (
-              <Button fullWidth onPress={() => setEditing(true)}>
+              <Button fullWidth className="btn-accent" onPress={() => setEditing(true)}>
                 重新填寫問卷
               </Button>
             ) : (
@@ -205,11 +305,21 @@ export function HealthProfileModal({
                   </Button>
                 )}
                 {step < questions.length - 1 ? (
-                  <Button fullWidth isDisabled={!canNext} onPress={() => setStep((s) => s + 1)}>
+                  <Button
+                    fullWidth
+                    className="btn-accent"
+                    isDisabled={!canNext}
+                    onPress={() => setStep((s) => s + 1)}
+                  >
                     下一步
                   </Button>
                 ) : (
-                  <Button fullWidth isDisabled={!canNext} onPress={handleSave}>
+                  <Button
+                    fullWidth
+                    className="btn-accent"
+                    isDisabled={!canNext}
+                    onPress={handleSave}
+                  >
                     {mode === 'onboarding' ? '完成並建立家庭' : '儲存分級'}
                   </Button>
                 )}

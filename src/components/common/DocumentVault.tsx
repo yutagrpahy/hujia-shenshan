@@ -13,21 +13,14 @@ const DOC_TYPE_LABELS: Record<string, string> = {
 interface DocumentVaultProps {
   documents: SecureDocument[]
   canUpload: boolean
-  title?: string
 }
 
 export function DocumentVault({
   documents,
   canUpload,
-  title = '安全文件庫',
 }: DocumentVaultProps) {
   return (
     <div className="m3-card p-4">
-      <h4 className="text-xs font-semibold text-gray-400 uppercase mb-3 flex items-center gap-1.5">
-        <Lock className="w-3.5 h-3.5 text-teal-500" />
-        {title}
-      </h4>
-
       {documents.length === 0 ? (
         <p className="text-sm text-gray-400 py-4 text-center">尚無上傳文件</p>
       ) : (

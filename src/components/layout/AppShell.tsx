@@ -1,9 +1,11 @@
 import {
-  Bell,
   Bot,
+  FileCheck2,
   LayoutDashboard,
   Shield,
 } from 'lucide-react'
+import { useMemo } from 'react'
+import { buildFamilyClaims } from '../../data/claims'
 import { useEffect, useRef } from 'react'
 import { useApp } from '../../context/AppContext'
 import { useCollapsingHeader } from '../../hooks/useCollapsingHeader'
@@ -12,18 +14,19 @@ import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { getMemberAvatarUrl } from '../../utils/avatars'
 import { BrandHeader } from '../common/BrandHeader'
 import { BrandLogo } from '../common/BrandLogo'
-import type { AppTab } from '../../types'
+import { UserHeaderMeta } from '../common/UserHeaderMeta'
+import type { AppTab, FamilyMember } from '../../types'
 
 const TABS: { id: AppTab; label: string; icon: typeof LayoutDashboard; desc: string }[] = [
   { id: 'overview', label: '總覽', icon: LayoutDashboard, desc: '家庭保障全貌' },
-  { id: 'reminders', label: '提醒', icon: Bell, desc: '待辦與通知' },
+  { id: 'claims', label: '理賠', icon: FileCheck2, desc: '出險進度' },
   { id: 'advisor', label: 'AI 顧問', icon: Bot, desc: '對話與模擬' },
   { id: 'protection', label: '保障', icon: Shield, desc: '成員與事件' },
 ]
 
 const TAB_TITLES: Record<AppTab, string> = {
   overview: '總覽',
-  reminders: '提醒',
+  claims: '理賠',
   advisor: 'AI 保障顧問',
   protection: '保障',
 }
@@ -32,14 +35,19 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
+/** 固定頂部列下方與內容之間的額外留白（px） */
+const MOBILE_HEADER_CONTENT_GAP = 12
+
 function MobileShell({
   scrollResetKey,
+  currentUser,
   memberCount,
   avatarButton,
   navItems,
   children,
 }: {
   scrollResetKey: string
+  currentUser: FamilyMember | undefined
   memberCount: number
   avatarButton: React.ReactNode
   navItems: React.ReactNode
@@ -54,6 +62,10 @@ function MobileShell({
     const root = scrollRef.current?.closest('.app-layout--mobile') as HTMLElement | null
     if (root && headerHeight > 0) {
       root.style.setProperty('--mobile-header-height', `${headerHeight}px`)
+      root.style.setProperty(
+        '--mobile-content-top',
+        `${headerHeight + MOBILE_HEADER_CONTENT_GAP}px`,
+      )
     }
   }, [headerHeight])
 
@@ -66,11 +78,16 @@ function MobileShell({
         }`}
       >
         <div className="flex items-center justify-between gap-2 min-w-0 w-full">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className="brand-header-cluster min-w-0 flex-1">
             <BrandLogo size={36} className="shrink-0 shadow-sm" />
-            <BrandHeader memberCount={memberCount} variant="mobile" compact />
+            <BrandHeader variant="mobile" />
           </div>
-          <div className="shrink-0">{avatarButton}</div>
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
+            {currentUser && (
+              <UserHeaderMeta user={currentUser} memberCount={memberCount} compact />
+            )}
+            {avatarButton}
+          </div>
         </div>
       </header>
 
@@ -93,7 +110,6 @@ export function AppShell({ children }: AppShellProps) {
     currentTab,
     setCurrentTab,
     isProfileView,
-    notifications,
     currentUserId,
     members,
     memberCount,
@@ -101,12 +117,15 @@ export function AppShell({ children }: AppShellProps) {
   } = useApp()
   const pageTitle = isProfileView ? '個人資料' : TAB_TITLES[currentTab]
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
-  const unreadNotifs = notifications.filter((n) => !n.read).length
+  const claimActionCount = useMemo(
+    () => buildFamilyClaims(members).filter((claim) => claim.isError).length,
+    [members],
+  )
   const currentUser = members.find((m) => m.id === currentUserId)
 
   const navItems = TABS.map(({ id, label, icon: Icon, desc }) => {
     const isActive = currentTab === id
-    const showBadge = id === 'reminders' && unreadNotifs > 0
+    const showBadge = id === 'claims' && claimActionCount > 0
     return (
       <button
         key={id}
@@ -119,7 +138,7 @@ export function AppShell({ children }: AppShellProps) {
             <div className="m3-nav-indicator relative">
               <Icon className="w-5 h-5" />
               {showBadge && (
-                <span className="nav-badge">{unreadNotifs}</span>
+                <span className="nav-badge">{claimActionCount}</span>
               )}
             </div>
             <span>{label}</span>
@@ -128,7 +147,9 @@ export function AppShell({ children }: AppShellProps) {
           <>
             <Icon className="w-4 h-4 shrink-0" />
             <span>{label}</span>
-            {showBadge && <span className="nav-badge nav-badge--inline">{unreadNotifs}</span>}
+            {showBadge && (
+              <span className="nav-badge nav-badge--inline">{claimActionCount}</span>
+            )}
           </>
         )}
       </button>
@@ -138,7 +159,7 @@ export function AppShell({ children }: AppShellProps) {
   const avatarButton = currentUser ? (
     <button
       onClick={navigateToProfile}
-      className="avatar-btn"
+      className="avatar-btn shrink-0"
       aria-label={`前往 ${currentUser.name} 的個人資料`}
       title="個人資料"
     >
@@ -154,6 +175,7 @@ export function AppShell({ children }: AppShellProps) {
     return (
       <MobileShell
         scrollResetKey={`${currentTab}-${isProfileView}`}
+        currentUser={currentUser}
         memberCount={memberCount}
         avatarButton={avatarButton}
         navItems={navItems}
@@ -167,19 +189,16 @@ export function AppShell({ children }: AppShellProps) {
     <div className="app-layout app-layout--desktop min-h-dvh">
       <header className="desktop-top-nav warm-header">
         <div className="desktop-nav-inner">
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="brand-header-cluster shrink-0">
             <BrandLogo size={44} className="shrink-0 shadow-sm" />
-            <BrandHeader memberCount={memberCount} variant="desktop" />
+            <BrandHeader variant="desktop" />
           </div>
 
           <nav className="top-nav-pills">{navItems}</nav>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 min-w-0">
             {currentUser && (
-              <div className="hidden lg:flex flex-col items-end">
-                <span className="text-sm font-medium text-gray-700">{currentUser.name}</span>
-                <span className="text-[10px] text-gray-400">家庭管理者</span>
-              </div>
+              <UserHeaderMeta user={currentUser} memberCount={memberCount} />
             )}
             {avatarButton}
           </div>

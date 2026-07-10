@@ -5,22 +5,26 @@ import {
   BookOpen,
   ChevronRight,
   Heart,
-  ShieldCheck,
   Sparkles,
   Trophy,
   Users,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { AccidentPayoutPanel } from './AccidentPayoutPanel'
+import { FamilyCoverageOverview } from './FamilyCoverageOverview'
 import { GapRecommendationModal } from './GapRecommendationModal'
 import { TodoCalendarPanel } from './TodoCalendarPanel'
 import { useApp } from '../../context/AppContext'
+import { ROLE_LABELS } from '../../data/mockData'
 
-import { HealthProfileEntry, HealthProfileModal } from '../common/HealthProfilePanel'
+import {
+  HealthProfileEntry,
+  HealthProfileModal,
+  type HealthProfileViewScope,
+} from '../common/HealthProfilePanel'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
 import type { CoverageGap } from '../../types'
-import { formatGapAmount, formatWan } from '../../utils/calculations'
+import { formatGapAmount } from '../../utils/calculations'
 
 export function OverviewPage() {
   const {
@@ -28,12 +32,22 @@ export function OverviewPage() {
     todos,
     education,
     members,
-    navigateToReminders,
+    currentUserId,
+    navigateToMember,
     uiState,
     protectionProfile,
     updateProtectionProfile,
   } = useApp()
+  const currentUser = members.find((m) => m.id === currentUserId)
+  const roleLabel = ROLE_LABELS[currentUser?.role ?? 'owner'] ?? '家庭管理者'
   const [showHealthProfile, setShowHealthProfile] = useState(false)
+  const [healthProfileScope, setHealthProfileScope] =
+    useState<HealthProfileViewScope>('current')
+
+  const openHealthProfile = (scope: HealthProfileViewScope) => {
+    setHealthProfileScope(scope)
+    setShowHealthProfile(true)
+  }
   const [selectedGap, setSelectedGap] = useState<CoverageGap | null>(null)
   const sortedGaps = useMemo(
     () =>
@@ -68,12 +82,12 @@ export function OverviewPage() {
           <p className="text-xs font-medium text-teal-600 mb-1">👋 早安，建國</p>
           <h3 className="text-lg font-bold text-gray-800">今天也要為家人守住幸福</h3>
           <p className="text-xs text-gray-500 mt-1">
-            王建國家庭 · 保障健康度 {coverage.healthScore} 分
+            {roleLabel} · 保障健康度 {coverage.healthScore} 分
           </p>
           <div className="mt-2">
             <HealthProfileEntry
               profile={protectionProfile}
-              onOpen={() => setShowHealthProfile(true)}
+              onOpen={() => openHealthProfile('current')}
               compact
             />
           </div>
@@ -86,11 +100,12 @@ export function OverviewPage() {
         </div>
       )}
 
-      <section className="m3-card p-4 md:p-6 w-full max-w-full min-w-0">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+      <section className="w-full max-w-full min-w-0">
+        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
           家庭保障總覽
         </h3>
 
+        <div className="m3-card p-4 md:p-6 w-full max-w-full min-w-0">
         <div className="flex items-center gap-4 mb-4">
           <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
             <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
@@ -124,7 +139,7 @@ export function OverviewPage() {
                   : '有多項缺口需關注'}
             </p>
             <button
-              onClick={() => setShowHealthProfile(true)}
+              onClick={() => openHealthProfile('compare')}
               className="text-[10px] text-teal-600 font-medium mt-1 hover:underline"
             >
               查看家庭保險健康分級 →
@@ -134,30 +149,18 @@ export function OverviewPage() {
 
         <HealthProfileEntry
           profile={protectionProfile}
-          onOpen={() => setShowHealthProfile(true)}
+          onOpen={() => openHealthProfile('current')}
         />
 
-        <div className="m3-card-filled p-4 mb-3 mt-4">
-          <div className="flex items-center gap-1.5 mb-1">
-            <ShieldCheck className="w-4 h-4 text-teal-600" />
-            <span className="text-xs font-medium text-teal-600">固定保障額</span>
-          </div>
-          <p className="text-xl md:text-2xl font-bold text-teal-700">
-            {formatWan(coverage.fixedCoverage)}
-          </p>
-          <p className="text-[10px] text-teal-600/70 mt-0.5">
-            非意外事件保障（壽險、醫療、長照等保額合計）
-          </p>
+        <FamilyCoverageOverview members={members} />
         </div>
-
-        <AccidentPayoutPanel items={coverage.accidentPayouts} members={members} />
       </section>
 
       <section className="w-full max-w-full min-w-0">
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
           保障缺口
         </h3>
-        <div className="space-y-2">
+        <div className="gap-cards-list">
           {sortedGaps.map((gap) => {
             const pct =
               gap.recommended === 0
@@ -165,7 +168,8 @@ export function OverviewPage() {
                 : Math.min(100, Math.round((gap.current / gap.recommended) * 100))
             const achieved = gap.current >= gap.recommended
             const isUrgent = gap.current === 0
-            const cardClass = `m3-card p-3 transition-all w-full text-left ${
+            const progressState = achieved ? 'achieved' : isUrgent ? 'urgent' : 'in-progress'
+            const cardClass = `m3-card gap-card transition-all w-full text-left ${
               achieved ? 'gap-card--achieved' : isUrgent ? 'gap-card--urgent' : ''
             }`
 
@@ -173,7 +177,7 @@ export function OverviewPage() {
               <>
                 <div className="flex justify-between items-start gap-2 mb-1.5 min-w-0">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <span className="text-xs font-medium text-gray-700 truncate">{gap.category}</span>
+                    <span className="gap-card__title text-gray-700 truncate">{gap.category}</span>
                     {achieved ? (
                       <span className="m3-chip gap-achieved-badge shrink-0">
                         <Trophy className="w-3 h-3" />
@@ -199,21 +203,21 @@ export function OverviewPage() {
                     </p>
                   </div>
                 </div>
-                <div className="m3-progress mb-2">
+                <div
+                  className={`gap-progress gap-progress--${progressState} mb-2`}
+                  data-level={
+                    progressState === 'in-progress'
+                      ? pct < 60
+                        ? 'low'
+                        : pct < 85
+                          ? 'mid'
+                          : 'high'
+                      : undefined
+                  }
+                >
                   <div
-                    className={`m3-progress-fill ${achieved ? 'm3-progress-fill--achieved' : ''}`}
-                    style={{
-                      width: `${pct}%`,
-                      background: achieved
-                        ? 'linear-gradient(90deg, #3d9b8f, #2d7a70, #1f5f57)'
-                        : isUrgent
-                          ? 'linear-gradient(90deg, #f0c4b0, #e8917a)'
-                          : pct < 60
-                            ? 'linear-gradient(90deg, #5a9e96, #2d7a70)'
-                            : pct < 85
-                              ? 'linear-gradient(90deg, #3d9b8f, #2d7a70)'
-                              : 'linear-gradient(90deg, #2d7a70, #1f5f57)',
-                    }}
+                    className={`gap-progress__fill gap-progress__fill--${progressState}`}
+                    style={{ width: `${pct}%` }}
                   />
                 </div>
                 <p
@@ -262,27 +266,22 @@ export function OverviewPage() {
                   )}
                 </div>
                 {isUrgent && (
-                  <div className="gap-urgent-cta">
+                  <button
+                    type="button"
+                    className="gap-urgent-cta"
+                    onClick={() => setSelectedGap(gap)}
+                  >
                     <span className="flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5" />
                       點擊查看 AI 推薦保單與專屬顧問
                     </span>
                     <ChevronRight className="w-4 h-4 shrink-0" />
-                  </div>
+                  </button>
                 )}
               </>
             )
 
-            return isUrgent ? (
-              <button
-                key={gap.category}
-                type="button"
-                className={cardClass}
-                onClick={() => setSelectedGap(gap)}
-              >
-                {cardContent}
-              </button>
-            ) : (
+            return (
               <div key={gap.category} className={cardClass}>
                 {cardContent}
               </div>
@@ -293,7 +292,7 @@ export function OverviewPage() {
 
       <TodoCalendarPanel
         todos={todos}
-        onViewAll={() => navigateToReminders('todos')}
+        onViewMember={(memberId) => navigateToMember(memberId)}
       />
 
       <section className="overview-grid--full">
@@ -324,6 +323,7 @@ export function OverviewPage() {
         onOpenChange={setShowHealthProfile}
         profile={protectionProfile}
         onSave={updateProtectionProfile}
+        viewScope={healthProfileScope}
       />
 
       <GapRecommendationModal

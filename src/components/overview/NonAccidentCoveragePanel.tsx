@@ -1,33 +1,41 @@
 import { Modal } from '@heroui/react'
-import { AlertCircle, ChevronDown, ChevronRight, ChevronUp, Shield } from 'lucide-react'
+import { AlertCircle, ChevronDown, ChevronRight, ChevronUp, ShieldCheck } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { getClaimByPolicyId } from '../../data/claims'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type {
-  AccidentPayoutGroup,
-  AccidentPayoutItem,
   ClaimRecord,
   FamilyMember,
+  NonAccidentCoverageGroup,
+  NonAccidentCoverageItem,
   PolicyWithMember,
 } from '../../types'
-import { formatCurrency, groupAccidentPayouts } from '../../utils/calculations'
+import { formatCurrency, formatWan, groupNonAccidentCoverage } from '../../utils/calculations'
 import { ClaimProgressRing, claimRingTone } from '../common/ClaimProgressRing'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
 
 const VISIBLE_LIMIT = 5
 
+/** 依主管機關／壽險公會人身保險險種分類：人壽、健康、年金；不含傷害保險 */
+const NON_ACCIDENT_SCOPE_NOTE =
+  '依人身保險險種分類，涵蓋人壽保險、健康保險與年金保險之約定給付保額，不含傷害保險（意外險）。'
+
+function formatCoverageAmount(amount: number, isMonthly: boolean): string {
+  return isMonthly ? `${formatCurrency(amount)}/月` : formatCurrency(amount)
+}
+
 function findMemberByPolicyId(members: FamilyMember[], policyId: string) {
   return members.find((member) => member.policies.some((policy) => policy.id === policyId))
 }
 
-function PayoutItemRow({
+function CoverageItemRow({
   item,
   member,
   claim,
   onOpenPolicy,
 }: {
-  item: AccidentPayoutItem
+  item: NonAccidentCoverageItem
   member?: FamilyMember
   claim?: ClaimRecord
   onOpenPolicy?: (item: PolicyWithMember) => void
@@ -79,7 +87,9 @@ function PayoutItemRow({
         )}
       </div>
       <div className="text-right shrink-0 flex flex-col items-end gap-1">
-        <p className="text-sm font-semibold text-teal-700">{formatCurrency(item.amount)}</p>
+        <p className="text-sm font-semibold text-teal-700">
+          {formatCoverageAmount(item.amount, item.isMonthly)}
+        </p>
         {isClickable && (
           <p className="text-[10px] text-teal-600">
             {hasClaim && claim.isError ? '查看保單' : hasClaim ? '理賠詳情' : '查看保單'}
@@ -112,100 +122,118 @@ function PayoutItemRow({
   )
 }
 
-export function AccidentPayoutPanel({
-  items,
+export function NonAccidentCoveragePanel({
   members,
+  totalAmount,
 }: {
-  items: AccidentPayoutItem[]
   members: FamilyMember[]
+  totalAmount: number
 }) {
-  const groups = useMemo(() => groupAccidentPayouts(items), [items])
-  const [expanded, setExpanded] = useState(false)
-  const [selectedGroup, setSelectedGroup] = useState<AccidentPayoutGroup | null>(null)
+  const groups = useMemo(() => groupNonAccidentCoverage(members), [members])
+  const [typesRevealed, setTypesRevealed] = useState(false)
+  const [listExpanded, setListExpanded] = useState(false)
+  const [selectedGroup, setSelectedGroup] = useState<NonAccidentCoverageGroup | null>(null)
   const [selectedPolicy, setSelectedPolicy] = useState<PolicyWithMember | null>(null)
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
 
-  const visibleGroups = expanded ? groups : groups.slice(0, VISIBLE_LIMIT)
+  const visibleGroups = listExpanded ? groups : groups.slice(0, VISIBLE_LIMIT)
   const hasMore = groups.length > VISIBLE_LIMIT
 
-  const activeClaimCount = useMemo(
-    () => items.filter((item) => getClaimByPolicyId(members, item.id)).length,
-    [items, members],
-  )
-
-  if (groups.length === 0) {
-    return (
-      <div>
-        <div className="flex items-center gap-1.5 mb-2">
-          <Shield className="w-3.5 h-3.5 text-teal-600" />
-          <span className="text-xs font-medium text-gray-600">意外保障額</span>
-        </div>
-        <p className="text-xs text-gray-400 px-1">尚無意外保障額項目</p>
-      </div>
-    )
-  }
+  const activeClaimCount = useMemo(() => {
+    const policyIds = new Set(groups.flatMap((group) => group.items.map((item) => item.id)))
+    return [...policyIds].filter((id) => {
+      const claim = getClaimByPolicyId(members, id)
+      return claim && ['in_review', 'approved', 'pending_docs'].includes(claim.claimStatus)
+    }).length
+  }, [groups, members])
 
   return (
     <>
-      <div>
-        <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="m3-card-filled p-4 mb-3">
+        <div className="flex items-center justify-between gap-2 mb-1">
           <div className="flex items-center gap-1.5 min-w-0">
-            <Shield className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-            <span className="text-xs font-medium text-gray-600">意外保障額</span>
+            <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
+            <span className="text-xs font-medium text-teal-600">非意外保障額</span>
           </div>
           {activeClaimCount > 0 && (
             <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
-              {activeClaimCount} 件進行中
+              {activeClaimCount} 件理賠進行中
             </span>
           )}
         </div>
-        <div className="space-y-2">
-          {visibleGroups.map((group) => {
-            const groupClaims = group.items.filter((item) =>
-              getClaimByPolicyId(members, item.id),
-            )
-            return (
-              <button
-                key={group.eventType}
-                type="button"
-                onClick={() => setSelectedGroup(group)}
-                className="m3-card p-3 bg-warm-50 w-full flex items-center justify-between gap-3 active:bg-sand-50 text-left transition-colors hover:bg-sand-50/80"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-800">{group.eventLabel}</p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">
-                    {group.memberNames.length} 位成員 · {group.items.length} 張保單
-                    {groupClaims.length > 0 && ` · ${groupClaims.length} 件理賠進行中`}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <p className="text-sm font-bold text-teal-700">
-                    {formatCurrency(group.totalAmount)}
-                  </p>
-                  <ChevronRight className="w-4 h-4 text-gray-300" />
-                </div>
-              </button>
-            )
-          })}
-        </div>
-        {hasMore && (
+        <p className="text-xl md:text-2xl font-bold text-teal-700">{formatWan(totalAmount)}</p>
+        <p className="text-[10px] text-teal-600/80 mt-1 leading-relaxed">{NON_ACCIDENT_SCOPE_NOTE}</p>
+
+        {groups.length > 0 && (
           <button
             type="button"
-            onClick={() => setExpanded((value) => !value)}
-            className="w-full mt-2 py-2 text-xs font-medium text-teal-600 flex items-center justify-center gap-1 hover:underline"
+            onClick={() => setTypesRevealed((value) => !value)}
+            className="w-full mt-3 py-2.5 text-xs font-medium text-teal-600 flex items-center justify-center gap-1.5 rounded-xl border border-teal-100 bg-white/60 hover:bg-white transition-colors"
           >
-            {expanded ? (
+            {typesRevealed ? (
               <>
                 <ChevronUp className="w-3.5 h-3.5" />
-                收合
+                收合保障分類
               </>
             ) : (
               <>
                 <ChevronDown className="w-3.5 h-3.5" />
-                展開其餘 {groups.length - VISIBLE_LIMIT} 類
+                查看保障分類（{groups.length} 類）
               </>
             )}
           </button>
+        )}
+
+        {typesRevealed && groups.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-teal-100/80 space-y-2">
+            {visibleGroups.map((group) => {
+              const groupClaims = group.items.filter((item) => {
+                const claim = getClaimByPolicyId(members, item.id)
+                return claim && ['in_review', 'approved', 'pending_docs'].includes(claim.claimStatus)
+              })
+              return (
+                <button
+                  key={group.categoryType}
+                  type="button"
+                  onClick={() => setSelectedGroup(group)}
+                  className="m3-card p-3 bg-white/70 w-full flex items-center justify-between gap-3 active:bg-sand-50 text-left transition-colors hover:bg-sand-50/80"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-800">{group.categoryLabel}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      {group.memberNames.length} 位成員 · {group.items.length} 張保單
+                      {groupClaims.length > 0 && ` · ${groupClaims.length} 件理賠進行中`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <p className="text-sm font-bold text-teal-700">
+                      {formatCoverageAmount(group.totalAmount, group.isMonthly)}
+                    </p>
+                    <ChevronRight className="w-4 h-4 text-gray-300" />
+                  </div>
+                </button>
+              )
+            })}
+            {hasMore && (
+              <button
+                type="button"
+                onClick={() => setListExpanded((value) => !value)}
+                className="w-full py-2 text-xs font-medium text-teal-600 flex items-center justify-center gap-1 hover:underline"
+              >
+                {listExpanded ? (
+                  <>
+                    <ChevronUp className="w-3.5 h-3.5" />
+                    收合
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-3.5 h-3.5" />
+                    展開其餘 {groups.length - VISIBLE_LIMIT} 類
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -217,22 +245,21 @@ export function AccidentPayoutPanel({
           <Modal.Dialog>
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>{selectedGroup?.eventLabel}</Modal.Heading>
+              <Modal.Heading>{selectedGroup?.categoryLabel}</Modal.Heading>
             </Modal.Header>
             <Modal.Body>
               {selectedGroup && (
                 <div className="space-y-3">
                   <p className="text-xs text-gray-500">
-                    合計 {formatCurrency(selectedGroup.totalAmount)} ·{' '}
-                    {selectedGroup.items.length} 張保單 · {selectedGroup.memberNames.length}{' '}
-                    位成員
+                    合計 {formatCoverageAmount(selectedGroup.totalAmount, selectedGroup.isMonthly)} ·{' '}
+                    {selectedGroup.items.length} 張保單 · {selectedGroup.memberNames.length} 位成員
                   </p>
                   <div className="space-y-2">
                     {selectedGroup.items.map((item) => {
                       const member = findMemberByPolicyId(members, item.id)
                       const claim = getClaimByPolicyId(members, item.id)
                       return (
-                        <PayoutItemRow
+                        <CoverageItemRow
                           key={item.id}
                           item={item}
                           member={member}
