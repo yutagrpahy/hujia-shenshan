@@ -11,6 +11,7 @@ export interface AdvisorFamilyContext {
     current: string
     target: string
     coveredMembers: string[]
+    lapsedMembers: string[]
   }>
   members: Array<{
     name: string
@@ -40,6 +41,7 @@ export function buildAdvisorContext(
       current: formatGapAmount(gap.current, gap.unit),
       target: formatGapAmount(gap.recommended, gap.unit),
       coveredMembers: gap.coveredMembers,
+      lapsedMembers: gap.lapsedMembers.map((entry) => entry.memberName),
     })),
     members: members.map((member) => ({
       name: member.name,

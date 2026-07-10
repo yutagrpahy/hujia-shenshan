@@ -16,6 +16,7 @@ import { GapRecommendationModal } from './GapRecommendationModal'
 import { TodoCalendarPanel } from './TodoCalendarPanel'
 import { useApp } from '../../context/AppContext'
 import { ROLE_LABELS } from '../../data/mockData'
+import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 
 import {
   HealthProfileEntry,
@@ -24,8 +25,9 @@ import {
 } from '../common/HealthProfilePanel'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
-import type { CoverageGap } from '../../types'
-import { formatGapAmount } from '../../utils/calculations'
+import { PolicyDetailModal } from '../protection/PolicyDetailModal'
+import type { CoverageGap, PolicyWithMember } from '../../types'
+import { findMemberGapPolicy, formatGapAmount } from '../../utils/calculations'
 
 export function OverviewPage() {
   const {
@@ -50,6 +52,8 @@ export function OverviewPage() {
     setShowHealthProfile(true)
   }
   const [selectedGap, setSelectedGap] = useState<CoverageGap | null>(null)
+  const [selectedPolicy, setSelectedPolicy] = useState<PolicyWithMember | null>(null)
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const sortedGaps = useMemo(
     () =>
       [...coverage.gaps].sort((a, b) => {
@@ -68,6 +72,25 @@ export function OverviewPage() {
 
   const findMemberByName = (name: string) =>
     members.find((m) => m.name === name)
+
+  const openGapMemberPolicy = (
+    gap: CoverageGap,
+    memberId: string,
+    policyId?: string,
+  ) => {
+    const member = members.find((entry) => entry.id === memberId)
+    if (!member) return
+
+    const policy = findMemberGapPolicy(member, gap.gapKey, policyId)
+    if (!policy) return
+
+    setSelectedPolicy({
+      policy,
+      memberId: member.id,
+      memberName: member.name,
+      avatarSeed: member.avatarSeed,
+    })
+  }
 
   return (
     <div className="space-y-4 overview-grid w-full max-w-full min-w-0">
@@ -241,27 +264,59 @@ export function OverviewPage() {
                 </p>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Users className="w-3 h-3 text-teal-500 shrink-0" />
-                  {gap.coveredMembers.length > 0 ? (
-                    gap.coveredMembers.map((name) => {
-                      const member = findMemberByName(name)
-                      return member ? (
-                        <span
-                          key={name}
-                          className="inline-flex items-center gap-1 m3-chip bg-teal-50 text-teal-700"
-                        >
-                          <MemberAvatar
-                            name={member.name}
-                            seed={member.avatarSeed}
-                            size="xs"
-                          />
-                          {name}
-                        </span>
-                      ) : (
-                        <span key={name} className="m3-chip bg-teal-50 text-teal-700">
-                          {name}
-                        </span>
-                      )
-                    })
+                  {gap.coveredMembers.length > 0 || gap.lapsedMembers.length > 0 ? (
+                    <>
+                      {gap.coveredMembers.map((name) => {
+                        const member = findMemberByName(name)
+                        if (!member) {
+                          return (
+                            <span key={name} className="m3-chip bg-teal-50 text-teal-700">
+                              {name}
+                            </span>
+                          )
+                        }
+
+                        return (
+                          <button
+                            key={name}
+                            type="button"
+                            onClick={() => openGapMemberPolicy(gap, member.id)}
+                            className="inline-flex items-center gap-1 m3-chip bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors"
+                          >
+                            <MemberAvatar
+                              name={member.name}
+                              seed={member.avatarSeed}
+                              size="xs"
+                            />
+                            {name}
+                          </button>
+                        )
+                      })}
+                      {gap.lapsedMembers.map((entry) => {
+                        const member = members.find((m) => m.id === entry.memberId)
+                        return (
+                          <button
+                            key={entry.policyId}
+                            type="button"
+                            onClick={() =>
+                              openGapMemberPolicy(gap, entry.memberId, entry.policyId)
+                            }
+                            className="inline-flex items-center gap-1 m3-chip bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+                            title="保單已到期，點擊查看詳情"
+                          >
+                            {member ? (
+                              <MemberAvatar
+                                name={member.name}
+                                seed={member.avatarSeed}
+                                size="xs"
+                              />
+                            ) : null}
+                            {entry.memberName}
+                            <span className="text-[9px] opacity-80">已到期</span>
+                          </button>
+                        )
+                      })}
+                    </>
                   ) : (
                     <span className="text-[10px] text-gray-400">尚無成員投保此類型</span>
                   )}
@@ -331,6 +386,13 @@ export function OverviewPage() {
         gap={selectedGap}
         isOpen={!!selectedGap}
         onOpenChange={(open) => !open && setSelectedGap(null)}
+      />
+
+      <PolicyDetailModal
+        item={selectedPolicy}
+        isOpen={!!selectedPolicy}
+        onOpenChange={(open) => !open && setSelectedPolicy(null)}
+        isMobile={isMobile}
       />
     </div>
   )

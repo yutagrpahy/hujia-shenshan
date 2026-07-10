@@ -208,6 +208,12 @@ export interface PolicyCategoryGroup {
   policies: PolicyWithMember[]
 }
 
+export interface GapLapsedMember {
+  memberId: string
+  memberName: string
+  policyId: string
+}
+
 export interface CoverageGap {
   category: string
   gapKey: 'death' | 'medical' | 'longterm' | 'disability' | 'critical'
@@ -215,6 +221,8 @@ export interface CoverageGap {
   recommended: number
   unit: string
   coveredMembers: string[]
+  /** 曾有此類保障、但保單已失效的成員（可點擊查看保單詳情） */
+  lapsedMembers: GapLapsedMember[]
 }
 
 export interface TodoItem {

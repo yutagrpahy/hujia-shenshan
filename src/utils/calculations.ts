@@ -23,6 +23,21 @@ import type {
   ScenarioResult,
 } from '../types'
 
+/** 仍計入「現有保障」的保單狀態 */
+const COVERING_POLICY_STATUSES: Policy['status'][] = ['active', 'expiring']
+
+export function isPolicyProvidingCoverage(policy: Policy): boolean {
+  return COVERING_POLICY_STATUSES.includes(policy.status)
+}
+
+export function findPolicyById(members: FamilyMember[], policyId: string): Policy | undefined {
+  for (const member of members) {
+    const policy = member.policies.find((entry) => entry.id === policyId)
+    if (policy) return policy
+  }
+  return undefined
+}
+
 const ACCIDENT_EVENT_LABELS: Record<string, string> = {
   health: '就醫實支實付',
   accident: '意外身故／失能',
@@ -54,6 +69,31 @@ const GAP_DEFS: {
     useMonthly: true,
   },
 ]
+
+const GAP_DEF_BY_KEY = new Map(GAP_DEFS.map((def) => [def.gapKey, def]))
+
+export function findMemberGapPolicy(
+  member: FamilyMember,
+  gapKey: CoverageGap['gapKey'],
+  policyId?: string,
+): Policy | undefined {
+  const def = GAP_DEF_BY_KEY.get(gapKey)
+  if (!def) return undefined
+
+  const matches = member.policies.filter((policy) => {
+    if (!def.policyTypes.includes(policy.type)) return false
+    return def.useMonthly ? policy.monthlyPayout > 0 : policy.coverage > 0
+  })
+
+  if (policyId) {
+    return matches.find((policy) => policy.id === policyId)
+  }
+
+  return (
+    matches.find((policy) => isPolicyProvidingCoverage(policy)) ??
+    matches.find((policy) => policy.status === 'expired')
+  )
+}
 
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('zh-TW', {
@@ -143,22 +183,38 @@ function computeGapFromMembers(
   return GAP_DEFS.map(({ gapKey, category, unit, policyTypes, useMonthly }) => {
     let current = 0
     const coveredMembers = new Set<string>()
+    const lapsedMembers: CoverageGap['lapsedMembers'] = []
 
     for (const member of members) {
       let memberContribution = 0
+      let lapsedPolicyId: string | undefined
+
       for (const policy of member.policies) {
         if (!policyTypes.includes(policy.type)) continue
-        if (useMonthly) {
-          if (policy.monthlyPayout <= 0) continue
-          memberContribution += policy.monthlyPayout / 10000
-        } else {
-          if (policy.coverage <= 0) continue
-          memberContribution += policy.coverage / 10000
+
+        const hasAmount = useMonthly
+          ? policy.monthlyPayout > 0
+          : policy.coverage > 0
+        if (!hasAmount) continue
+
+        if (isPolicyProvidingCoverage(policy)) {
+          memberContribution += useMonthly
+            ? policy.monthlyPayout / 10000
+            : policy.coverage / 10000
+        } else if (policy.status === 'expired') {
+          lapsedPolicyId = policy.id
         }
       }
+
       if (memberContribution > 0) {
         current += memberContribution
         coveredMembers.add(member.name)
+      } else if (lapsedPolicyId) {
+        lapsedMembers.push({
+          memberId: member.id,
+          memberName: member.name,
+          policyId: lapsedPolicyId,
+        })
       }
     }
 
@@ -169,6 +225,7 @@ function computeGapFromMembers(
       recommended: getTargetValue(gapKey, profile),
       unit,
       coveredMembers: [...coveredMembers],
+      lapsedMembers,
     }
   })
 }
@@ -272,7 +329,10 @@ function buildFamilyCoverageDomain(
         subcategoryType: def.subcategoryType,
         subcategoryLabel: def.subcategoryLabel,
         isMonthly: def.useMonthly,
-        totalAmount: items.reduce((sum, item) => sum + item.amount, 0),
+        totalAmount: items.reduce((sum, item) => {
+          const policy = findPolicyById(members, item.id)
+          return sum + (policy && isPolicyProvidingCoverage(policy) ? item.amount : 0)
+        }, 0),
         memberNames: [...new Set(items.map((item) => item.memberName))],
         items,
       }
@@ -404,7 +464,10 @@ export function groupNonAccidentCoverage(members: FamilyMember[]): NonAccidentCo
     categoryType,
     categoryLabel,
     isMonthly,
-    totalAmount: groupItems.reduce((sum, item) => sum + item.amount, 0),
+    totalAmount: groupItems.reduce((sum, item) => {
+      const policy = findPolicyById(members, item.id)
+      return sum + (policy && isPolicyProvidingCoverage(policy) ? item.amount : 0)
+    }, 0),
     memberNames: [...new Set(groupItems.map((item) => item.memberName))],
     items: [...groupItems].sort((a, b) => b.amount - a.amount),
   })
@@ -518,6 +581,7 @@ function sumMemberCategory(
   let total = 0
   for (const policy of member.policies) {
     if (!policyTypes.includes(policy.type)) continue
+    if (!isPolicyProvidingCoverage(policy)) continue
     if (useMonthly) {
       if (policy.monthlyPayout > 0) total += policy.monthlyPayout
     } else if (policy.coverage > 0) {
@@ -917,16 +981,35 @@ export function generateAIResponse(
     const longtermMembers = members
       .map((m) => {
         const monthly = m.policies
-          .filter((p) => p.type === 'longterm')
+          .filter((p) => p.type === 'longterm' && isPolicyProvidingCoverage(p))
           .reduce((sum, p) => sum + p.monthlyPayout, 0)
-        return monthly > 0 ? { name: m.name, monthly } : null
+        return monthly > 0 ? { name: m.name, monthly, status: 'active' as const } : null
       })
-      .filter(Boolean) as { name: string; monthly: number }[]
+      .filter(Boolean) as { name: string; monthly: number; status: 'active' }[]
+
+    const lapsedLongterm = members.flatMap((m) =>
+      m.policies
+        .filter((p) => p.type === 'longterm' && p.status === 'expired' && p.monthlyPayout > 0)
+        .map((p) => ({ name: m.name, policyName: p.name, expiryDate: p.expiryDate })),
+    )
+
     const totalMonthly = longtermMembers.reduce((sum, m) => sum + m.monthly, 0)
-    const lines = longtermMembers
+    const activeLines = longtermMembers
       .map((m) => `• ${m.name}：月給付 ${formatCurrency(m.monthly)}`)
       .join('\n')
-    return `您家庭目前的長照保障：\n\n${lines}\n\n家庭合計月給付約 ${formatCurrency(totalMonthly)}，距離「穩健守護」目標 8 萬元／月尚有缺口。\n\n建議為王建國夫婦評估長照險加碼，並檢視王阿公長照給付是否足夠。`
+    const lapsedLines = lapsedLongterm
+      .map(
+        (entry) =>
+          `• ${entry.name}：${entry.policyName} 已於 ${entry.expiryDate.replace(/-/g, '/')} 到期`,
+      )
+      .join('\n')
+
+    const lapsedNote =
+      lapsedLongterm.length > 0
+        ? `\n\n⚠️ 保障中斷：\n${lapsedLines}\n\n建議儘快為 ${lapsedLongterm.map((e) => e.name).join('、')} 評估重新投保。`
+        : ''
+
+    return `您家庭目前的長照保障：\n\n${activeLines || '• 尚無有效長照月給付保單'}${lapsedNote}\n\n家庭合計有效月給付約 ${formatCurrency(totalMonthly)}，距離「穩健守護」目標 8 萬元／月尚有缺口。\n\n建議為王建國夫婦評估長照險加碼。`
   }
 
   if (q.includes('受益人') || q.includes('雅婷')) {
