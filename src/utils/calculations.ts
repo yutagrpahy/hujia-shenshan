@@ -133,6 +133,11 @@ function getTargetValue(
   return map[gapKey]
 }
 
+/** 依總覽保障缺口分類，彙整單一成員保單 */
+export function groupMemberPoliciesByGapCategory(member: FamilyMember): PolicyCategoryGroup[] {
+  return groupPoliciesByGapCategory([member]).filter((group) => group.policies.length > 0)
+}
+
 /** 依總覽保障缺口分類，彙整全家保單（每張保單僅歸入一類） */
 export function groupPoliciesByGapCategory(members: FamilyMember[]): PolicyCategoryGroup[] {
   const buckets = new Map<CoverageGap['gapKey'] | 'other', PolicyWithMember[]>()

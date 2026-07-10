@@ -7,7 +7,7 @@ import {
   Plus,
   Shield,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import {
   ROLE_LABELS,
@@ -23,7 +23,7 @@ import { DocumentVault } from '../common/DocumentVault'
 import { EventFormModal } from '../common/EventFormModal'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
-import { countMemberPolicies } from '../../utils/calculations'
+import { countMemberPolicies, groupMemberPoliciesByGapCategory } from '../../utils/calculations'
 import { AllPoliciesPanel } from './AllPoliciesPanel'
 import { MemberTodosSection } from './MemberTodosSection'
 import { PolicyDetailModal } from './PolicyDetailModal'
@@ -104,6 +104,8 @@ export function ProtectionPage() {
     historyTodos,
     selectedMemberId,
     setSelectedMemberId,
+    memberNavigationTarget,
+    clearMemberNavigationTarget,
     uiState,
   } = useApp()
 
@@ -113,6 +115,7 @@ export function ProtectionPage() {
   const totalPolicies = countMemberPolicies(members)
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
+  const [highlightedPolicyId, setHighlightedPolicyId] = useState<string | null>(null)
   const [newPolicy, setNewPolicy] = useState<NewPolicyInput>(EMPTY_POLICY_INPUT)
   const [newMember, setNewMember] = useState<NewMemberInput>({
     name: '',
@@ -171,6 +174,42 @@ export function ProtectionPage() {
     setShowAddPolicy(false)
     setNewPolicy(EMPTY_POLICY_INPUT)
   }
+
+  const memberPolicyGroups = useMemo(
+    () =>
+      selectedMember ? groupMemberPoliciesByGapCategory(selectedMember) : [],
+    [selectedMember],
+  )
+
+  useEffect(() => {
+    if (!selectedMember || !memberNavigationTarget) return
+    if (memberNavigationTarget.memberId !== selectedMember.id) return
+
+    const { policyId, gapKey } = memberNavigationTarget
+    const scrollTargetId = policyId
+      ? `member-policy-${policyId}`
+      : gapKey
+        ? `member-gap-section-${gapKey}`
+        : null
+
+    const timer = window.setTimeout(() => {
+      const element = scrollTargetId ? document.getElementById(scrollTargetId) : null
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (policyId) {
+          setHighlightedPolicyId(policyId)
+          window.setTimeout(() => setHighlightedPolicyId(null), 2400)
+        }
+      }
+      clearMemberNavigationTarget()
+    }, 150)
+
+    return () => window.clearTimeout(timer)
+  }, [
+    selectedMember,
+    memberNavigationTarget,
+    clearMemberNavigationTarget,
+  ])
 
   if (selectedMember) {
     const memberTodos = todos.filter((t) => t.memberId === selectedMember.id)
@@ -238,56 +277,70 @@ export function ProtectionPage() {
           {selectedMember.policies.length === 0 ? (
             <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增」自行登載</p>
           ) : (
-            selectedMember.policies.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() =>
-                  setSelectedPolicy({
-                    policy: p,
-                    memberId: selectedMember.id,
-                    memberName: selectedMember.name,
-                    avatarSeed: selectedMember.avatarSeed,
-                  })
-                }
-                className={`m3-card p-3 mb-2 w-full text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60 ${
-                  p.source === 'manual' ? 'border border-dashed border-sand-300 bg-sand-50/40' : ''
-                }`}
+            memberPolicyGroups.map((group) => (
+              <div
+                key={group.gapKey}
+                id={`member-gap-section-${group.gapKey}`}
+                className="mb-4 scroll-mt-28"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <span className="text-sm font-medium block truncate">{p.name}</span>
-                    <span className="text-[10px] text-gray-400">{p.insurer}</span>
-                  </div>
-                  <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
-                    {POLICY_TYPE_LABELS[p.type]}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  受益人：{p.beneficiary} · 到期 {p.expiryDate}
-                </p>
-                <div className="flex flex-wrap gap-1.5 mt-1.5">
-                  {p.source === 'union' ? (
-                    <span className="m3-chip bg-teal-50 text-teal-600 inline-flex items-center gap-1">
-                      <Link2 className="w-3 h-3" />
-                      {UNION_POLICY_CHIP_LABEL}
-                    </span>
-                  ) : (
-                    <span className="m3-chip bg-sand-100 text-gray-600 inline-flex items-center gap-1 border border-dashed border-sand-300">
-                      <PenLine className="w-3 h-3" />
-                      自行登載
-                    </span>
-                  )}
-                  {p.status !== 'active' && POLICY_STATUS_BADGES[p.status] && (
-                    <span className={`m3-chip ${POLICY_STATUS_BADGES[p.status]}`}>
-                      {POLICY_STATUS_LABELS[p.status]}
-                    </span>
-                  )}
-                </div>
-                <div className="flex justify-end mt-1">
-                  <ChevronRight className="w-4 h-4 text-gray-300" />
-                </div>
-              </button>
+                <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-0.5">
+                  {group.category}
+                </h5>
+                {group.policies.map(({ policy: p }) => (
+                  <button
+                    key={p.id}
+                    id={`member-policy-${p.id}`}
+                    type="button"
+                    onClick={() =>
+                      setSelectedPolicy({
+                        policy: p,
+                        memberId: selectedMember.id,
+                        memberName: selectedMember.name,
+                        avatarSeed: selectedMember.avatarSeed,
+                      })
+                    }
+                    className={`m3-card p-3 mb-2 w-full text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60 scroll-mt-28 ${
+                      p.source === 'manual'
+                        ? 'border border-dashed border-sand-300 bg-sand-50/40'
+                        : ''
+                    } ${highlightedPolicyId === p.id ? 'member-policy-card--highlight' : ''}`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm font-medium block truncate">{p.name}</span>
+                        <span className="text-[10px] text-gray-400">{p.insurer}</span>
+                      </div>
+                      <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
+                        {POLICY_TYPE_LABELS[p.type]}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      受益人：{p.beneficiary} · 到期 {p.expiryDate}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {p.source === 'union' ? (
+                        <span className="m3-chip bg-teal-50 text-teal-600 inline-flex items-center gap-1">
+                          <Link2 className="w-3 h-3" />
+                          {UNION_POLICY_CHIP_LABEL}
+                        </span>
+                      ) : (
+                        <span className="m3-chip bg-sand-100 text-gray-600 inline-flex items-center gap-1 border border-dashed border-sand-300">
+                          <PenLine className="w-3 h-3" />
+                          自行登載
+                        </span>
+                      )}
+                      {p.status !== 'active' && POLICY_STATUS_BADGES[p.status] && (
+                        <span className={`m3-chip ${POLICY_STATUS_BADGES[p.status]}`}>
+                          {POLICY_STATUS_LABELS[p.status]}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex justify-end mt-1">
+                      <ChevronRight className="w-4 h-4 text-gray-300" />
+                    </div>
+                  </button>
+                ))}
+              </div>
             ))
           )}
         </section>

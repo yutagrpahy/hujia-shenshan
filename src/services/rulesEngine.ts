@@ -223,6 +223,11 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
   for (const claim of buildFamilyClaims(members)) {
     if (claim.claimStatus === 'paid') continue
 
+    const policy = findPolicyOwner(members, claim.policyId)?.policies.find(
+      (item) => item.id === claim.policyId,
+    )
+    if (policy?.status === 'expired' || policy?.status === 'expiring') continue
+
     notifications.push({
       id: `notif:claim:${claim.id}`,
       type: 'claim-progress',

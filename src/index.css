@@ -453,6 +453,16 @@ body {
   100% { transform: scale(1); opacity: 1; }
 }
 
+.member-policy-card--highlight {
+  animation: member-policy-highlight 2.2s ease-out;
+  box-shadow: 0 0 0 2px #5a9e96;
+}
+
+@keyframes member-policy-highlight {
+  0% { box-shadow: 0 0 0 3px rgba(90, 158, 150, 0.55); }
+  100% { box-shadow: 0 0 0 2px rgba(90, 158, 150, 0.15); }
+}
+
 /* ── 理賠頁：狀態標籤色彩（取代區塊標題分類）── */
 .claim-card {
   border-left: 3px solid transparent;

@@ -276,7 +276,8 @@ function buildScenario(
       statusLabel: '已到期',
       statusTone: 'danger',
       situationTitle: '保障已終止',
-      situationSummary: `保單已於 ${policy.expiryDate} 到期，目前無法受理新的理賠。若仍有保障需求，建議重新評估投保方案。`,
+      situationSummary:
+        '目前無法受理新的理賠。若仍有保障需求，建議重新評估投保方案。',
       ctas: [
         {
           id: 'reapply',

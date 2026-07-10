@@ -83,8 +83,8 @@ const POLICY_STATUS_FALLBACK: Partial<
   expired: {
     claimStatus: 'rejected',
     progress: 100,
-    statusLabel: '保單已到期',
-    statusSummary: '保單已失效，無法受理新理賠，可洽業務員評估重新投保。',
+    statusLabel: '已到期',
+    statusSummary: '無法受理新理賠，可洽業務員評估重新投保。',
     isError: true,
   },
 }

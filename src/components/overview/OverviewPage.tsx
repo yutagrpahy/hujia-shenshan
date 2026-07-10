@@ -16,7 +16,6 @@ import { GapRecommendationModal } from './GapRecommendationModal'
 import { TodoCalendarPanel } from './TodoCalendarPanel'
 import { useApp } from '../../context/AppContext'
 import { ROLE_LABELS } from '../../data/mockData'
-import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 
 import {
   HealthProfileEntry,
@@ -25,8 +24,7 @@ import {
 } from '../common/HealthProfilePanel'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
-import { PolicyDetailModal } from '../protection/PolicyDetailModal'
-import type { CoverageGap, PolicyWithMember } from '../../types'
+import type { CoverageGap } from '../../types'
 import { findMemberGapPolicy, formatGapAmount } from '../../utils/calculations'
 
 export function OverviewPage() {
@@ -52,8 +50,6 @@ export function OverviewPage() {
     setShowHealthProfile(true)
   }
   const [selectedGap, setSelectedGap] = useState<CoverageGap | null>(null)
-  const [selectedPolicy, setSelectedPolicy] = useState<PolicyWithMember | null>(null)
-  const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const sortedGaps = useMemo(
     () =>
       [...coverage.gaps].sort((a, b) => {
@@ -73,7 +69,7 @@ export function OverviewPage() {
   const findMemberByName = (name: string) =>
     members.find((m) => m.name === name)
 
-  const openGapMemberPolicy = (
+  const navigateGapMember = (
     gap: CoverageGap,
     memberId: string,
     policyId?: string,
@@ -82,13 +78,9 @@ export function OverviewPage() {
     if (!member) return
 
     const policy = findMemberGapPolicy(member, gap.gapKey, policyId)
-    if (!policy) return
-
-    setSelectedPolicy({
-      policy,
-      memberId: member.id,
-      memberName: member.name,
-      avatarSeed: member.avatarSeed,
+    navigateToMember(memberId, {
+      policyId: policy?.id ?? policyId,
+      gapKey: gap.gapKey,
     })
   }
 
@@ -280,7 +272,7 @@ export function OverviewPage() {
                           <button
                             key={name}
                             type="button"
-                            onClick={() => openGapMemberPolicy(gap, member.id)}
+                            onClick={() => navigateGapMember(gap, member.id)}
                             className="inline-flex items-center gap-1 m3-chip bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors"
                           >
                             <MemberAvatar
@@ -299,10 +291,10 @@ export function OverviewPage() {
                             key={entry.policyId}
                             type="button"
                             onClick={() =>
-                              openGapMemberPolicy(gap, entry.memberId, entry.policyId)
+                              navigateGapMember(gap, entry.memberId, entry.policyId)
                             }
                             className="inline-flex items-center gap-1 m3-chip bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
-                            title="保單已到期，點擊查看詳情"
+                            title="點擊前往成員保單詳情"
                           >
                             {member ? (
                               <MemberAvatar
@@ -312,7 +304,6 @@ export function OverviewPage() {
                               />
                             ) : null}
                             {entry.memberName}
-                            <span className="text-[9px] opacity-80">已到期</span>
                           </button>
                         )
                       })}
@@ -388,12 +379,6 @@ export function OverviewPage() {
         onOpenChange={(open) => !open && setSelectedGap(null)}
       />
 
-      <PolicyDetailModal
-        item={selectedPolicy}
-        isOpen={!!selectedPolicy}
-        onOpenChange={(open) => !open && setSelectedPolicy(null)}
-        isMobile={isMobile}
-      />
     </div>
   )
 }

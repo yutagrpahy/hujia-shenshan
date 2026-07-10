@@ -29,6 +29,7 @@ import type {
   ChatMessage,
   FamilyEvent,
   FamilyMember,
+  MemberNavigationTarget,
   ProtectionLifeProfile,
   NewEventInput,
   NewMemberInput,
@@ -57,7 +58,12 @@ interface AppContextValue {
   setupFamily: () => void
   currentTab: AppTab
   setCurrentTab: (tab: AppTab) => void
-  navigateToMember: (memberId: string) => void
+  navigateToMember: (
+    memberId: string,
+    target?: Pick<MemberNavigationTarget, 'policyId' | 'gapKey'>,
+  ) => void
+  clearMemberNavigationTarget: () => void
+  memberNavigationTarget: MemberNavigationTarget | null
   isProfileView: boolean
   navigateToProfile: () => void
   closeProfileView: () => void
@@ -122,6 +128,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     useState<ProtectionLifeProfile>(defaultProtectionProfile)
   const [uiState, setUiState] = useState<UiState>('idle')
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
+  const [memberNavigationTarget, setMemberNavigationTarget] =
+    useState<MemberNavigationTarget | null>(null)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
   const memberCount = members.length
@@ -171,10 +179,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCurrentTabState(tab)
   }, [])
 
-  const navigateToMember = useCallback((memberId: string) => {
-    setIsProfileView(false)
-    setSelectedMemberId(memberId)
-    setCurrentTabState('protection')
+  const navigateToMember = useCallback(
+    (memberId: string, target?: Pick<MemberNavigationTarget, 'policyId' | 'gapKey'>) => {
+      setIsProfileView(false)
+      setSelectedMemberId(memberId)
+      setMemberNavigationTarget(
+        target ? { memberId, ...target } : { memberId },
+      )
+      setCurrentTabState('protection')
+    },
+    [],
+  )
+
+  const clearMemberNavigationTarget = useCallback(() => {
+    setMemberNavigationTarget(null)
   }, [])
 
   const navigateToProfile = useCallback(() => {
@@ -495,6 +513,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       currentTab,
       setCurrentTab,
       navigateToMember,
+      clearMemberNavigationTarget,
+      memberNavigationTarget,
       isProfileView,
       navigateToProfile,
       closeProfileView,
@@ -536,6 +556,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       currentTab,
       setCurrentTab,
       navigateToMember,
+      clearMemberNavigationTarget,
+      memberNavigationTarget,
       isProfileView,
       navigateToProfile,
       closeProfileView,

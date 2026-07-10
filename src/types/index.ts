@@ -208,6 +208,13 @@ export interface PolicyCategoryGroup {
   policies: PolicyWithMember[]
 }
 
+/** 從總覽等頁面導向成員詳情時，指定要捲動至的保單或缺口類型 */
+export interface MemberNavigationTarget {
+  memberId: string
+  policyId?: string
+  gapKey?: CoverageGap['gapKey']
+}
+
 export interface GapLapsedMember {
   memberId: string
   memberName: string
