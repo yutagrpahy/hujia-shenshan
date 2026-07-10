@@ -257,6 +257,7 @@ export const initialMembers: FamilyMember[] = [
         status: 'active',
         source: 'union',
       },
+      // DEMO: 補件完成後 — 復原時改回 status: 'pending'
       {
         id: 'p7',
         name: '新實支實付醫療險',
@@ -268,7 +269,7 @@ export const initialMembers: FamilyMember[] = [
         premium: 2400,
         beneficiary: '本人',
         expiryDate: '2028-06-01',
-        status: 'pending',
+        status: 'active',
         source: 'union',
       },
       {
@@ -585,6 +586,19 @@ export const initialHistoryTodos: TodoItem[] = [
     completedAt: '2025-09-20',
     source: 'manual',
   },
+  // DEMO: 王雅婷 p7 補件完成紀錄 — 復原時移除此項
+  {
+    id: 'h-p7-docs',
+    ruleId: 'claim_docs:p7',
+    title: '補齊「新實支實付醫療險」理賠文件',
+    memberId: 'm3',
+    memberName: '王雅婷',
+    policyId: 'p7',
+    urgency: 'high',
+    completed: true,
+    completedAt: '2026-07-10',
+    source: 'system',
+  },
 ]
 
 /** 已結案／歷史通知；即時規則通知由 rulesEngine 產生 */
@@ -606,6 +620,16 @@ export const archivedNotifications: AppNotification[] = [
     date: '2026-03-01',
     read: true,
     memberId: 'm2',
+  },
+  // DEMO: 王雅婷 p7 補件完成 — 復原時移除此項
+  {
+    id: 'archive:n-p7-docs',
+    type: 'claim-progress',
+    title: '理賠補件完成',
+    message: '王雅婷「新實支實付醫療險」理賠補件已收齊，案件進入審核階段',
+    date: '2026-07-10',
+    read: true,
+    memberId: 'm3',
   },
   {
     id: 'archive:n5',

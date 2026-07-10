@@ -20,13 +20,14 @@ interface ClaimTemplate {
 }
 
 const CLAIM_BY_POLICY: Record<string, ClaimTemplate> = {
+  // DEMO: 王雅婷 p7 補件完成後 — 復原時改回 pending_docs / progress 42
   p7: {
-    claimStatus: 'pending_docs',
-    progress: 42,
-    statusLabel: '待補件',
-    statusSummary: '理賠審核需補充診斷證明與費用明細，請於 14 天內完成。',
-    isError: true,
-    updatedAt: '2026-07-05',
+    claimStatus: 'in_review',
+    progress: 68,
+    statusLabel: '申請理賠中',
+    statusSummary: '補件文件已收齊，理賠案件審核進行中，預估 7–14 個工作天內通知結果。',
+    isError: false,
+    updatedAt: '2026-07-10',
   },
   p1: {
     claimStatus: 'in_review',

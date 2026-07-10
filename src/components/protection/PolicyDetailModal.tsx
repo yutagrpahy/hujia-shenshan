@@ -9,6 +9,7 @@ import {
   Shield,
   UserCircle,
 } from 'lucide-react'
+import { useApp } from '../../context/AppContext'
 import { buildPolicyDetailContext } from '../../data/policyDetails'
 import {
   MANUAL_POLICY_CHIP_LABEL,
@@ -46,9 +47,10 @@ export function PolicyDetailModal({
   onOpenChange: (open: boolean) => void
   isMobile: boolean
 }) {
+  const { members } = useApp()
   if (!item) return null
 
-  const detail = buildPolicyDetailContext(item)
+  const detail = buildPolicyDetailContext(item, members)
   const { policy, agent } = detail
 
   return (

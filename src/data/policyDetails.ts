@@ -1,8 +1,16 @@
+import { getClaimByPolicyId } from './claims'
 import {
   MANUAL_POLICY_CHIP_LABEL,
   UNION_INFO_SYSTEM_NAME,
 } from './policySourceLabels'
-import type { AdvisorRecommendation, Policy, PolicyWithMember } from '../types'
+import type {
+  AdvisorRecommendation,
+  ClaimRecord,
+  ClaimStatus,
+  FamilyMember,
+  Policy,
+  PolicyWithMember,
+} from '../types'
 import { formatCurrency } from '../utils/calculations'
 
 export interface PolicyDetailCta {
@@ -103,10 +111,99 @@ function formatCoverage(policy: Policy): string {
   return '保額 0 元'
 }
 
-function buildScenario(policy: Policy): Pick<
+function buildClaimScenario(
+  claim: ClaimRecord,
+): Pick<
+  PolicyDetailContext,
+  'statusLabel' | 'statusTone' | 'situationTitle' | 'situationSummary' | 'ctas'
+> | null {
+  const scenarios: Partial<
+    Record<
+      ClaimStatus,
+      Pick<
+        PolicyDetailContext,
+        'statusLabel' | 'statusTone' | 'situationTitle' | 'situationSummary' | 'ctas'
+      >
+    >
+  > = {
+    in_review: {
+      statusLabel: '申請理賠中',
+      statusTone: 'info',
+      situationTitle: '補件完成 · 審核進行中',
+      situationSummary:
+        '您已完成補件，診斷證明與費用明細已收齊。理賠案件目前由核保單位審核，預估 7–14 個工作天內通知結果。',
+      ctas: [
+        {
+          id: 'track-claim',
+          label: '追蹤理賠進度',
+          description: '示意：查看審核階段與預估完成時間',
+          variant: 'primary',
+        },
+        {
+          id: 'call-agent',
+          label: '聯絡保險業務員',
+          description: '確認審核進度或補充說明',
+          variant: 'secondary',
+        },
+      ],
+    },
+    pending_docs: {
+      statusLabel: '待補件',
+      statusTone: 'danger',
+      situationTitle: '理賠審核中 · 需補充文件',
+      situationSummary: claim.statusSummary,
+      ctas: [
+        {
+          id: 'upload-docs',
+          label: '上傳證明文件',
+          description: '示意：上傳診斷書、收據與費用清單',
+          variant: 'primary',
+        },
+        {
+          id: 'ask-agent',
+          label: '請洽詢保險業務員',
+          description: '確認補件格式與理賠進度',
+          variant: 'secondary',
+        },
+      ],
+    },
+    approved: {
+      statusLabel: '核准待給付',
+      statusTone: 'info',
+      situationTitle: '理賠核准',
+      situationSummary: claim.statusSummary,
+      ctas: [
+        {
+          id: 'track-payout',
+          label: '查詢給付進度',
+          description: '示意：確認匯款帳戶與入帳時間',
+          variant: 'primary',
+        },
+        {
+          id: 'call-agent',
+          label: '聯絡保險業務員',
+          description: '給付相關問題諮詢',
+          variant: 'secondary',
+        },
+      ],
+    },
+  }
+
+  return scenarios[claim.claimStatus] ?? null
+}
+
+function buildScenario(
+  policy: Policy,
+  claim?: ClaimRecord,
+): Pick<
   PolicyDetailContext,
   'statusLabel' | 'statusTone' | 'situationTitle' | 'situationSummary' | 'ctas'
 > {
+  if (policy.status === 'active' && claim) {
+    const claimScenario = buildClaimScenario(claim)
+    if (claimScenario) return claimScenario
+  }
+
   if (policy.status === 'expiring') {
     return {
       statusLabel: '即將到期',
@@ -248,9 +345,13 @@ function buildScenario(policy: Policy): Pick<
   }
 }
 
-export function buildPolicyDetailContext(item: PolicyWithMember): PolicyDetailContext {
+export function buildPolicyDetailContext(
+  item: PolicyWithMember,
+  members?: FamilyMember[],
+): PolicyDetailContext {
   const { policy, memberId, memberName, avatarSeed } = item
-  const scenario = buildScenario(policy)
+  const claim = members ? getClaimByPolicyId(members, policy.id) : undefined
+  const scenario = buildScenario(policy, claim)
 
   return {
     policy,
