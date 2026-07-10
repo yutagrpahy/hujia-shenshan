@@ -476,7 +476,7 @@ export const initialMembers: FamilyMember[] = [
       },
       {
         id: 'p21',
-        name: '銀髮醫療附約（已到期）',
+        name: '銀髮醫療附約',
         insurer: '台灣人壽',
         type: 'health',
         coverage: 0,
@@ -491,7 +491,7 @@ export const initialMembers: FamilyMember[] = [
       // DEMO: 王阿公長照保單已過期 — 復原示範時改回 active / expiryDate 2030-12-01
       {
         id: 'p22',
-        name: '長照分期給付保險（已到期）',
+        name: '長照分期給付保險',
         insurer: '富邦人壽',
         type: 'longterm',
         coverage: 40000,
