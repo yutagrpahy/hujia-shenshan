@@ -257,7 +257,7 @@ export const initialMembers: FamilyMember[] = [
         status: 'active',
         source: 'union',
       },
-      // DEMO: 補件完成後 — 復原時改回 status: 'pending'
+      // DEMO: 理賠完成後（保單有效）— 復原待補件時改回 status: 'pending'
       {
         id: 'p7',
         name: '新實支實付醫療險',
@@ -621,13 +621,22 @@ export const archivedNotifications: AppNotification[] = [
     read: true,
     memberId: 'm2',
   },
-  // DEMO: 王雅婷 p7 補件完成 — 復原時移除此項
+  // DEMO: 王雅婷 p7 理賠歷程 — 復原待補件時移除此兩項
   {
     id: 'archive:n-p7-docs',
     type: 'claim-progress',
     title: '理賠補件完成',
     message: '王雅婷「新實支實付醫療險」理賠補件已收齊，案件進入審核階段',
     date: '2026-07-10',
+    read: true,
+    memberId: 'm3',
+  },
+  {
+    id: 'archive:n-p7-paid',
+    type: 'claim-progress',
+    title: '理賠給付完成',
+    message: '王雅婷「新實支實付醫療險」醫療理賠 NT$ 128,400 已匯入，本案結案',
+    date: '2026-07-12',
     read: true,
     memberId: 'm3',
   },

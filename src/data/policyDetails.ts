@@ -187,6 +187,26 @@ function buildClaimScenario(
         },
       ],
     },
+    paid: {
+      statusLabel: '已給付',
+      statusTone: 'success',
+      situationTitle: '理賠完成 · 本案結案',
+      situationSummary: claim.statusSummary,
+      ctas: [
+        {
+          id: 'download-receipt',
+          label: '下載給付明細',
+          description: '示意：匯款紀錄與理賠結案通知',
+          variant: 'primary',
+        },
+        {
+          id: 'call-agent',
+          label: '聯絡保險業務員',
+          description: '後續保障檢視或續保諮詢',
+          variant: 'secondary',
+        },
+      ],
+    },
   }
 
   return scenarios[claim.claimStatus] ?? null

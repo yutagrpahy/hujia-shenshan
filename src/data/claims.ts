@@ -20,14 +20,14 @@ interface ClaimTemplate {
 }
 
 const CLAIM_BY_POLICY: Record<string, ClaimTemplate> = {
-  // DEMO: 王雅婷 p7 補件完成後 — 復原時改回 pending_docs / progress 42
+  // DEMO: 王雅婷 p7 理賠完成後 — 復原待補件時改回 pending_docs / progress 42
   p7: {
-    claimStatus: 'in_review',
-    progress: 68,
-    statusLabel: '申請理賠中',
-    statusSummary: '補件文件已收齊，理賠案件審核進行中，預估 7–14 個工作天內通知結果。',
+    claimStatus: 'paid',
+    progress: 100,
+    statusLabel: '已給付',
+    statusSummary: '醫療理賠款項 NT$ 128,400 已於 2026/07/12 匯入指定帳戶，本案結案。',
     isError: false,
-    updatedAt: '2026-07-10',
+    updatedAt: '2026-07-12',
   },
   p1: {
     claimStatus: 'in_review',
