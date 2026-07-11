@@ -165,7 +165,7 @@ export const CLAIM_TAB_STATUSES: Record<ClaimTab, ClaimStatus[]> = {
 export const CLAIM_TAB_LABELS: Record<ClaimTab, string> = {
   pending: '待處理',
   in_progress: '進行中',
-  completed: '已完成',
+  completed: '已結案',
 }
 
 export function countClaimsByTab(claims: ClaimRecord[]) {
