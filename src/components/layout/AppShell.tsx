@@ -114,8 +114,10 @@ export function AppShell({ children }: AppShellProps) {
     members,
     memberCount,
     navigateToProfile,
+    selectedMemberId,
   } = useApp()
   const pageTitle = isProfileView ? '個人資料' : TAB_TITLES[currentTab]
+  const hidePageTitle = currentTab === 'protection' && selectedMemberId !== null
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const claimActionCount = useMemo(
     () => buildFamilyClaims(members).filter((claim) => claim.isError).length,
@@ -207,7 +209,7 @@ export function AppShell({ children }: AppShellProps) {
 
       <main className="main-content main-content--desktop">
         <div className="content-container content-container--wide">
-          <h2 className="page-title">{pageTitle}</h2>
+          {!hidePageTitle && <h2 className="page-title">{pageTitle}</h2>}
           {children}
         </div>
       </main>

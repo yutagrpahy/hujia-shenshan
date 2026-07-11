@@ -1,11 +1,8 @@
-import { ChevronRight, Link2, PenLine } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { useMemo } from 'react'
 import { MemberAvatar } from '../common/MemberAvatar'
-import {
-  MANUAL_POLICY_CHIP_LABEL,
-  UNION_INFO_SYSTEM_NAME,
-  UNION_POLICY_CHIP_LABEL,
-} from '../../data/policySourceLabels'
+import { PolicySourceLabel } from '../common/PolicySourceLabel'
+import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
 import { groupPoliciesByGapCategory } from '../../utils/calculations'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 
@@ -44,9 +41,7 @@ function PolicyCard({
     <button
       type="button"
       onClick={() => onSelect(item)}
-      className={`m3-card p-3 mb-2 w-full max-w-full min-w-0 text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60 ${
-        policy.source === 'manual' ? 'border border-dashed border-sand-300 bg-sand-50/40' : ''
-      }`}
+      className="m3-card p-3 mb-2 w-full max-w-full min-w-0 text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60"
     >
       <div className="flex items-center gap-2 mb-2 min-w-0">
         <MemberAvatar name={memberName} seed={avatarSeed} size="sm" />
@@ -64,18 +59,8 @@ function PolicyCard({
       <p className="text-xs text-gray-400 mt-1">
         受益人：{policy.beneficiary} · 到期 {policy.expiryDate}
       </p>
-      <div className="flex flex-wrap gap-1.5 mt-1.5">
-        {policy.source === 'union' ? (
-          <span className="m3-chip bg-teal-50 text-teal-600 inline-flex items-center gap-1">
-            <Link2 className="w-3 h-3" />
-            {UNION_POLICY_CHIP_LABEL}
-          </span>
-        ) : (
-          <span className="m3-chip bg-sand-100 text-gray-600 inline-flex items-center gap-1 border border-dashed border-sand-300">
-            <PenLine className="w-3 h-3" />
-            {MANUAL_POLICY_CHIP_LABEL}
-          </span>
-        )}
+      <div className="flex flex-wrap items-center gap-2 mt-1.5">
+        <PolicySourceLabel source={policy.source} />
         {policy.status !== 'active' && STATUS_BADGES[policy.status] && (
           <span className={`m3-chip ${STATUS_BADGES[policy.status]}`}>
             {STATUS_LABELS[policy.status]}

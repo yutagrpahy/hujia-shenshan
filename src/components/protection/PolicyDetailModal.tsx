@@ -3,18 +3,13 @@ import {
   AlertCircle,
   Calendar,
   ChevronRight,
-  Link2,
-  PenLine,
   Phone,
   Shield,
   UserCircle,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import { buildPolicyDetailContext } from '../../data/policyDetails'
-import {
-  MANUAL_POLICY_CHIP_LABEL,
-  UNION_POLICY_CHIP_LABEL,
-} from '../../data/policySourceLabels'
+import { PolicySourceLabel } from '../common/PolicySourceLabel'
 import { getAdvisorAvatarUrl } from '../../utils/avatars'
 import type { PolicyWithMember } from '../../types'
 import { MemberAvatar } from '../common/MemberAvatar'
@@ -86,17 +81,7 @@ export function PolicyDetailModal({
                       >
                         {detail.statusLabel}
                       </span>
-                      {policy.source === 'union' ? (
-                        <span className="m3-chip bg-teal-50 text-teal-600 inline-flex items-center gap-1">
-                          <Link2 className="w-3 h-3" />
-                          {UNION_POLICY_CHIP_LABEL}
-                        </span>
-                      ) : (
-                        <span className="m3-chip bg-sand-100 text-gray-600 inline-flex items-center gap-1 border border-dashed border-sand-300">
-                          <PenLine className="w-3 h-3" />
-                          {MANUAL_POLICY_CHIP_LABEL}
-                        </span>
-                      )}
+                      <PolicySourceLabel source={policy.source} />
                     </div>
                   </div>
                 </div>

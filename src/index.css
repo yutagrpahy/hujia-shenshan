@@ -301,6 +301,54 @@ body {
   min-height: 2rem;
 }
 
+/* ── 保單資料來源：資訊標籤（非互動按鈕樣式）── */
+.policy-source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+
+.policy-source-tag--union {
+  color: #5a9e96;
+}
+
+.policy-source-tag--manual {
+  color: #9ca3af;
+}
+
+.policy-source-tag--manual::before {
+  content: '·';
+  margin-right: 2px;
+  color: #d1d5db;
+}
+
+/* ── 成員詳情：保單區與後續區塊視覺分群 ── */
+.member-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.member-policies-panel {
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);
+  border: 1px solid rgba(139, 115, 85, 0.08);
+  box-shadow: 0 2px 10px rgba(45, 122, 112, 0.05);
+}
+
+.member-detail-follow-block {
+  padding-top: 24px;
+  border-top: 1px solid rgba(139, 115, 85, 0.12);
+}
+
+.member-detail-follow-block + .member-detail-follow-block {
+  margin-top: 4px;
+}
+
 /* ── 保障缺口達標獎勵（無背景光暈，避免遮擋文字）── */
 .gap-card--achieved {
   border-color: rgba(45, 122, 112, 0.5);
