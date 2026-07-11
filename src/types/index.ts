@@ -221,6 +221,15 @@ export interface GapLapsedMember {
   policyId: string
 }
 
+export interface GapMemberStatus {
+  memberId: string
+  memberName: string
+  /** 目前是否持有有效保障 */
+  hasCoverage: boolean
+  /** 可導向的保單（有效優先，否則為同類失效保單） */
+  policyId?: string
+}
+
 export interface CoverageGap {
   category: string
   gapKey: 'death' | 'medical' | 'longterm' | 'disability' | 'critical'
@@ -230,6 +239,8 @@ export interface CoverageGap {
   coveredMembers: string[]
   /** 曾有此類保障、但保單已失效的成員（可點擊查看保單詳情） */
   lapsedMembers: GapLapsedMember[]
+  /** 全家成員在此缺口類型的保障持有狀態 */
+  gapMembers: GapMemberStatus[]
 }
 
 export interface TodoItem {

@@ -23,7 +23,11 @@ import { DocumentVault } from '../common/DocumentVault'
 import { EventFormModal } from '../common/EventFormModal'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
-import { countMemberPolicies, groupMemberPoliciesByGapCategory } from '../../utils/calculations'
+import {
+  countMemberPolicies,
+  groupMemberPoliciesByGapCategory,
+  isPolicyEffective,
+} from '../../utils/calculations'
 import { AllPoliciesPanel } from './AllPoliciesPanel'
 import { MemberTodosSection } from './MemberTodosSection'
 import { PolicyDetailModal } from './PolicyDetailModal'
@@ -116,6 +120,7 @@ export function ProtectionPage() {
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
   const [highlightedPolicyId, setHighlightedPolicyId] = useState<string | null>(null)
+  const [memberPolicyTab, setMemberPolicyTab] = useState<'effective' | 'expired'>('effective')
   const [newPolicy, setNewPolicy] = useState<NewPolicyInput>(EMPTY_POLICY_INPUT)
   const [newMember, setNewMember] = useState<NewMemberInput>({
     name: '',
@@ -181,11 +186,48 @@ export function ProtectionPage() {
     [selectedMember],
   )
 
+  const filteredMemberPolicyGroups = useMemo(
+    () =>
+      memberPolicyGroups
+        .map((group) => ({
+          ...group,
+          policies: group.policies.filter(({ policy }) =>
+            memberPolicyTab === 'effective'
+              ? isPolicyEffective(policy)
+              : !isPolicyEffective(policy),
+          ),
+        }))
+        .filter((group) => group.policies.length > 0),
+    [memberPolicyGroups, memberPolicyTab],
+  )
+
+  const memberPolicyCounts = useMemo(() => {
+    if (!selectedMember) return { effective: 0, expired: 0 }
+    return selectedMember.policies.reduce(
+      (counts, policy) => {
+        if (isPolicyEffective(policy)) counts.effective += 1
+        else counts.expired += 1
+        return counts
+      },
+      { effective: 0, expired: 0 },
+    )
+  }, [selectedMember])
+
+  useEffect(() => {
+    setMemberPolicyTab('effective')
+    setHighlightedPolicyId(null)
+  }, [selectedMemberId])
+
   useEffect(() => {
     if (!selectedMember || !memberNavigationTarget) return
     if (memberNavigationTarget.memberId !== selectedMember.id) return
 
     const { policyId, gapKey } = memberNavigationTarget
+    if (policyId) {
+      const policy = selectedMember.policies.find((entry) => entry.id === policyId)
+      setMemberPolicyTab(policy && !isPolicyEffective(policy) ? 'expired' : 'effective')
+    }
+
     const scrollTargetId = policyId
       ? `member-policy-${policyId}`
       : gapKey
@@ -202,7 +244,7 @@ export function ProtectionPage() {
         }
       }
       clearMemberNavigationTarget()
-    }, 150)
+    }, policyId ? 220 : 150)
 
     return () => window.clearTimeout(timer)
   }, [
@@ -277,7 +319,28 @@ export function ProtectionPage() {
           {selectedMember.policies.length === 0 ? (
             <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增」自行登載</p>
           ) : (
-            memberPolicyGroups.map((group) => (
+            <>
+              <div className="m3-segment mb-3 grid grid-cols-2 gap-1">
+                <SegmentTab
+                  active={memberPolicyTab === 'effective'}
+                  label={`有效保單 (${memberPolicyCounts.effective})`}
+                  onClick={() => setMemberPolicyTab('effective')}
+                />
+                <SegmentTab
+                  active={memberPolicyTab === 'expired'}
+                  label={`失效保單 (${memberPolicyCounts.expired})`}
+                  onClick={() => setMemberPolicyTab('expired')}
+                />
+              </div>
+
+              {filteredMemberPolicyGroups.length === 0 ? (
+                <p className="text-sm text-gray-400 m3-card p-4">
+                  {memberPolicyTab === 'effective'
+                    ? '目前沒有有效保單'
+                    : '目前沒有失效保單'}
+                </p>
+              ) : (
+                filteredMemberPolicyGroups.map((group) => (
               <div
                 key={group.gapKey}
                 id={`member-gap-section-${group.gapKey}`}
@@ -341,7 +404,9 @@ export function ProtectionPage() {
                   </button>
                 ))}
               </div>
-            ))
+                ))
+              )}
+            </>
           )}
         </section>
 

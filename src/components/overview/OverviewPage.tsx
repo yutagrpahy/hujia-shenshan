@@ -66,9 +66,6 @@ export function OverviewPage() {
         ? 'text-teal-700'
         : 'text-teal-800'
 
-  const findMemberByName = (name: string) =>
-    members.find((m) => m.name === name)
-
   const navigateGapMember = (
     gap: CoverageGap,
     memberId: string,
@@ -256,61 +253,52 @@ export function OverviewPage() {
                 </p>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Users className="w-3 h-3 text-teal-500 shrink-0" />
-                  {gap.coveredMembers.length > 0 || gap.lapsedMembers.length > 0 ? (
-                    <>
-                      {gap.coveredMembers.map((name) => {
-                        const member = findMemberByName(name)
-                        if (!member) {
-                          return (
-                            <span key={name} className="m3-chip bg-teal-50 text-teal-700">
-                              {name}
-                            </span>
-                          )
-                        }
+                  {gap.gapMembers.map((entry) => {
+                    const member = members.find((m) => m.id === entry.memberId)
+                    const tone = entry.hasCoverage ? 'covered' : 'uncovered'
+                    const chipClass = entry.hasCoverage
+                      ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
 
-                        return (
-                          <button
-                            key={name}
-                            type="button"
-                            onClick={() => navigateGapMember(gap, member.id)}
-                            className="inline-flex items-center gap-1 m3-chip bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors"
-                          >
-                            <MemberAvatar
-                              name={member.name}
-                              seed={member.avatarSeed}
-                              size="xs"
-                            />
-                            {name}
-                          </button>
-                        )
-                      })}
-                      {gap.lapsedMembers.map((entry) => {
-                        const member = members.find((m) => m.id === entry.memberId)
-                        return (
-                          <button
-                            key={entry.policyId}
-                            type="button"
-                            onClick={() =>
-                              navigateGapMember(gap, entry.memberId, entry.policyId)
-                            }
-                            className="inline-flex items-center gap-1 m3-chip bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
-                            title="點擊前往成員保單詳情"
-                          >
-                            {member ? (
-                              <MemberAvatar
-                                name={member.name}
-                                seed={member.avatarSeed}
-                                size="xs"
-                              />
-                            ) : null}
-                            {entry.memberName}
-                          </button>
-                        )
-                      })}
-                    </>
-                  ) : (
-                    <span className="text-[10px] text-gray-400">尚無成員投保此類型</span>
-                  )}
+                    const chipContent = (
+                      <>
+                        {member ? (
+                          <MemberAvatar
+                            name={member.name}
+                            seed={member.avatarSeed}
+                            size="xs"
+                            tone={tone}
+                          />
+                        ) : null}
+                        {entry.memberName}
+                      </>
+                    )
+
+                    if (!entry.policyId) {
+                      return (
+                        <span
+                          key={entry.memberId}
+                          className={`inline-flex items-center gap-1 m3-chip ${chipClass}`}
+                        >
+                          {chipContent}
+                        </span>
+                      )
+                    }
+
+                    return (
+                      <button
+                        key={entry.memberId}
+                        type="button"
+                        onClick={() =>
+                          navigateGapMember(gap, entry.memberId, entry.policyId)
+                        }
+                        className={`inline-flex items-center gap-1 m3-chip transition-colors ${chipClass}`}
+                        title="點擊前往成員保單詳情"
+                      >
+                        {chipContent}
+                      </button>
+                    )
+                  })}
                 </div>
                 {isUrgent && (
                   <button

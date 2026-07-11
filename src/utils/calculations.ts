@@ -30,6 +30,36 @@ export function isPolicyProvidingCoverage(policy: Policy): boolean {
   return COVERING_POLICY_STATUSES.includes(policy.status)
 }
 
+/** 成員詳情「有效保單」分頁：尚未失效的保單 */
+export function isPolicyEffective(policy: Policy): boolean {
+  return policy.status !== 'expired'
+}
+
+function buildGapMemberStatuses(
+  members: FamilyMember[],
+  policyTypes: Array<Policy['type']>,
+  useMonthly: boolean,
+): CoverageGap['gapMembers'] {
+  return members.map((member) => {
+    const matching = member.policies.filter((policy) => {
+      if (!policyTypes.includes(policy.type)) return false
+      return useMonthly ? policy.monthlyPayout > 0 : policy.coverage > 0
+    })
+    const activePolicy = matching.find((policy) => isPolicyProvidingCoverage(policy))
+    const navigablePolicy =
+      activePolicy ??
+      matching.find((policy) => policy.status === 'expired') ??
+      matching[0]
+
+    return {
+      memberId: member.id,
+      memberName: member.name,
+      hasCoverage: !!activePolicy,
+      policyId: navigablePolicy?.id,
+    }
+  })
+}
+
 export function findPolicyById(members: FamilyMember[], policyId: string): Policy | undefined {
   for (const member of members) {
     const policy = member.policies.find((entry) => entry.id === policyId)
@@ -231,6 +261,7 @@ function computeGapFromMembers(
       unit,
       coveredMembers: [...coveredMembers],
       lapsedMembers,
+      gapMembers: buildGapMemberStatuses(members, policyTypes, useMonthly),
     }
   })
 }
