@@ -317,28 +317,31 @@ body {
   min-height: 2rem;
 }
 
-/* ── 保單資料來源：資訊標籤（非互動按鈕樣式）── */
+/* ── 保單資料來源：資訊標籤（襯底 chip，非互動按鈕）── */
 .policy-source-tag {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  padding: 2px 7px;
+  border-radius: 6px;
   font-size: 10px;
-  line-height: 1.3;
+  font-weight: 500;
+  line-height: 1.35;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .policy-source-tag--union {
-  color: #5a9e96;
+  color: #2d7a70;
+  background: rgba(90, 158, 150, 0.12);
+  border: 1px solid rgba(90, 158, 150, 0.18);
 }
 
 .policy-source-tag--manual {
-  color: #9ca3af;
-}
-
-.policy-source-tag--manual::before {
-  content: '·';
-  margin-right: 2px;
-  color: #d1d5db;
+  color: #6b7280;
+  background: rgba(139, 115, 85, 0.08);
+  border: 1px solid rgba(139, 115, 85, 0.12);
 }
 
 .policy-source-legend {
