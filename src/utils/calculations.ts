@@ -40,20 +40,22 @@ function buildGapMemberStatuses(
   policyTypes: Array<Policy['type']>,
   useMonthly: boolean,
 ): CoverageGap['gapMembers'] {
-  return members.map((member) => {
-    const matching = member.policies.filter((policy) => {
-      if (!policyTypes.includes(policy.type)) return false
-      return useMonthly ? policy.monthlyPayout > 0 : policy.coverage > 0
-    })
-    const activePolicy = matching.find((policy) => isPolicyProvidingCoverage(policy))
+  return members
+    .map((member) => {
+      const matching = member.policies.filter((policy) => {
+        if (!policyTypes.includes(policy.type)) return false
+        return useMonthly ? policy.monthlyPayout > 0 : policy.coverage > 0
+      })
+      const activePolicy = matching.find((policy) => isPolicyProvidingCoverage(policy))
 
-    return {
-      memberId: member.id,
-      memberName: member.name,
-      hasCoverage: !!activePolicy,
-      policyId: activePolicy?.id,
-    }
-  })
+      return {
+        memberId: member.id,
+        memberName: member.name,
+        hasCoverage: !!activePolicy,
+        policyId: activePolicy?.id,
+      }
+    })
+    .sort((a, b) => Number(b.hasCoverage) - Number(a.hasCoverage))
 }
 
 export function findPolicyById(members: FamilyMember[], policyId: string): Policy | undefined {
