@@ -69,7 +69,7 @@ export function NonAccidentCoveragePanel({
       </CardSectionTitle>
       <div className="m3-card-filled p-4">
         <p className="text-xl md:text-2xl font-bold text-teal-700">{formatWan(totalAmount)}</p>
-        <p className="text-[10px] text-teal-600/80 mt-1 leading-relaxed">{NON_ACCIDENT_SCOPE_NOTE}</p>
+        <p className="text-caption text-teal-700 mt-1">{NON_ACCIDENT_SCOPE_NOTE}</p>
 
         {groups.length > 0 && (
           <button

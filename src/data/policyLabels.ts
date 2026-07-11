@@ -13,7 +13,7 @@ export const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
 export const POLICY_STATUS_BADGES: Partial<Record<Policy['status'], string>> = {
   expiring: 'bg-amber-50 text-amber-600',
   pending: 'bg-red-50 text-red-600',
-  expired: 'bg-gray-100 text-gray-500',
+  expired: 'bg-gray-100 text-gray-600',
 }
 
 export const POLICY_STATUS_LABELS: Partial<Record<Policy['status'], string>> = {

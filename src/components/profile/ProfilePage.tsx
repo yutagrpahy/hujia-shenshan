@@ -61,7 +61,7 @@ export function ProfilePage() {
           size="lg"
         />
         <div>
-          <p className="text-[10px] text-teal-600 font-medium uppercase">登入帳號</p>
+          <p className="m3-card-eyebrow">登入帳號</p>
           <h3 className="text-lg font-semibold">{currentUser.name}</h3>
           <p className="text-xs text-gray-400">{currentUser.email}</p>
         </div>

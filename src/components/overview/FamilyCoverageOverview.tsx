@@ -140,7 +140,7 @@ function CoverageDetailModal({
                     {formatHeadlineAmount(summary.headlineAmount)}
                     {summary.domain === 'life' ? ' 身故保額' : ' 醫療保額'}
                   </p>
-                  <p className="text-[10px] mt-1 opacity-70">
+                  <p className="text-caption text-secondary mt-1">
                     {summary.memberCount} 位成員 · {summary.policyCount} 張保單 ·{' '}
                     {summary.subcategories.length} 類保障
                   </p>
