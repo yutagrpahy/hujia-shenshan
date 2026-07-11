@@ -179,7 +179,7 @@ export function OverviewPage() {
                     ) : isUrgent ? (
                       <span className="m3-chip gap-urgent-badge shrink-0">
                         <AlertCircle className="w-3 h-3" />
-                        尚未投保
+                        存在風險
                       </span>
                     ) : null}
                   </div>
