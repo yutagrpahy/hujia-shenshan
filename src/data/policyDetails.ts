@@ -1,5 +1,5 @@
 import { getClaimByPolicyId } from './claims'
-import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from './policyLabels'
+import { getPolicyStatusLabel, POLICY_TYPE_LABELS } from './policyLabels'
 import {
   MANUAL_POLICY_CHIP_LABEL,
   UNION_INFO_SYSTEM_NAME,
@@ -164,7 +164,7 @@ function buildPassbookDetailRows(
     { label: '每期保費', value: formatPremium(policy) },
     { label: '繳費方式', value: policy.premium > 0 ? '月繳' : '—' },
     { label: '保障期間', value: formatPolicyPeriod(policy) },
-    { label: '保單狀態', value: POLICY_STATUS_LABELS[policy.status] },
+    { label: '保單狀態', value: getPolicyStatusLabel(policy) },
   ]
 
   if (policy.type === 'life' && policy.beneficiary && policy.beneficiary !== '本人') {
@@ -313,11 +313,34 @@ function buildScenario(
   }
 
   if (policy.status === 'expiring') {
+    if (policy.autoRenew) {
+      return {
+        statusLabel: '到期自動續保',
+        statusTone: 'success',
+        situationTitle: '到期自動續保',
+        situationSummary: `此保單將於 ${policy.expiryDate} 到期，已設定到期自動續保，保障預計無縫接軌。請留意扣款帳戶餘額與保費調整通知。`,
+        ctas: [
+          {
+            id: 'view-premium',
+            label: '查看續保保費',
+            description: '示意：確認下期扣款金額與日期',
+            variant: 'primary',
+          },
+          {
+            id: 'call-agent',
+            label: '聯絡保險業務員',
+            description: '若有疑問可預約回電說明',
+            variant: 'secondary',
+          },
+        ],
+      }
+    }
+
     return {
-      statusLabel: '即將到期',
+      statusLabel: '到期不續保',
       statusTone: 'warning',
       situationTitle: '續保提醒',
-      situationSummary: `此保單將於 ${policy.expiryDate} 到期。建議提前 30 天聯繫業務員評估續保條件，避免保障空窗期影響醫療理賠。`,
+      situationSummary: `此保單將於 ${policy.expiryDate} 到期且不會自動續保。建議提前 30 天聯繫業務員評估續保或轉換方案，避免保障空窗。`,
       ctas: [
         {
           id: 'renew',

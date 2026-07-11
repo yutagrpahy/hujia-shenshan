@@ -1,4 +1,5 @@
 import { buildFamilyClaims } from '../data/claims'
+import { getPolicyStatusLabel } from '../data/policyLabels'
 import { calculateGapPercent, computeCoverageSummary } from '../utils/calculations'
 import type {
   AppNotification,
@@ -183,8 +184,10 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
         notifications.push({
           id: `notif:policy-expiry:${policy.id}`,
           type: 'policy-expiry',
-          title: '保單即將到期',
-          message: `${member.name}的「${policy.insurer}${policy.name}」將於 ${formatPolicyExpiry(policy.expiryDate)} 到期`,
+          title: getPolicyStatusLabel(policy),
+          message: `${member.name}的「${policy.insurer}${policy.name}」將於 ${formatPolicyExpiry(policy.expiryDate)} 到期${
+            policy.autoRenew ? '，已設定自動續保' : '，請留意續保安排'
+          }`,
           date: policy.expiryDate,
           read: false,
           memberId: member.id,

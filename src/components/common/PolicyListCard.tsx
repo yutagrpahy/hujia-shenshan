@@ -1,9 +1,5 @@
 import { getClaimByPolicyId, CLAIM_STATUS_GROUP } from '../../data/claims'
-import {
-  POLICY_STATUS_BADGES,
-  POLICY_STATUS_LABELS,
-  POLICY_TYPE_LABELS,
-} from '../../data/policyLabels'
+import { getPolicyStatusChip, POLICY_TYPE_LABELS } from '../../data/policyLabels'
 import { getPolicyParties } from '../../data/policyDetails'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
@@ -58,6 +54,7 @@ export function PolicyListCard({
         : null
   const resolvedAvatarSeed = avatarSeed ?? memberName
   const showIdentity = showMember && memberName && resolvedAvatarSeed
+  const statusChip = getPolicyStatusChip(policy)
 
   const content = (
     <CardItemTriRow>
@@ -82,10 +79,8 @@ export function PolicyListCard({
         ) : null}
         <CardItemTags>
           <PolicySourceLabel source={policy.source} />
-          {!hasClaim && policy.status !== 'active' && POLICY_STATUS_BADGES[policy.status] ? (
-            <span className={`m3-chip ${POLICY_STATUS_BADGES[policy.status]}`}>
-              {POLICY_STATUS_LABELS[policy.status]}
-            </span>
+          {!hasClaim && statusChip ? (
+            <span className={`m3-chip ${statusChip.className}`}>{statusChip.label}</span>
           ) : null}
         </CardItemTags>
       </CardItemTriMain>

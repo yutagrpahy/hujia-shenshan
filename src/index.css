@@ -955,6 +955,39 @@ body {
   border-color: rgba(5, 150, 105, 0.22);
 }
 
+.policy-status-chip {
+  font-size: var(--ds-chip-font-size);
+  font-weight: 600;
+  line-height: 1.2;
+  border-width: 1px;
+  border-style: solid;
+  align-self: center;
+}
+
+.policy-status-chip--renew-auto {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #047857;
+  border-color: rgba(5, 150, 105, 0.22);
+}
+
+.policy-status-chip--renew-none {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.22);
+}
+
+.policy-status-chip--pending {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  color: #c2410c;
+  border-color: rgba(234, 88, 12, 0.22);
+}
+
+.policy-status-chip--expired {
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  color: #4b5563;
+  border-color: rgba(107, 114, 128, 0.28);
+}
+
 /* ── Cards & UI tokens ── */
 .m3-card {
   background: var(--color-surface-container);
@@ -2550,7 +2583,8 @@ button.m3-chip {
     font-size: 0.9375rem;
   }
 
-  .claim-chip {
+  .claim-chip,
+  .policy-status-chip {
     font-size: 0.6875rem;
     line-height: 1.2;
   }

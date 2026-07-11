@@ -111,6 +111,7 @@ export const initialMembers: FamilyMember[] = [
         beneficiary: '本人',
         expiryDate: '2026-08-01',
         status: 'expiring',
+        autoRenew: false,
         source: 'union',
       },
       {
@@ -268,8 +269,9 @@ export const initialMembers: FamilyMember[] = [
         eventPayout: 1000000,
         premium: 2400,
         beneficiary: '本人',
-        expiryDate: '2028-06-01',
-        status: 'active',
+        expiryDate: '2026-09-15',
+        status: 'expiring',
+        autoRenew: true,
         source: 'union',
       },
       {

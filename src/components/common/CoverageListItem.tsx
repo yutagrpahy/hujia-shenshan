@@ -1,10 +1,6 @@
 import type { ClaimRecord, FamilyMember, PolicyWithMember } from '../../types'
 import { CLAIM_STATUS_GROUP } from '../../data/claims'
-import {
-  POLICY_STATUS_BADGES,
-  POLICY_STATUS_LABELS,
-  POLICY_TYPE_LABELS,
-} from '../../data/policyLabels'
+import { getPolicyStatusChip, POLICY_TYPE_LABELS } from '../../data/policyLabels'
 import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
 import {
   CardItem,
@@ -60,6 +56,7 @@ export function CoverageListItem({
   const statusTone = hasClaim ? CLAIM_STATUS_GROUP[claim.claimStatus].tone : null
   const amountLabel = item.isMonthly ? '月給付' : '保額'
   const formattedAmount = formatAmount(item.amount, item.isMonthly)
+  const statusChip = policy ? getPolicyStatusChip(policy) : null
 
   const content = (
     <CardItemTriRow>
@@ -71,13 +68,9 @@ export function CoverageListItem({
             <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
               {claim.statusLabel}
             </span>
-          ) : policy && policy.status !== 'active' && POLICY_STATUS_LABELS[policy.status] ? (
-            <span
-              className={`m3-chip shrink-0 ${
-                POLICY_STATUS_BADGES[policy.status] ?? 'bg-sand-100 text-gray-600'
-              }`}
-            >
-              {POLICY_STATUS_LABELS[policy.status]}
+          ) : statusChip ? (
+            <span className={`m3-chip shrink-0 ${statusChip.className}`}>
+              {statusChip.label}
             </span>
           ) : null}
         </CardItemMeta>

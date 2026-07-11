@@ -103,6 +103,8 @@ export interface Policy {
   beneficiary: string
   expiryDate: string
   status: 'active' | 'expiring' | 'expired' | 'pending'
+  /** 僅 status 為 expiring 時有效：true＝到期自動續保 */
+  autoRenew?: boolean
   source: PolicySource
 }
 
