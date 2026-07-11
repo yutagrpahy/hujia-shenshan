@@ -490,7 +490,7 @@ export const initialMembers: FamilyMember[] = [
         status: 'expired',
         source: 'union',
       },
-      // DEMO: 王阿公長照保單已過期 — 復原示範時改回 active / expiryDate 2030-12-01
+      // DEMO: 王阿公長照保單已過期，p23 重新投保申請中 — 復原舊情境時移除 p23、改回 p22 active
       {
         id: 'p22',
         name: '長照分期給付保險',
@@ -505,6 +505,21 @@ export const initialMembers: FamilyMember[] = [
         status: 'expired',
         source: 'union',
       },
+      {
+        id: 'p23',
+        name: '長照月給付保險',
+        insurer: '富邦人壽',
+        type: 'longterm',
+        coverage: 40000,
+        monthlyPayout: 20000,
+        eventPayout: 0,
+        premium: 2800,
+        beneficiary: '王建國',
+        expiryDate: '2031-03-31',
+        status: 'pending',
+        reapplyOf: 'p22',
+        source: 'union',
+      },
     ],
   },
 ]
@@ -514,17 +529,6 @@ export const initialMembers: FamilyMember[] = [
  * DEMO 個人待辦空白：m3 王雅婷、m6 王小美（見 initialFamilyEvents 註解）。
  */
 export const initialTodos: TodoItem[] = [
-  {
-    id: 't3',
-    title: '王阿公長照保單已到期，評估重新投保',
-    memberId: 'm4',
-    memberName: '王阿公',
-    urgency: 'high',
-    dueDate: '2026-05-15',
-    completed: false,
-    source: 'manual',
-    eventId: 'fe1',
-  },
   {
     id: 't5',
     title: '王子安新婚後檢視定期壽險受益人',
@@ -550,6 +554,18 @@ export const initialHistoryTodos: TodoItem[] = [
     completed: true,
     completedAt: '2025-09-20',
     source: 'manual',
+  },
+  {
+    id: 'h-agong-reapply',
+    title: '已送件王阿公長照月給付重新投保申請',
+    memberId: 'm4',
+    memberName: '王阿公',
+    policyId: 'p23',
+    urgency: 'medium',
+    completed: true,
+    completedAt: '2026-07-08',
+    source: 'manual',
+    eventId: 'fe1',
   },
   // DEMO: 王雅婷 p7 補件完成紀錄 — 復原時移除此項
   {
@@ -619,13 +635,14 @@ export const archivedNotifications: AppNotification[] = [
 export const initialFamilyEvents: FamilyEvent[] = [
   {
     id: 'fe1',
-    name: '父親長照評估',
+    name: '父親長照重新投保',
     type: 'longterm-care',
-    date: '2026-05-15',
+    date: '2026-07-20',
     frequency: 'once',
     fundsNeeded: 50000,
     urgency: 'high',
-    description: '王阿公富邦長照月給 2 萬已於 2026/03 到期，評估是否需重新投保並加強居家照護',
+    description:
+      '王阿公富邦長照月給 2 萬已於 2026/03 到期，重新投保申請已於 7/8 送件，目前核保審查中，預估 7/20 前通知結果',
     memberIds: ['m4'],
     createdBy: '王建國',
   },

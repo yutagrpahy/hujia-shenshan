@@ -5,6 +5,8 @@ import {
 } from '../data/claims'
 import {
   getPolicyStatusLabel,
+  isPolicyReapplication,
+  isPolicyUnderwriting,
   resolvePolicySystemTodoTrigger,
 } from '../data/policyLabels'
 import { calculateGapPercent, computeCoverageSummary } from '../utils/calculations'
@@ -24,6 +26,11 @@ const DEFAULT_PENDING_COVERAGE: Partial<Record<Policy['type'], number>> = {
   life: 3000000,
   health: 1000000,
   critical: 1000000,
+  longterm: 40000,
+}
+
+const DEFAULT_PENDING_MONTHLY_PAYOUT: Partial<Record<Policy['type'], number>> = {
+  longterm: 20000,
 }
 
 export interface TodoCompletionResult {
@@ -158,7 +165,36 @@ export function deriveSystemTodos(
         continue
       }
 
+      if (trigger.kind === 'pending') {
+        const ruleId = `pending:${policy.id}`
+        if (dismissedRuleIds.has(ruleId)) continue
+        const isReapply = isPolicyReapplication(policy)
+        const needsDocs = !isReapply && !isPolicyUnderwriting(policy)
+        todos.push({
+          id: `sys-${ruleId}`,
+          ruleId,
+          title: isReapply
+            ? `追蹤重新投保「${policy.name}」核保進度`
+            : isPolicyUnderwriting(policy)
+              ? `追蹤「${policy.name}」核保進度`
+              : `補齊「${policy.name}」申請文件`,
+          memberId: member.id,
+          memberName: member.name,
+          policyId: policy.id,
+          urgency: needsDocs ? 'high' : 'medium',
+          dueDate: '2026-07-20',
+          completed: false,
+          source: 'system',
+        })
+        continue
+      }
+
       if (trigger.kind === 'expired') {
+        const hasReapplyInFlight = member.policies.some(
+          (item) => item.status === 'pending' && item.reapplyOf === policy.id,
+        )
+        if (hasReapplyInFlight) continue
+
         const ruleId = `expired:${policy.id}`
         if (dismissedRuleIds.has(ruleId)) continue
         todos.push({
@@ -242,14 +278,21 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
       }
 
       if (policy.status === 'pending') {
-        const isUnderwriting = policy.coverage <= 0 && policy.type === 'life'
+        const isReapply = isPolicyReapplication(policy)
+        const isUnderwriting = isPolicyUnderwriting(policy)
         notifications.push({
           id: `notif:policy-pending:${policy.id}`,
           type: 'policy-purchase',
-          title: isUnderwriting ? '保單核保中' : '保單申請待補件',
-          message: isUnderwriting
-            ? `${member.name}的「${policy.name}」核保進行中，保額通過後將自動更新`
-            : `${member.name}的「${policy.name}」申請需補齊文件，請儘快處理`,
+          title: isReapply
+            ? '重新投保申請中'
+            : isUnderwriting
+              ? '保單核保中'
+              : '保單申請待補件',
+          message: isReapply
+            ? `${member.name}的「${policy.name}」重新投保申請已送件，核保審查中`
+            : isUnderwriting
+              ? `${member.name}的「${policy.name}」核保進行中，保額通過後將自動更新`
+              : `${member.name}的「${policy.name}」申請需補齊文件，請儘快處理`,
           date: '2026-07-08',
           read: false,
           memberId: member.id,
@@ -257,6 +300,11 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
       }
 
       if (policy.status === 'expired') {
+        const hasReapplyInFlight = member.policies.some(
+          (item) => item.status === 'pending' && item.reapplyOf === policy.id,
+        )
+        if (hasReapplyInFlight) continue
+
         notifications.push({
           id: `notif:policy-expired:${policy.id}`,
           type: 'policy-expiry',
@@ -340,11 +388,17 @@ function applySystemTodoCompletion(
         policy.coverage > 0
           ? policy.coverage
           : (DEFAULT_PENDING_COVERAGE[policy.type] ?? policy.eventPayout)
+      const monthlyPayout =
+        policy.monthlyPayout > 0
+          ? policy.monthlyPayout
+          : (DEFAULT_PENDING_MONTHLY_PAYOUT[policy.type] ?? policy.monthlyPayout)
       return {
         members: updatePolicy(members, ref, {
           status: 'active',
           coverage,
+          monthlyPayout,
           eventPayout: policy.eventPayout > 0 ? policy.eventPayout : coverage,
+          reapplyOf: undefined,
         }),
         dismissedRuleIds,
       }

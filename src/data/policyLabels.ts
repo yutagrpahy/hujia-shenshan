@@ -9,7 +9,16 @@ import type { ClaimRecord, Policy } from '../types'
 export type PolicySystemTodoTrigger =
   | { kind: 'renewal'; policy: Policy }
   | { kind: 'expired'; policy: Policy }
+  | { kind: 'pending'; policy: Policy }
   | { kind: 'claim_docs'; claim: ClaimRecord }
+
+export function isPolicyReapplication(policy: Policy): boolean {
+  return policy.status === 'pending' && !!policy.reapplyOf
+}
+
+export function isPolicyUnderwriting(policy: Policy): boolean {
+  return policy.status === 'pending' && policy.coverage <= 0 && policy.type === 'life'
+}
 
 export const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
   life: '壽險',
@@ -45,7 +54,29 @@ export interface PolicyStatusChip {
 }
 
 export function getPolicyStatusChip(policy: Policy): PolicyStatusChip | null {
-  if (policy.status === 'active' || policy.status === 'pending') return null
+  if (policy.status === 'active') return null
+
+  if (policy.status === 'pending') {
+    if (isPolicyReapplication(policy)) {
+      return {
+        label: '重新投保申請中',
+        className: 'policy-status-chip policy-status-chip--pending-reapply',
+        tone: 'warning',
+      }
+    }
+    if (isPolicyUnderwriting(policy)) {
+      return {
+        label: '核保中',
+        className: 'policy-status-chip policy-status-chip--pending',
+        tone: 'warning',
+      }
+    }
+    return {
+      label: '申請待補件',
+      className: 'policy-status-chip policy-status-chip--pending-docs',
+      tone: 'danger',
+    }
+  }
 
   if (policy.status === 'expiring') {
     if (policy.autoRenew) {
@@ -97,8 +128,8 @@ export function getPolicyCardStatusChip(
 
 /**
  * 依保單卡片標籤判斷是否產生系統待辦。
- * 有效／核保中／到期自動續保／理賠進行中／理賠已結案 → 不產生。
- * 即將到期、已失效、理賠待補件 → 產生。
+ * 有效／到期自動續保／理賠進行中／理賠已結案 → 不產生。
+ * 即將到期、已失效、核保中／申請待補件、理賠待補件 → 產生。
  */
 export function resolvePolicySystemTodoTrigger(
   policy: Policy,
@@ -109,6 +140,10 @@ export function resolvePolicySystemTodoTrigger(
       return { kind: 'claim_docs', claim }
     }
     return null
+  }
+
+  if (policy.status === 'pending') {
+    return { kind: 'pending', policy }
   }
 
   if (policy.status === 'expiring' && !policy.autoRenew) {

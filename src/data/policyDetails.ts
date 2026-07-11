@@ -1,5 +1,10 @@
 import { getClaimByPolicyId } from './claims'
-import { getPolicyStatusLabel, POLICY_TYPE_LABELS } from './policyLabels'
+import {
+  getPolicyStatusLabel,
+  isPolicyReapplication,
+  isPolicyUnderwriting,
+  POLICY_TYPE_LABELS,
+} from './policyLabels'
 import {
   MANUAL_POLICY_CHIP_LABEL,
   UNION_INFO_SYSTEM_NAME,
@@ -359,7 +364,34 @@ function buildScenario(
   }
 
   if (policy.status === 'pending') {
-    const isUnderwriting = policy.coverage <= 0 && policy.type === 'life'
+    if (isPolicyReapplication(policy)) {
+      const payoutLine =
+        policy.monthlyPayout > 0
+          ? `預計月給付 ${formatCurrency(policy.monthlyPayout)}`
+          : '月給付尚待核保核定'
+      return {
+        statusLabel: '重新投保申請中',
+        statusTone: 'warning',
+        situationTitle: '長照保單重新投保核保中',
+        situationSummary: `原保單保障已終止，重新投保申請已送件，核保單位審查中。${payoutLine}，通過後將自動恢復至家庭保障地圖。`,
+        ctas: [
+          {
+            id: 'track-underwriting',
+            label: '查詢核保進度',
+            description: '示意：查看重新投保審查階段與預估生效日',
+            variant: 'primary',
+          },
+          {
+            id: 'call-agent',
+            label: '聯絡保險業務員',
+            description: '了解重新投保條件、等待期與核保進度',
+            variant: 'secondary',
+          },
+        ],
+      }
+    }
+
+    const isUnderwriting = isPolicyUnderwriting(policy)
     return {
       statusLabel: isUnderwriting ? '核保中' : '申請待補件',
       statusTone: 'warning',

@@ -7,7 +7,7 @@ export const TODO_SOURCE_DISPLAY = {
   manual: '手動新增',
 } as const
 
-const ENGINE_SYSTEM_RULE_KINDS = new Set(['renewal', 'expired', 'claim_docs', 'gap'])
+const ENGINE_SYSTEM_RULE_KINDS = new Set(['renewal', 'expired', 'pending', 'claim_docs', 'gap'])
 
 /** 規則引擎產生的系統待辦（對齊保單標籤狀態與保障缺口） */
 export function isEngineSystemTodo(todo: Pick<TodoItem, 'ruleId'>): boolean {
