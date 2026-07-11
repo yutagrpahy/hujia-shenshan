@@ -27,7 +27,6 @@ export function ProfilePage() {
     unionSyncEnabled,
     unionPolicyCount,
     setUnionSyncEnabled,
-    closeProfileView,
     uiState,
   } = useApp()
   const [showHealthProfile, setShowHealthProfile] = useState(false)
@@ -45,13 +44,6 @@ export function ProfilePage() {
 
   return (
     <PageStack>
-      <button
-        onClick={closeProfileView}
-        className="text-sm text-teal-600 font-medium"
-      >
-        ← 返回
-      </button>
-
       {uiState === 'success' && <SuccessBanner />}
 
       <div className="m3-card-warm p-4 flex items-center gap-4">
