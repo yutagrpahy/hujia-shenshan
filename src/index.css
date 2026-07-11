@@ -695,6 +695,12 @@ body {
   opacity: 0.72;
 }
 
+.policy-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-inline);
+}
+
 .member-policies-section {
   display: flex;
   flex-direction: column;
