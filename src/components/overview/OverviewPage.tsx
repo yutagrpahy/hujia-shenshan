@@ -2,7 +2,6 @@ import {
   AlertCircle,
   ChevronRight,
   Eye,
-  Glasses,
   Heart,
   Sparkles,
   SquareArrowOutUpRight,
@@ -311,16 +310,14 @@ export function OverviewPage() {
 
       <PageSection title="推薦內容" fullWidth>
         <div className="education-grid">
-          {education.map((item) => {
-            const DurationIcon = item.type === 'video' ? Eye : Glasses
-            return (
+          {education.map((item) => (
             <CardItem key={item.id} className="m3-card-item--lg">
               <CardItemTriRow className="education-card-row">
                 <CardItemTriMain>
                   <CardItemMetaLabel className="text-[10px]">{item.stage}</CardItemMetaLabel>
                   <CardItemTitle>{item.title}</CardItemTitle>
                   <CardItemDetail className="education-duration">
-                    <DurationIcon className="education-duration__icon" aria-hidden />
+                    <Eye className="education-duration__icon" aria-hidden />
                     <span>{item.duration}</span>
                   </CardItemDetail>
                 </CardItemTriMain>
@@ -335,8 +332,7 @@ export function OverviewPage() {
                 </CardItemTriAction>
               </CardItemTriRow>
             </CardItem>
-            )
-          })}
+          ))}
         </div>
       </PageSection>
 
