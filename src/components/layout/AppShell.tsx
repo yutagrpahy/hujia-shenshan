@@ -90,7 +90,7 @@ function MobileShell({
           headerVisible ? '' : 'm3-app-bar--hidden'
         }`}
       >
-        <div className="flex items-center justify-between gap-2 min-w-0 w-full">
+        <div className="content-container app-header-row">
           <div className="brand-header-cluster min-w-0 flex-1">
             <BrandLogo size={44} />
             <BrandHeader variant="mobile" />
@@ -214,7 +214,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="app-layout app-layout--desktop min-h-dvh">
       <SkipToMainLink />
       <header className="desktop-top-nav warm-header">
-        <div className="desktop-nav-inner">
+        <div className="content-container desktop-nav-inner">
           <div className="brand-header-cluster shrink-0">
             <BrandLogo size={52} />
             <BrandHeader variant="desktop" />
