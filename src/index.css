@@ -2173,12 +2173,13 @@ button.m3-chip {
   align-items: center;
   justify-content: space-between;
   gap: var(--ds-space-title-content);
-  padding-right: 1.75rem;
+  width: 100%;
+  align-self: stretch;
 }
 
 .modal-detail-title-row__heading {
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
   font-size: var(--a11y-text-body);
   font-weight: 600;
   line-height: 1.5;
@@ -2186,10 +2187,11 @@ button.m3-chip {
 }
 
 .modal-detail-title-row .m3-detail-edit-link {
+  flex: 0 0 auto;
   align-self: center;
   min-height: auto;
-  padding-top: 0;
-  padding-bottom: 0;
+  margin-left: 0;
+  padding: 0;
 }
 
 .member-todos-footer {
