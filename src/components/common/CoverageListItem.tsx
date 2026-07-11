@@ -1,6 +1,6 @@
 import type { ClaimRecord, FamilyMember, PolicyWithMember } from '../../types'
 import { CLAIM_STATUS_GROUP } from '../../data/claims'
-import { getPolicyStatusChip, POLICY_TYPE_LABELS } from '../../data/policyLabels'
+import { getPolicyStatusChip } from '../../data/policyLabels'
 import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
 import {
   CardItem,
@@ -35,7 +35,6 @@ export function CoverageListItem({
   claim,
   formatAmount,
   amountClassName = 'text-teal-700',
-  showTypeLabel = true,
   onOpenPolicy,
 }: {
   item: CoverageListItemData
@@ -43,8 +42,6 @@ export function CoverageListItem({
   claim?: ClaimRecord
   formatAmount: (amount: number, isMonthly?: boolean | undefined) => string
   amountClassName?: string
-  /** 右側險種標籤（如醫療、壽險）；分類已在區塊標題呈現時可關閉 */
-  showTypeLabel?: boolean
   onOpenPolicy?: (payload: PolicyWithMember) => void
 }) {
   const hasClaim = !!claim
@@ -92,20 +89,16 @@ export function CoverageListItem({
         </CardItemDetail>
       </CardItemTriMain>
 
-      <CardItemTriIndicator>
-        {hasClaim ? (
+      {hasClaim ? (
+        <CardItemTriIndicator>
           <ClaimProgressRing
             progress={claim.progress}
             tone={claimRingTone(claim.claimStatus, claim.isError)}
             size={44}
             label={`${claim.progress}%`}
           />
-        ) : policy && showTypeLabel ? (
-          <span className="m3-chip bg-teal-50 text-teal-600 text-center leading-tight">
-            {POLICY_TYPE_LABELS[policy.type]}
-          </span>
-        ) : null}
-      </CardItemTriIndicator>
+        </CardItemTriIndicator>
+      ) : null}
 
       <CardItemTriAction>
         {isClickable ? <CardItemChevron /> : null}

@@ -167,7 +167,6 @@ function CoverageDetailModal({
                             }}
                             member={member}
                             claim={claim}
-                            showTypeLabel={false}
                             formatAmount={(amount, isMonthly) =>
                               formatItemAmount(amount, isMonthly ?? false)
                             }

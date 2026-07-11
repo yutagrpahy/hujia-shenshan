@@ -1,5 +1,5 @@
 import { getClaimByPolicyId, CLAIM_STATUS_GROUP } from '../../data/claims'
-import { getPolicyStatusChip, POLICY_TYPE_LABELS } from '../../data/policyLabels'
+import { getPolicyStatusChip } from '../../data/policyLabels'
 import { getPolicyParties } from '../../data/policyDetails'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
@@ -85,20 +85,16 @@ export function PolicyListCard({
         </CardItemTags>
       </CardItemTriMain>
 
-      <CardItemTriIndicator>
-        {hasClaim ? (
+      {hasClaim ? (
+        <CardItemTriIndicator>
           <ClaimProgressRing
             progress={claim.progress}
             tone={claimRingTone(claim.claimStatus, claim.isError)}
             size={44}
             label={`${claim.progress}%`}
           />
-        ) : (
-          <span className="m3-chip bg-teal-50 text-teal-600 text-center leading-tight">
-            {POLICY_TYPE_LABELS[policy.type]}
-          </span>
-        )}
-      </CardItemTriIndicator>
+        </CardItemTriIndicator>
+      ) : null}
 
       <CardItemTriAction>{onClick ? <CardItemChevron /> : null}</CardItemTriAction>
     </CardItemTriRow>
