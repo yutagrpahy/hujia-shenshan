@@ -626,9 +626,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--ds-space-inline);
-  margin-bottom: var(--ds-space-form);
+  gap: var(--ds-space-3);
+  margin: 0;
+  padding: var(--ds-space-3);
   text-align: left;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--ds-radius-control);
 }
 
 .policy-source-legend__item {
@@ -691,7 +695,17 @@ body {
   opacity: 0.72;
 }
 
+.member-policies-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
 .member-policies-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-block);
   padding: var(--ds-space-inset);
   border-radius: var(--ds-radius-panel);
   background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);

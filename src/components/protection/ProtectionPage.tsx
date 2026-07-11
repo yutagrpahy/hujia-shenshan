@@ -285,18 +285,22 @@ export function ProtectionPage() {
           </div>
         </div>
 
-        <section>
-          <div className="flex justify-end mb-1">
-            <Button
-              size="sm"
-              variant="secondary"
-              className="border-teal-200 text-teal-700 shrink-0"
-              onPress={() => setShowAddPolicy(true)}
-            >
-              <Plus className="w-3.5 h-3.5" />
-              新增
-            </Button>
-          </div>
+        <section className="member-policies-section">
+          <CardSectionTitle
+            actions={
+              <Button
+                size="sm"
+                variant="secondary"
+                className="border-teal-200 text-teal-700 shrink-0"
+                onPress={() => setShowAddPolicy(true)}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                新增
+              </Button>
+            }
+          >
+            保單
+          </CardSectionTitle>
 
           <div className="member-policies-panel">
           {selectedMember.policies.length === 0 ? (
