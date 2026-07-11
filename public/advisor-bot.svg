@@ -11,15 +11,17 @@
     </linearGradient>
   </defs>
   <circle cx="32" cy="32" r="30" fill="url(#advisor-bg)" stroke="#b8ddd6" stroke-width="1.5"/>
-  <g transform="translate(20 15)" stroke="url(#advisor-body)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 8V4H8"/>
-    <rect x="4" y="8" width="16" height="12" rx="2" fill="#f7fcfb" stroke="url(#advisor-body)"/>
-    <path d="M2 14h2"/>
-    <path d="M20 14h2"/>
-    <path d="M15 13v2"/>
-    <path d="M9 13v2"/>
+  <g transform="translate(32 31) scale(1.44) translate(-32 -31)">
+    <g stroke="url(#advisor-body)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 23V19H28"/>
+      <rect x="24" y="23" width="16" height="12" rx="2" fill="#f7fcfb" stroke="url(#advisor-body)"/>
+      <path d="M22 29h2"/>
+      <path d="M40 29h2"/>
+      <path d="M35 28v2"/>
+      <path d="M29 28v2"/>
+    </g>
+    <circle cx="27" cy="38" r="2" fill="#2d7a70"/>
+    <circle cx="37" cy="38" r="2" fill="#2d7a70"/>
+    <path fill="#f4a88a" d="m46 17 1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z" opacity=".92"/>
   </g>
-  <circle cx="27" cy="38" r="2" fill="#2d7a70"/>
-  <circle cx="37" cy="38" r="2" fill="#2d7a70"/>
-  <path fill="#f4a88a" d="m46 17 1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z" opacity=".92"/>
 </svg>
