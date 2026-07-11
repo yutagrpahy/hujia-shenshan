@@ -2168,13 +2168,28 @@ button.m3-chip {
   outline-offset: 2px;
 }
 
-.modal-detail-header {
+.modal-detail-title-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: var(--ds-space-title-content);
-  width: 100%;
-  padding-right: 2.75rem;
+  padding-right: 1.75rem;
+}
+
+.modal-detail-title-row__heading {
+  min-width: 0;
+  flex: 1;
+  font-size: var(--a11y-text-body);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-on-surface);
+}
+
+.modal-detail-title-row .m3-detail-edit-link {
+  align-self: center;
+  min-height: auto;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .member-todos-footer {

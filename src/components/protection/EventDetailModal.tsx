@@ -41,14 +41,13 @@ export function EventDetailModal({
       <Modal.Container placement={isMobile ? 'bottom' : 'center'}>
         <Modal.Dialog>
           <Modal.CloseTrigger />
-          <Modal.Header className="modal-detail-header">
-            <Modal.Heading className="min-w-0 flex-1">規劃事件詳情</Modal.Heading>
-            {onEdit ? <DetailEditLink onClick={onEdit} /> : null}
-          </Modal.Header>
           <Modal.Body>
             {event && (
               <StackBlock>
-                <p className="text-sm font-semibold text-gray-800 leading-relaxed">{event.name}</p>
+                <div className="modal-detail-title-row">
+                  <p className="modal-detail-title-row__heading">{event.name}</p>
+                  {onEdit ? <DetailEditLink onClick={onEdit} /> : null}
+                </div>
                 {event.description && (
                   <p className="text-sm text-gray-600 leading-relaxed">{event.description}</p>
                 )}

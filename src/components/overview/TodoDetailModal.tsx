@@ -39,14 +39,13 @@ export function TodoDetailModal({
       <Modal.Container placement={isMobile ? 'bottom' : 'center'}>
         <Modal.Dialog>
           <Modal.CloseTrigger />
-          <Modal.Header className="modal-detail-header">
-            <Modal.Heading className="min-w-0 flex-1">待辦詳情</Modal.Heading>
-            {onEdit ? <DetailEditLink onClick={onEdit} /> : null}
-          </Modal.Header>
           <Modal.Body>
             {todo && (
               <StackBlock>
-                <p className="text-sm font-semibold text-gray-800 leading-relaxed">{todo.title}</p>
+                <div className="modal-detail-title-row">
+                  <p className="modal-detail-title-row__heading">{todo.title}</p>
+                  {onEdit ? <DetailEditLink onClick={onEdit} /> : null}
+                </div>
                 <StackList className="text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
                     <User className="w-4 h-4 text-teal-500 shrink-0" />
