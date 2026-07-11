@@ -10,8 +10,21 @@
  * ds-stack-tight → --ds-space-tight (4px)  極緊湊列
  */
 import type { LucideIcon } from 'lucide-react'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Pencil } from 'lucide-react'
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
+
+/** 容器內層編輯 — 靠右純文字，次要字級（詳情 Modal 標題列） */
+export function DetailEditLink({
+  className = '',
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button type="button" className={`m3-detail-edit-link ${className}`.trim()} {...props}>
+      <Pencil className="w-3.5 h-3.5 shrink-0" aria-hidden />
+      編輯
+    </button>
+  )
+}
 
 /** 文字按鈕 — 點擊開啟視窗，統一附右箭頭 */
 export function TextModalLink({

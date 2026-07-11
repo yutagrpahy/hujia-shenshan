@@ -2127,11 +2127,45 @@ button.m3-chip {
   outline-offset: 2px;
 }
 
+.m3-detail-edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-height: var(--a11y-touch-min);
+  padding: 0 4px;
+  margin-left: auto;
+  font-family: inherit;
+  font-size: var(--a11y-text-small);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-a11y-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--ds-radius-control);
+  cursor: pointer;
+  appearance: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.m3-detail-edit-link:hover {
+  color: var(--color-teal-700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.m3-detail-edit-link:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
+}
+
 .modal-detail-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--ds-space-title-content);
+  width: 100%;
   padding-right: 2.75rem;
 }
 

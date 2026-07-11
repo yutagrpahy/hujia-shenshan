@@ -1,6 +1,6 @@
 import { Button, Modal } from '@heroui/react'
-import { StackBlock, StackList } from '../common/CardLayout'
-import { Calendar, Check, Pencil, User } from 'lucide-react'
+import { DetailEditLink, StackBlock, StackList } from '../common/CardLayout'
+import { Calendar, Check, User } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
 import type { TodoItem } from '../../types'
@@ -15,20 +15,6 @@ const SOURCE_LABELS: Record<TodoItem['source'], string> = {
   system: '系統提醒',
   event: '保障規劃',
   manual: '手動新增',
-}
-
-function DetailModalEditButton({ onPress }: { onPress: () => void }) {
-  return (
-    <Button
-      size="sm"
-      variant="secondary"
-      className="border-teal-200 text-teal-700 shrink-0"
-      onPress={onPress}
-    >
-      <Pencil className="w-3.5 h-3.5" />
-      編輯
-    </Button>
-  )
 }
 
 export function TodoDetailModal({
@@ -54,8 +40,8 @@ export function TodoDetailModal({
         <Modal.Dialog>
           <Modal.CloseTrigger />
           <Modal.Header className="modal-detail-header">
-            <Modal.Heading>待辦詳情</Modal.Heading>
-            {onEdit ? <DetailModalEditButton onPress={onEdit} /> : null}
+            <Modal.Heading className="min-w-0 flex-1">待辦詳情</Modal.Heading>
+            {onEdit ? <DetailEditLink onClick={onEdit} /> : null}
           </Modal.Header>
           <Modal.Body>
             {todo && (
