@@ -28,11 +28,13 @@ export function PolicySourceLegend() {
     <div className="policy-source-legend">
       <span className="policy-source-legend__item">
         <PolicySourceLabel source="union" />
-        <span className="policy-source-legend__text">登入後自動同步</span>
+        <span className="policy-source-legend__text">
+          保單資料來自定中華民國保險業同業公會之系統
+        </span>
       </span>
       <span className="policy-source-legend__item">
         <PolicySourceLabel source="manual" />
-        <span className="policy-source-legend__text">家人手動新增</span>
+        <span className="policy-source-legend__text">該成員自行登載之保單</span>
       </span>
     </div>
   )
