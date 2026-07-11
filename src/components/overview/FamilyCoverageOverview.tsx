@@ -161,7 +161,10 @@ function CoverageDetailModal({
                         return (
                           <CoverageListItem
                             key={item.id}
-                            item={item}
+                            item={{
+                              ...item,
+                              categoryLabel: item.subcategoryLabel,
+                            }}
                             member={member}
                             claim={claim}
                             formatAmount={(amount, isMonthly) =>

@@ -41,6 +41,7 @@ export function AllPoliciesPanel({
               <PolicyListCardFromItem
                 key={`${item.memberId}-${item.policy.id}`}
                 item={item}
+                members={members}
                 onSelect={onSelectPolicy}
               />
             ))

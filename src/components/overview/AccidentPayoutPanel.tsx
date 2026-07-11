@@ -130,7 +130,10 @@ export function AccidentPayoutPanel({
                       return (
                         <CoverageListItem
                           key={item.id}
-                          item={item}
+                          item={{
+                            ...item,
+                            categoryLabel: item.eventLabel,
+                          }}
                           member={member}
                           claim={claim}
                           formatAmount={(amount) => formatCurrency(amount)}

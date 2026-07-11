@@ -1,16 +1,15 @@
-import { AlertCircle } from 'lucide-react'
 import type { ClaimRecord, FamilyMember, PolicyWithMember } from '../../types'
+import { CLAIM_STATUS_GROUP } from '../../data/claims'
+import { POLICY_STATUS_BADGES, POLICY_STATUS_LABELS } from '../../data/policyLabels'
 import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
 import {
   CardItem,
-  CardItemAction,
-  CardItemAmount,
-  CardItemAside,
   CardItemChevron,
   CardItemDetail,
   CardItemMain,
   CardItemMeta,
   CardItemMetaLabel,
+  CardItemMedia,
   CardItemRow,
   CardItemSubtitle,
   CardItemTitle,
@@ -19,11 +18,14 @@ import { MemberAvatar } from './MemberAvatar'
 
 export interface CoverageListItemData {
   id: string
+  memberId?: string
   memberName: string
+  avatarSeed?: string
   policyName: string
   insurer: string
   amount: number
   isMonthly?: boolean
+  categoryLabel?: string
 }
 
 export function CoverageListItem({
@@ -44,64 +46,59 @@ export function CoverageListItem({
   const hasClaim = !!claim
   const policy = member?.policies.find((entry) => entry.id === item.id)
   const isClickable = !!onOpenPolicy && !!member && !!policy
-
-  const actionLabel = hasClaim && claim.isError ? '查看保單' : hasClaim ? '理賠詳情' : '查看保單'
+  const avatarSeed = member?.avatarSeed ?? item.avatarSeed
+  const memberName = member?.name ?? item.memberName
+  const statusTone = hasClaim ? CLAIM_STATUS_GROUP[claim.claimStatus].tone : null
+  const amountLabel = item.isMonthly ? '月給付' : '保額'
+  const formattedAmount = formatAmount(item.amount, item.isMonthly)
 
   const content = (
     <CardItemRow>
-      <div className="m3-card-item__media relative">
-        {hasClaim ? (
+      {hasClaim ? (
+        <CardItemMedia>
           <ClaimProgressRing
             progress={claim.progress}
             tone={claimRingTone(claim.claimStatus, claim.isError)}
             size={44}
             label={`${claim.progress}%`}
           />
-        ) : member ? (
-          <MemberAvatar name={member.name} seed={member.avatarSeed} size="sm" />
-        ) : (
-          <div className="m3-icon-wrap m3-icon-wrap--sm" />
-        )}
-      </div>
+        </CardItemMedia>
+      ) : null}
       <CardItemMain>
         <CardItemMeta>
-          <CardItemMetaLabel>{item.memberName}</CardItemMetaLabel>
+          {avatarSeed ? (
+            <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
+          ) : null}
+          <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
           {hasClaim ? (
+            <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
+              {claim.statusLabel}
+            </span>
+          ) : policy && policy.status !== 'active' && POLICY_STATUS_LABELS[policy.status] ? (
             <span
               className={`m3-chip shrink-0 ${
-                claim.isError
-                  ? 'bg-red-50 text-red-600'
-                  : claim.claimStatus === 'in_review'
-                    ? 'bg-teal-50 text-teal-600'
-                    : 'bg-amber-50 text-amber-600'
+                POLICY_STATUS_BADGES[policy.status] ?? 'bg-sand-100 text-gray-600'
               }`}
             >
-              {claim.isError ? (
-                <AlertCircle className="w-3 h-3 inline mr-0.5 -mt-0.5" />
-              ) : null}
-              {claim.statusLabel}
+              {POLICY_STATUS_LABELS[policy.status]}
             </span>
           ) : null}
         </CardItemMeta>
         <CardItemTitle>{item.policyName}</CardItemTitle>
-        <CardItemSubtitle>{item.insurer}</CardItemSubtitle>
+        <CardItemSubtitle>
+          {item.categoryLabel ? `${item.categoryLabel} · ` : ''}
+          {item.insurer}
+        </CardItemSubtitle>
         {hasClaim ? (
           <CardItemDetail className="text-gray-500 line-clamp-2">
             {claim.statusSummary}
           </CardItemDetail>
         ) : null}
+        <CardItemDetail className={`${amountClassName} font-semibold text-xs mt-1`}>
+          {amountLabel} {formattedAmount}
+        </CardItemDetail>
       </CardItemMain>
-      <CardItemAside>
-        <CardItemAmount className={amountClassName}>
-          {formatAmount(item.amount, item.isMonthly)}
-        </CardItemAmount>
-        {isClickable ? (
-          <>
-            <CardItemAction>{actionLabel}</CardItemAction>
-            <CardItemChevron />
-          </>
-        ) : null}
-      </CardItemAside>
+      {isClickable ? <CardItemChevron className="mt-1" /> : null}
     </CardItemRow>
   )
 

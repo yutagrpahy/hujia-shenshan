@@ -16,8 +16,9 @@ export const POLICY_STATUS_BADGES: Partial<Record<Policy['status'], string>> = {
   expired: 'bg-gray-100 text-gray-600',
 }
 
-export const POLICY_STATUS_LABELS: Partial<Record<Policy['status'], string>> = {
+export const POLICY_STATUS_LABELS: Record<Policy['status'], string> = {
+  active: '有效',
   expiring: '即將到期',
-  pending: '待補件',
-  expired: '已到期',
+  pending: '核保中',
+  expired: '已失效',
 }

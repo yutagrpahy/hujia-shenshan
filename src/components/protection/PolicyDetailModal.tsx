@@ -71,7 +71,7 @@ export function PolicyDetailModal({
                       {policy.name}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {detail.memberName} · {policy.insurer}
+                      {policy.insurer} · 被保人 {detail.memberName}
                     </p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       <span className="m3-chip bg-teal-50 text-teal-600">
@@ -97,7 +97,7 @@ export function PolicyDetailModal({
               </div>
 
               <div className="m3-card p-4">
-                <CardSectionTitle icon={Shield}>保單摘要</CardSectionTitle>
+                <CardSectionTitle icon={Shield}>契約資料</CardSectionTitle>
                 <div className="ds-stack-list-loose">
                 {detail.detailRows.map((row) => (
                   <div key={row.label} className="flex justify-between gap-3 text-sm">

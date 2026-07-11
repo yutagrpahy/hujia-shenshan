@@ -1,4 +1,5 @@
 import { getClaimByPolicyId } from './claims'
+import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from './policyLabels'
 import {
   MANUAL_POLICY_CHIP_LABEL,
   UNION_INFO_SYSTEM_NAME,
@@ -32,16 +33,6 @@ export interface PolicyDetailContext {
   detailRows: Array<{ label: string; value: string }>
   ctas: PolicyDetailCta[]
   agent: AdvisorRecommendation
-}
-
-const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
-  life: '壽險',
-  health: '醫療',
-  accident: '意外',
-  longterm: '長照',
-  savings: '年金',
-  disability: '失能',
-  critical: '重大疾病',
 }
 
 const DEFAULT_AGENT: AdvisorRecommendation = {
@@ -98,17 +89,94 @@ function getAgent(insurer: string): AdvisorRecommendation {
   }
 }
 
+export interface PolicyParties {
+  proposer: string
+  insured: string
+}
+
+/** 依家庭角色推斷要保人／被保人（對齊保險存摺常見欄位） */
+export function getPolicyParties(
+  members: FamilyMember[],
+  memberId: string,
+): PolicyParties {
+  const member = members.find((item) => item.id === memberId)
+  if (!member) return { proposer: '—', insured: '—' }
+
+  const insured = member.name
+  const owner = members.find((item) => item.role === 'owner')
+  const proposerIsOwner =
+    owner &&
+    member.id !== owner.id &&
+    (member.role === 'child' || member.role === 'parent')
+
+  return {
+    proposer: proposerIsOwner ? owner.name : insured,
+    insured,
+  }
+}
+
+function formatPolicyNumber(policyId: string): string {
+  const seed = [...policyId].reduce((sum, char) => sum + char.charCodeAt(0), 0)
+  const base = String(10000000 + (seed % 89999999))
+  return `${base.slice(0, 4)}-${base.slice(4, 8)}-${String(seed % 1000).padStart(3, '0')}`
+}
+
 function formatCoverage(policy: Policy): string {
   if (policy.monthlyPayout > 0) {
-    return `月給付 ${formatCurrency(policy.monthlyPayout)}`
+    return `${formatCurrency(policy.monthlyPayout)}／月`
   }
   if (policy.coverage > 0) {
     return formatCurrency(policy.coverage)
   }
   if (policy.status === 'pending') {
-    return '保額 0 元（核保／待生效）'
+    return '核保中（保額待核定）'
   }
-  return '保額 0 元'
+  return '—'
+}
+
+function formatPolicyPeriod(policy: Policy): string {
+  if (policy.expiryDate === '終身' || policy.expiryDate === '未填寫') {
+    return policy.expiryDate === '終身' ? '終身有效' : policy.expiryDate
+  }
+  return `至 ${policy.expiryDate.replace(/-/g, '/')}`
+}
+
+function formatPremium(policy: Policy): string {
+  if (policy.premium <= 0) return '—'
+  return `${formatCurrency(policy.premium)}／月`
+}
+
+function buildPassbookDetailRows(
+  policy: Policy,
+  parties: PolicyParties,
+): Array<{ label: string; value: string }> {
+  const rows: Array<{ label: string; value: string }> = [
+    { label: '保單號碼', value: formatPolicyNumber(policy.id) },
+    { label: '保險公司', value: policy.insurer },
+    { label: '商品名稱', value: policy.name },
+    { label: '險種', value: POLICY_TYPE_LABELS[policy.type] },
+    { label: '要保人', value: parties.proposer },
+    { label: '被保人', value: parties.insured },
+    {
+      label: policy.monthlyPayout > 0 ? '給付金額' : '保險金額',
+      value: formatCoverage(policy),
+    },
+    { label: '每期保費', value: formatPremium(policy) },
+    { label: '繳費方式', value: policy.premium > 0 ? '月繳' : '—' },
+    { label: '保障期間', value: formatPolicyPeriod(policy) },
+    { label: '保單狀態', value: POLICY_STATUS_LABELS[policy.status] },
+  ]
+
+  if (policy.type === 'life' && policy.beneficiary && policy.beneficiary !== '本人') {
+    rows.push({ label: '身故受益人', value: policy.beneficiary })
+  }
+
+  rows.push({
+    label: '資料來源',
+    value: policy.source === 'union' ? UNION_INFO_SYSTEM_NAME : MANUAL_POLICY_CHIP_LABEL,
+  })
+
+  return rows
 }
 
 function buildClaimScenario(
@@ -397,6 +465,9 @@ export function buildPolicyDetailContext(
   const { policy, memberId, memberName, avatarSeed } = item
   const claim = members ? getClaimByPolicyId(members, policy.id) : undefined
   const scenario = buildScenario(policy, claim)
+  const parties = members
+    ? getPolicyParties(members, memberId)
+    : { proposer: memberName, insured: memberName }
 
   return {
     policy,
@@ -405,17 +476,6 @@ export function buildPolicyDetailContext(
     avatarSeed,
     agent: getAgent(policy.insurer),
     ...scenario,
-    detailRows: [
-      { label: '保險公司', value: policy.insurer },
-      { label: '保單類型', value: POLICY_TYPE_LABELS[policy.type] },
-      { label: '保障內容', value: formatCoverage(policy) },
-      { label: '月繳保費', value: policy.premium > 0 ? formatCurrency(policy.premium) : '—' },
-      { label: '受益人', value: policy.beneficiary },
-      { label: '到期日', value: policy.expiryDate },
-      {
-        label: '資料來源',
-        value: policy.source === 'union' ? UNION_INFO_SYSTEM_NAME : MANUAL_POLICY_CHIP_LABEL,
-      },
-    ],
+    detailRows: buildPassbookDetailRows(policy, parties),
   }
 }

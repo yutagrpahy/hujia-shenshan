@@ -339,6 +339,9 @@ export function ProtectionPage() {
                             key={p.id}
                             id={`member-policy-${p.id}`}
                             policy={p}
+                            memberName={selectedMember.name}
+                            memberId={selectedMember.id}
+                            members={members}
                             showMember={false}
                             highlighted={highlightedPolicyId === p.id}
                             onClick={() =>

@@ -3,7 +3,8 @@ import {
   POLICY_STATUS_LABELS,
   POLICY_TYPE_LABELS,
 } from '../../data/policyLabels'
-import type { Policy, PolicyWithMember } from '../../types'
+import { getPolicyParties } from '../../data/policyDetails'
+import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
 import {
   CardItem,
@@ -23,7 +24,9 @@ import { MemberAvatar } from './MemberAvatar'
 export function PolicyListCard({
   policy,
   memberName,
+  memberId,
   avatarSeed,
+  members,
   showMember = true,
   highlighted = false,
   onClick,
@@ -32,19 +35,28 @@ export function PolicyListCard({
 }: {
   policy: Policy
   memberName?: string
+  memberId?: string
   avatarSeed?: string
+  members?: FamilyMember[]
   showMember?: boolean
   highlighted?: boolean
   onClick?: () => void
   id?: string
   className?: string
 }) {
+  const parties =
+    members && memberId
+      ? getPolicyParties(members, memberId)
+      : memberName
+        ? { proposer: memberName, insured: memberName }
+        : null
+
   const content = (
     <CardItemRow>
       <CardItemMain>
         {showMember && memberName && avatarSeed ? (
           <CardItemMeta>
-            <MemberAvatar name={memberName} seed={avatarSeed} size="sm" />
+            <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
             <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
           </CardItemMeta>
         ) : null}
@@ -57,9 +69,11 @@ export function PolicyListCard({
             {POLICY_TYPE_LABELS[policy.type]}
           </span>
         </CardItemHead>
-        <CardItemDetail>
-          受益人：{policy.beneficiary} · 到期 {policy.expiryDate}
-        </CardItemDetail>
+        {parties ? (
+          <CardItemDetail>
+            要保人 {parties.proposer} · 被保人 {parties.insured}
+          </CardItemDetail>
+        ) : null}
         <CardItemTags>
           <PolicySourceLabel source={policy.source} />
           {policy.status !== 'active' && POLICY_STATUS_BADGES[policy.status] && (
@@ -96,12 +110,14 @@ export function PolicyListCard({
 
 export function PolicyListCardFromItem({
   item,
+  members,
   showMember = true,
   highlighted = false,
   onSelect,
   className = '',
 }: {
   item: PolicyWithMember
+  members?: FamilyMember[]
   showMember?: boolean
   highlighted?: boolean
   onSelect: (item: PolicyWithMember) => void
@@ -111,7 +127,9 @@ export function PolicyListCardFromItem({
     <PolicyListCard
       policy={item.policy}
       memberName={item.memberName}
+      memberId={item.memberId}
       avatarSeed={item.avatarSeed}
+      members={members}
       showMember={showMember}
       highlighted={highlighted}
       onClick={() => onSelect(item)}

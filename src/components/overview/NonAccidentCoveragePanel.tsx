@@ -158,7 +158,10 @@ export function NonAccidentCoveragePanel({
                       return (
                         <CoverageListItem
                           key={item.id}
-                          item={item}
+                          item={{
+                            ...item,
+                            categoryLabel: item.categoryLabel,
+                          }}
                           member={member}
                           claim={claim}
                           formatAmount={(amount, isMonthly) =>
