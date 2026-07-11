@@ -96,6 +96,7 @@ export function ProtectionPage() {
     todos,
     systemTodos,
     persistedTodos,
+    dismissedRuleIds,
     familyEvents,
     documents,
     currentUserId,
@@ -438,9 +439,11 @@ export function ProtectionPage() {
             {members.map((member) => {
               const { total: memberTodoCount, hasUrgent } = countMemberReminders(
                 member.id,
+                members,
                 systemTodos,
                 persistedTodos,
                 familyEvents,
+                dismissedRuleIds,
               )
 
               return (

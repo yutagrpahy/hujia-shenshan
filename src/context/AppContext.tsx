@@ -72,6 +72,7 @@ interface AppContextValue {
   todos: TodoItem[]
   systemTodos: TodoItem[]
   persistedTodos: TodoItem[]
+  dismissedRuleIds: ReadonlySet<string>
   historyTodos: TodoItem[]
   notifications: AppNotification[]
   familyEvents: FamilyEvent[]
@@ -525,6 +526,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       todos,
       systemTodos,
       persistedTodos,
+      dismissedRuleIds,
       historyTodos,
       notifications,
       familyEvents,
@@ -570,6 +572,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       todos,
       systemTodos,
       persistedTodos,
+      dismissedRuleIds,
       historyTodos,
       notifications,
       familyEvents,

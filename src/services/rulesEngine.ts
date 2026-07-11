@@ -8,6 +8,7 @@ import { getPolicyStatusLabel } from '../data/policyLabels'
 import { calculateGapPercent, computeCoverageSummary } from '../utils/calculations'
 import type {
   AppNotification,
+  ClaimStatus,
   FamilyMember,
   Policy,
   ProtectionLifeProfile,
@@ -63,6 +64,69 @@ function findPolicyOwner(members: FamilyMember[], policyId: string) {
 function formatPolicyExpiry(expiryDate: string): string {
   if (expiryDate === '終身' || expiryDate === '未填寫') return expiryDate
   return expiryDate.replace(/-/g, '/')
+}
+
+function claimStatusRuleId(claimStatus: ClaimStatus, policyId: string): string {
+  const ruleKind =
+    claimStatus === 'pending_docs'
+      ? 'claim_docs'
+      : claimStatus === 'in_review'
+        ? 'claim_review'
+        : claimStatus === 'approved'
+          ? 'claim_payout'
+          : 'claim_rejected'
+  return `${ruleKind}:${policyId}`
+}
+
+function policyStatusRuleId(policy: Policy): string | null {
+  if (policy.status === 'expiring') {
+    return policy.autoRenew ? `auto_renewal:${policy.id}` : `renewal:${policy.id}`
+  }
+  if (policy.status === 'pending') return `pending:${policy.id}`
+  if (policy.status === 'expired') return `expired:${policy.id}`
+  return null
+}
+
+/** 成員保單申請／有效性與理賠狀態產生的系統提醒數（對齊 deriveSystemTodos） */
+export function countMemberPolicyClaimStatusReminders(
+  memberId: string,
+  members: FamilyMember[],
+  dismissedRuleIds: ReadonlySet<string>,
+): { count: number; hasUrgent: boolean } {
+  const member = members.find((entry) => entry.id === memberId)
+  if (!member) return { count: 0, hasUrgent: false }
+
+  const claims = buildFamilyClaims(members).filter((claim) => claim.memberId === memberId)
+  const claimByPolicyId = new Map(claims.map((claim) => [claim.policyId, claim]))
+
+  let count = 0
+  let hasUrgent = false
+
+  for (const policy of member.policies) {
+    const claim = claimByPolicyId.get(policy.id)
+
+    if (claim && CLAIM_TODO_STATUSES.includes(claim.claimStatus)) {
+      if (policy.status === 'pending') continue
+      const ruleId = claimStatusRuleId(claim.claimStatus, claim.policyId)
+      if (dismissedRuleIds.has(ruleId)) continue
+      count++
+      if (claim.claimStatus === 'pending_docs' || claim.claimStatus === 'rejected') {
+        hasUrgent = true
+      }
+      continue
+    }
+
+    const ruleId = policyStatusRuleId(policy)
+    if (!ruleId || dismissedRuleIds.has(ruleId)) continue
+    count++
+    if (policy.status === 'expired' || policy.status === 'pending') {
+      hasUrgent = true
+    } else if (policy.status === 'expiring' && !policy.autoRenew) {
+      hasUrgent = true
+    }
+  }
+
+  return { count, hasUrgent }
 }
 
 export function deriveSystemTodos(
@@ -163,15 +227,7 @@ export function deriveSystemTodos(
     )
     if (policy?.status === 'pending') continue
 
-    const ruleKind =
-      claim.claimStatus === 'pending_docs'
-        ? 'claim_docs'
-        : claim.claimStatus === 'in_review'
-          ? 'claim_review'
-          : claim.claimStatus === 'approved'
-            ? 'claim_payout'
-            : 'claim_rejected'
-    const ruleId = `${ruleKind}:${claim.policyId}`
+    const ruleId = claimStatusRuleId(claim.claimStatus, claim.policyId)
     if (dismissedRuleIds.has(ruleId)) continue
 
     const titleBuilder = CLAIM_TODO_TITLES[claim.claimStatus]
