@@ -235,6 +235,53 @@ export function CardItemRow({
   return <div className={`m3-card-item__row ${className}`.trim()}>{children}</div>
 }
 
+/** 三欄卡片列：內容 80% · 指標 15% · 箭頭 5% */
+export function CardItemTriRow({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`m3-card-item__row m3-card-item__row--tri ${className}`.trim()}>
+      {children}
+    </div>
+  )
+}
+
+export function CardItemTriMain({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return <div className={`m3-card-item__tri-main ${className}`.trim()}>{children}</div>
+}
+
+export function CardItemTriIndicator({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`m3-card-item__tri-indicator ${className}`.trim()}>{children}</div>
+  )
+}
+
+export function CardItemTriAction({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return <div className={`m3-card-item__tri-action ${className}`.trim()}>{children}</div>
+}
+
 export function CardItemMedia({
   children,
   className = '',

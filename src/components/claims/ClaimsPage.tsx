@@ -18,12 +18,14 @@ import {
   CardItem,
   CardItemChevron,
   CardItemDetail,
-  CardItemMain,
   CardItemMeta,
   CardItemMetaLabel,
-  CardItemRow,
   CardItemSubtitle,
   CardItemTitle,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
 } from '../common/CardLayout'
 import { ClaimProgressRing, claimRingTone } from '../common/ClaimProgressRing'
 import { MemberAvatar } from '../common/MemberAvatar'
@@ -66,15 +68,8 @@ function ClaimCard({
       className={`claim-card claim-card--${statusTone}`}
       onClick={() => onSelect(claim)}
     >
-      <CardItemRow>
-        <div className="m3-card-item__media">
-          <ClaimProgressRing
-            progress={claim.progress}
-            tone={ringTone}
-            label={`${claim.progress}%`}
-          />
-        </div>
-        <CardItemMain>
+      <CardItemTriRow>
+        <CardItemTriMain>
           <CardItemMeta>
             <MemberAvatar name={claim.memberName} seed={claim.avatarSeed} size="xs" />
             <CardItemMetaLabel>{claim.memberName}</CardItemMetaLabel>
@@ -94,9 +89,19 @@ function ClaimCard({
               理賠金額 {formatCurrency(claim.amount)}
             </CardItemDetail>
           ) : null}
-        </CardItemMain>
-        <CardItemChevron className="mt-1" />
-      </CardItemRow>
+        </CardItemTriMain>
+        <CardItemTriIndicator>
+          <ClaimProgressRing
+            progress={claim.progress}
+            tone={ringTone}
+            size={40}
+            label={`${claim.progress}%`}
+          />
+        </CardItemTriIndicator>
+        <CardItemTriAction>
+          <CardItemChevron />
+        </CardItemTriAction>
+      </CardItemTriRow>
     </CardItem>
   )
 }

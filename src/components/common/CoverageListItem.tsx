@@ -6,13 +6,14 @@ import {
   CardItem,
   CardItemChevron,
   CardItemDetail,
-  CardItemMain,
   CardItemMeta,
   CardItemMetaLabel,
-  CardItemMedia,
-  CardItemRow,
   CardItemSubtitle,
   CardItemTitle,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
 } from './CardLayout'
 import { MemberAvatar } from './MemberAvatar'
 
@@ -57,24 +58,10 @@ export function CoverageListItem({
   const formattedAmount = formatAmount(item.amount, item.isMonthly)
 
   const content = (
-    <CardItemRow>
-      <CardItemMedia>
-        {hasClaim ? (
-          <ClaimProgressRing
-            progress={claim.progress}
-            tone={claimRingTone(claim.claimStatus, claim.isError)}
-            size={44}
-            label={`${claim.progress}%`}
-          />
-        ) : (
-          <MemberAvatar name={memberName} seed={avatarSeed} size="sm" />
-        )}
-      </CardItemMedia>
-      <CardItemMain>
+    <CardItemTriRow>
+      <CardItemTriMain>
         <CardItemMeta>
-          {hasClaim ? (
-            <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
-          ) : null}
+          <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
           <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
           {hasClaim ? (
             <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
@@ -103,9 +90,23 @@ export function CoverageListItem({
         <CardItemDetail className={`${amountClassName} font-semibold text-xs mt-1`}>
           {amountLabel} {formattedAmount}
         </CardItemDetail>
-      </CardItemMain>
-      {isClickable ? <CardItemChevron className="mt-1" /> : null}
-    </CardItemRow>
+      </CardItemTriMain>
+
+      <CardItemTriIndicator>
+        {hasClaim ? (
+          <ClaimProgressRing
+            progress={claim.progress}
+            tone={claimRingTone(claim.claimStatus, claim.isError)}
+            size={40}
+            label={`${claim.progress}%`}
+          />
+        ) : null}
+      </CardItemTriIndicator>
+
+      <CardItemTriAction>
+        {isClickable ? <CardItemChevron /> : null}
+      </CardItemTriAction>
+    </CardItemTriRow>
   )
 
   if (!isClickable) {
