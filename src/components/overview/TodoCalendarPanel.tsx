@@ -14,7 +14,22 @@ import {
   WEEKDAY_LABELS,
   type CalendarViewMode,
 } from '../../utils/calendar'
+import {
+  CardItem,
+  CardItemChevron,
+  CardItemDetail,
+  CardItemMain,
+  CardItemRow,
+  CardItemSubtitle,
+  CardItemTitle,
+} from '../common/CardLayout'
 import { TodoDetailModal } from './TodoDetailModal'
+
+const URGENCY_STYLES = {
+  high: 'bg-red-50 text-red-600',
+  medium: 'bg-amber-50 text-amber-600',
+  low: 'bg-sand-100 text-gray-500',
+}
 
 const VIEW_MODES: { id: CalendarViewMode; label: string }[] = [
   { id: 'week', label: '週' },
@@ -231,23 +246,30 @@ export function TodoCalendarPanel({
           ) : (
             <div className="space-y-2">
               {selectedDayTodos.map((todo) => (
-                <button
+                <CardItem
                   key={todo.id}
-                  type="button"
+                  as="button"
+                  interactive
                   onClick={() => setSelectedTodo(todo)}
-                  className="w-full m3-card p-3 text-left flex items-start gap-2 hover:bg-sand-50 active:bg-sand-100 transition-colors"
                 >
-                  <span
-                    className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${URGENCY_DOT[todo.urgency]}`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{todo.title}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">
-                      {todo.memberName} · {URGENCY_LABELS[todo.urgency]}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300 shrink-0 mt-0.5" />
-                </button>
+                  <CardItemRow className="gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${URGENCY_DOT[todo.urgency]}`}
+                    />
+                    <CardItemMain>
+                      <CardItemTitle>{todo.title}</CardItemTitle>
+                      <CardItemSubtitle className="text-[10px] text-gray-400">
+                        {todo.memberName}
+                      </CardItemSubtitle>
+                      <CardItemDetail>
+                        <span className={`m3-chip ${URGENCY_STYLES[todo.urgency] ?? ''}`}>
+                          {URGENCY_LABELS[todo.urgency]}
+                        </span>
+                      </CardItemDetail>
+                    </CardItemMain>
+                    <CardItemChevron className="mt-0.5" />
+                  </CardItemRow>
+                </CardItem>
               ))}
             </div>
           )}

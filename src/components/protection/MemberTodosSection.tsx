@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react'
-import { ChevronRight, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import {
@@ -7,6 +7,7 @@ import {
   FREQUENCY_LABELS,
   URGENCY_LABELS,
 } from '../../data/mockData'
+import { TodoCompleteButton, TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
 import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
 import { TodoEditModal } from '../common/TodoEditModal'
@@ -207,78 +208,66 @@ export function MemberTodosSection({
         <div className="space-y-2">
           {items.map((item) =>
             item.kind === 'todo' ? (
-              <div
+              <TodoListCard
                 key={`todo-${item.data.id}`}
-                className="m3-card p-4 bg-sand-50/50 flex items-start gap-3"
-              >
-                <button
-                  type="button"
-                  onClick={() => setPendingCompleteTodo(item.data)}
-                  className="w-6 h-6 rounded-full border-2 border-teal-400 flex items-center justify-center shrink-0 mt-0.5 active:bg-teal-50"
-                  aria-label="標記完成"
-                />
-                <button
-                  type="button"
-                  onClick={() => setSelectedTodo(item.data)}
-                  className="flex-1 min-w-0 text-left"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold text-gray-700">{item.data.title}</p>
-                    <ChevronRight className="w-4 h-4 text-gray-300 shrink-0 mt-0.5" />
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-[10px] text-gray-400 mt-2">
-                    {item.data.dueDate && <span>📅 {item.data.dueDate}</span>}
+                title={item.data.title}
+                onClick={() => setSelectedTodo(item.data)}
+                leading={
+                  <TodoCompleteButton
+                    onClick={() => setPendingCompleteTodo(item.data)}
+                    label="標記完成"
+                  />
+                }
+                tags={
+                  <>
+                    {item.data.dueDate ? (
+                      <span className="text-[10px] text-gray-400">📅 {item.data.dueDate}</span>
+                    ) : null}
                     <span className={`m3-chip ${URGENCY_STYLES[item.data.urgency]}`}>
                       {URGENCY_LABELS[item.data.urgency]}
                     </span>
-                    <span className="m3-chip bg-white text-gray-500 border border-sand-200">
+                    <span className="m3-chip m3-chip--muted border border-sand-200 bg-white">
                       {SOURCE_LABELS[item.data.source]}
                     </span>
-                  </div>
-                </button>
-              </div>
+                  </>
+                }
+              />
             ) : (
-              <div
+              <TodoListCard
                 key={`event-${item.data.id}`}
-                className="m3-card p-4 bg-sand-50/50 flex items-start gap-3"
-              >
-                <button
-                  type="button"
-                  onClick={() => setPendingCompleteEvent(item.data)}
-                  className="w-6 h-6 rounded-full border-2 border-teal-400 flex items-center justify-center shrink-0 mt-0.5 active:bg-teal-50"
-                  aria-label="標記完成"
-                />
-                <button
-                  type="button"
-                  onClick={() => setSelectedEvent(item.data)}
-                  className="flex-1 min-w-0 text-left"
-                >
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <p className="text-sm font-semibold text-gray-700">{item.data.name}</p>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {item.data.type && (
-                        <span className="m3-chip bg-teal-50 text-teal-600">
-                          {EVENT_TYPE_LABELS[item.data.type]}
-                        </span>
-                      )}
-                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                    </div>
-                  </div>
-                  {item.data.description && (
-                    <p className="text-xs text-gray-500 mb-2 line-clamp-2">{item.data.description}</p>
-                  )}
-                  <div className="flex flex-wrap gap-2 text-[10px] text-gray-400">
-                    {item.data.date && <span>📅 {item.data.date}</span>}
-                    <span>🔄 {FREQUENCY_LABELS[item.data.frequency]}</span>
-                    {item.data.fundsNeeded > 0 && (
-                      <span>💰 {formatCurrency(item.data.fundsNeeded)}</span>
-                    )}
+                title={item.data.name}
+                detail={item.data.description}
+                onClick={() => setSelectedEvent(item.data)}
+                leading={
+                  <TodoCompleteButton
+                    onClick={() => setPendingCompleteEvent(item.data)}
+                    label="標記完成"
+                  />
+                }
+                tags={
+                  <>
+                    {item.data.type ? (
+                      <span className="m3-chip bg-teal-50 text-teal-600">
+                        {EVENT_TYPE_LABELS[item.data.type]}
+                      </span>
+                    ) : null}
+                    {item.data.date ? (
+                      <span className="text-[10px] text-gray-400">📅 {item.data.date}</span>
+                    ) : null}
+                    <span className="text-[10px] text-gray-400">
+                      🔄 {FREQUENCY_LABELS[item.data.frequency]}
+                    </span>
+                    {item.data.fundsNeeded > 0 ? (
+                      <span className="text-[10px] text-gray-400">
+                        💰 {formatCurrency(item.data.fundsNeeded)}
+                      </span>
+                    ) : null}
                     <span className={`m3-chip ${URGENCY_STYLES[item.data.urgency]}`}>
                       {URGENCY_LABELS[item.data.urgency]}
                     </span>
-                  </div>
-                </button>
-              </div>
+                  </>
+                }
+              />
             ),
           )}
         </div>

@@ -1,18 +1,16 @@
 import { Modal } from '@heroui/react'
-import { AlertCircle, ChevronDown, ChevronRight, ChevronUp, ShieldCheck } from 'lucide-react'
+import { ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { getClaimByPolicyId } from '../../data/claims'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type {
-  ClaimRecord,
   FamilyMember,
   NonAccidentCoverageGroup,
-  NonAccidentCoverageItem,
   PolicyWithMember,
 } from '../../types'
 import { formatCurrency, formatWan, groupNonAccidentCoverage } from '../../utils/calculations'
-import { ClaimProgressRing, claimRingTone } from '../common/ClaimProgressRing'
-import { MemberAvatar } from '../common/MemberAvatar'
+import { CoverageListItem } from '../common/CoverageListItem'
+import { GroupSummaryCard } from '../common/GroupSummaryCard'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
 
 const VISIBLE_LIMIT = 5
@@ -27,99 +25,6 @@ function formatCoverageAmount(amount: number, isMonthly: boolean): string {
 
 function findMemberByPolicyId(members: FamilyMember[], policyId: string) {
   return members.find((member) => member.policies.some((policy) => policy.id === policyId))
-}
-
-function CoverageItemRow({
-  item,
-  member,
-  claim,
-  onOpenPolicy,
-}: {
-  item: NonAccidentCoverageItem
-  member?: FamilyMember
-  claim?: ClaimRecord
-  onOpenPolicy?: (item: PolicyWithMember) => void
-}) {
-  const hasClaim = !!claim
-  const policy = member?.policies.find((entry) => entry.id === item.id)
-  const isClickable = !!onOpenPolicy && !!member && !!policy
-
-  const content = (
-    <>
-      <div className="relative shrink-0">
-        {hasClaim ? (
-          <ClaimProgressRing
-            progress={claim.progress}
-            tone={claimRingTone(claim.claimStatus, claim.isError)}
-            size={44}
-            label={`${claim.progress}%`}
-          />
-        ) : member ? (
-          <MemberAvatar name={member.name} seed={member.avatarSeed} size="sm" />
-        ) : (
-          <div className="m3-icon-wrap m3-icon-wrap--sm shrink-0" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-sm font-medium text-gray-800">{item.memberName}</p>
-          {hasClaim && (
-            <span
-              className={`m3-chip shrink-0 ${
-                claim.isError
-                  ? 'bg-red-50 text-red-600'
-                  : claim.claimStatus === 'in_review'
-                    ? 'bg-teal-50 text-teal-600'
-                    : 'bg-amber-50 text-amber-600'
-              }`}
-            >
-              {claim.isError && <AlertCircle className="w-3 h-3 inline mr-0.5 -mt-0.5" />}
-              {claim.statusLabel}
-            </span>
-          )}
-        </div>
-        <p className="text-xs text-gray-500 mt-0.5">{item.insurer}</p>
-        <p className="text-[10px] text-gray-400 truncate">{item.policyName}</p>
-        {hasClaim && (
-          <p className="text-[10px] text-gray-500 mt-1 leading-relaxed line-clamp-2">
-            {claim.statusSummary}
-          </p>
-        )}
-      </div>
-      <div className="text-right shrink-0 flex flex-col items-end gap-1">
-        <p className="text-sm font-semibold text-teal-700">
-          {formatCoverageAmount(item.amount, item.isMonthly)}
-        </p>
-        {isClickable && (
-          <p className="text-[10px] text-teal-600">
-            {hasClaim && claim.isError ? '查看保單' : hasClaim ? '理賠詳情' : '查看保單'}
-          </p>
-        )}
-        {isClickable && <ChevronRight className="w-4 h-4 text-gray-300" />}
-      </div>
-    </>
-  )
-
-  if (!isClickable) {
-    return <div className="m3-card p-3 flex items-start gap-3">{content}</div>
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() =>
-        onOpenPolicy({
-          policy: policy!,
-          memberId: member.id,
-          memberName: member.name,
-          avatarSeed: member.avatarSeed,
-        })
-      }
-      className="m3-card p-3 flex items-start gap-3 w-full text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60"
-    >
-      {content}
-    </button>
-  )
 }
 
 export function NonAccidentCoveragePanel({
@@ -192,26 +97,16 @@ export function NonAccidentCoveragePanel({
                 return claim && ['in_review', 'approved', 'pending_docs'].includes(claim.claimStatus)
               })
               return (
-                <button
+                <GroupSummaryCard
                   key={group.categoryType}
-                  type="button"
+                  title={group.categoryLabel}
+                  subtitle={`${group.memberNames.length} 位成員 · ${group.items.length} 張保單${
+                    groupClaims.length > 0 ? ` · ${groupClaims.length} 件理賠進行中` : ''
+                  }`}
+                  amount={formatCoverageAmount(group.totalAmount, group.isMonthly)}
+                  variant="nested"
                   onClick={() => setSelectedGroup(group)}
-                  className="m3-card p-3 bg-white/70 w-full flex items-center justify-between gap-3 active:bg-sand-50 text-left transition-colors hover:bg-sand-50/80"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-800">{group.categoryLabel}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">
-                      {group.memberNames.length} 位成員 · {group.items.length} 張保單
-                      {groupClaims.length > 0 && ` · ${groupClaims.length} 件理賠進行中`}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <p className="text-sm font-bold text-teal-700">
-                      {formatCoverageAmount(group.totalAmount, group.isMonthly)}
-                    </p>
-                    <ChevronRight className="w-4 h-4 text-gray-300" />
-                  </div>
-                </button>
+                />
               )
             })}
             {hasMore && (
@@ -259,11 +154,14 @@ export function NonAccidentCoveragePanel({
                       const member = findMemberByPolicyId(members, item.id)
                       const claim = getClaimByPolicyId(members, item.id)
                       return (
-                        <CoverageItemRow
+                        <CoverageListItem
                           key={item.id}
                           item={item}
                           member={member}
                           claim={claim}
+                          formatAmount={(amount, isMonthly) =>
+                            formatCoverageAmount(amount, isMonthly ?? false)
+                          }
                           onOpenPolicy={setSelectedPolicy}
                         />
                       )

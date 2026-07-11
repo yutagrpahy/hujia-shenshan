@@ -22,6 +22,15 @@ import {
   HealthProfileModal,
   type HealthProfileViewScope,
 } from '../common/HealthProfilePanel'
+import {
+  CardItem,
+  CardItemDetail,
+  CardItemMain,
+  CardItemMetaLabel,
+  CardItemRow,
+  CardItemTitle,
+  CardSectionTitle,
+} from '../common/CardLayout'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
 import type { CoverageGap } from '../../types'
@@ -110,9 +119,7 @@ export function OverviewPage() {
       )}
 
       <section className="w-full max-w-full min-w-0">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-          家庭保障總覽
-        </h3>
+        <CardSectionTitle>家庭保障總覽</CardSectionTitle>
 
         <div className="m3-card p-4 md:p-6 w-full max-w-full min-w-0">
         <div className="flex items-center gap-4 mb-4">
@@ -166,9 +173,7 @@ export function OverviewPage() {
       </section>
 
       <section className="w-full max-w-full min-w-0">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-          保障缺口
-        </h3>
+        <CardSectionTitle>保障缺口</CardSectionTitle>
         <div className="gap-cards-list">
           {sortedGaps.map((gap) => {
             const pct =
@@ -318,24 +323,26 @@ export function OverviewPage() {
       />
 
       <section className="overview-grid--full">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-          推薦內容
-        </h3>
+        <CardSectionTitle>推薦內容</CardSectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 education-grid">
           {education.map((item) => (
-            <div key={item.id} className="m3-card p-4 flex items-center gap-3">
-              <div className="m3-icon-wrap m3-icon-wrap--md shrink-0">
-                <BookOpen className="w-5 h-5 text-teal-500" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-teal-600 font-medium">{item.stage}</p>
-                <p className="text-sm font-medium text-gray-800 truncate">{item.title}</p>
-                <p className="text-[10px] text-gray-400">{item.duration}</p>
-              </div>
-              <Button isIconOnly variant="ghost" size="sm" className="text-teal-600">
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
+            <CardItem key={item.id} className="m3-card-item--lg">
+              <CardItemRow className="items-center">
+                <div className="m3-card-item__media">
+                  <div className="m3-icon-wrap m3-icon-wrap--md">
+                    <BookOpen className="w-5 h-5 text-teal-500" />
+                  </div>
+                </div>
+                <CardItemMain>
+                  <CardItemMetaLabel className="text-[10px]">{item.stage}</CardItemMetaLabel>
+                  <CardItemTitle>{item.title}</CardItemTitle>
+                  <CardItemDetail>{item.duration}</CardItemDetail>
+                </CardItemMain>
+                <Button isIconOnly variant="ghost" size="sm" className="text-teal-600 shrink-0">
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </CardItemRow>
+            </CardItem>
           ))}
         </div>
       </section>

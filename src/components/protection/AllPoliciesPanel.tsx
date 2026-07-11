@@ -1,78 +1,9 @@
-import { ChevronRight } from 'lucide-react'
 import { useMemo } from 'react'
-import { MemberAvatar } from '../common/MemberAvatar'
-import { PolicySourceLabel } from '../common/PolicySourceLabel'
 import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
 import { groupPoliciesByGapCategory } from '../../utils/calculations'
-import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
-
-const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
-  life: '壽險',
-  health: '醫療',
-  accident: '意外',
-  longterm: '長照',
-  savings: '年金',
-  disability: '失能',
-  critical: '重大疾病',
-}
-
-const STATUS_BADGES: Partial<Record<Policy['status'], string>> = {
-  expiring: 'bg-amber-50 text-amber-600',
-  pending: 'bg-red-50 text-red-600',
-  expired: 'bg-gray-100 text-gray-500',
-}
-
-const STATUS_LABELS: Partial<Record<Policy['status'], string>> = {
-  expiring: '即將到期',
-  pending: '待補件',
-  expired: '已到期',
-}
-
-function PolicyCard({
-  item,
-  onSelect,
-}: {
-  item: PolicyWithMember
-  onSelect: (item: PolicyWithMember) => void
-}) {
-  const { policy, memberName, avatarSeed } = item
-
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(item)}
-      className="m3-card p-3 mb-2 w-full max-w-full min-w-0 text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60"
-    >
-      <div className="flex items-center gap-2 mb-2 min-w-0">
-        <MemberAvatar name={memberName} seed={avatarSeed} size="sm" />
-        <span className="text-xs font-medium text-teal-700 truncate">{memberName}</span>
-      </div>
-      <div className="flex items-center justify-between gap-2 min-w-0">
-        <div className="min-w-0 flex-1">
-          <span className="text-sm font-medium block truncate">{policy.name}</span>
-          <span className="text-[10px] text-gray-400">{policy.insurer}</span>
-        </div>
-        <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
-          {POLICY_TYPE_LABELS[policy.type]}
-        </span>
-      </div>
-      <p className="text-xs text-gray-400 mt-1">
-        受益人：{policy.beneficiary} · 到期 {policy.expiryDate}
-      </p>
-      <div className="flex flex-wrap items-center gap-2 mt-1.5">
-        <PolicySourceLabel source={policy.source} />
-        {policy.status !== 'active' && STATUS_BADGES[policy.status] && (
-          <span className={`m3-chip ${STATUS_BADGES[policy.status]}`}>
-            {STATUS_LABELS[policy.status]}
-          </span>
-        )}
-      </div>
-      <div className="flex justify-end mt-1">
-        <ChevronRight className="w-4 h-4 text-gray-300" />
-      </div>
-    </button>
-  )
-}
+import type { FamilyMember, PolicyWithMember } from '../../types'
+import { CardEmptyState, CardSectionTitle } from '../common/CardLayout'
+import { PolicyListCardFromItem } from '../common/PolicyListCard'
 
 export function AllPoliciesPanel({
   members,
@@ -89,12 +20,10 @@ export function AllPoliciesPanel({
 
   if (totalPolicies === 0) {
     return (
-      <div className="m3-card p-8 text-center">
-        <p className="text-sm text-gray-500">全家尚無保單資料</p>
-        <p className="text-xs text-gray-400 mt-1">
-          {`可至各成員詳情自行登載，或等待${UNION_INFO_SYSTEM_NAME}同步`}
-        </p>
-      </div>
+      <CardEmptyState
+        title="全家尚無保單資料"
+        description={`可至各成員詳情自行登載，或等待${UNION_INFO_SYSTEM_NAME}同步`}
+      />
     )
   }
 
@@ -102,17 +31,14 @@ export function AllPoliciesPanel({
     <div className="space-y-4 w-full max-w-full min-w-0">
       {groups.map((group) => (
         <section key={group.gapKey} className="w-full max-w-full min-w-0">
-          <div className="flex items-center justify-between mb-2 px-1">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              {group.category}
-            </h3>
-            <span className="text-[10px] text-gray-400">{group.policies.length} 張</span>
-          </div>
+          <CardSectionTitle count={`${group.policies.length} 張`}>
+            {group.category}
+          </CardSectionTitle>
           {group.policies.length === 0 ? (
-            <p className="text-sm text-gray-400 m3-card p-4">此類別尚無保單</p>
+            <p className="text-sm text-gray-400 m3-card m3-card-item">此類別尚無保單</p>
           ) : (
             group.policies.map((item) => (
-              <PolicyCard
+              <PolicyListCardFromItem
                 key={`${item.memberId}-${item.policy.id}`}
                 item={item}
                 onSelect={onSelectPolicy}

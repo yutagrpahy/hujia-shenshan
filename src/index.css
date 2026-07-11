@@ -76,6 +76,9 @@ body {
   --ds-radius-icon-btn: 10px;
   --ds-radius-panel: 16px;
   --ds-logo-inset: 0px;
+  --ds-card-p: 12px;
+  --ds-card-p-lg: 16px;
+  --ds-card-gap: 12px;
 }
 
 /* ── 品牌標準字與標語 ── */
@@ -682,6 +685,147 @@ body {
   background: linear-gradient(135deg, var(--color-primary-container), #e8f5f3);
   border-radius: 20px;
   border: none;
+}
+
+/* ── 卡片內容佈局（統一閱讀順序）── */
+.m3-card-item {
+  padding: var(--ds-card-p);
+  width: 100%;
+  text-align: left;
+}
+
+.m3-card-item--clickable {
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.2s;
+}
+
+.m3-card-item--clickable:hover {
+  background: rgba(250, 249, 247, 0.8);
+}
+
+.m3-card-item--clickable:active {
+  background: rgba(232, 228, 221, 0.6);
+}
+
+.m3-card-item__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-card-gap);
+}
+
+.m3-card-item__media {
+  flex-shrink: 0;
+}
+
+.m3-card-item__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.m3-card-item__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.m3-card-item__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.m3-card-item__meta-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-teal-500);
+  line-height: 1.35;
+}
+
+.m3-card-item__title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-on-surface);
+  line-height: 1.35;
+}
+
+.m3-card-item__subtitle {
+  font-size: 0.75rem;
+  color: var(--color-on-surface-variant);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.m3-card-item__detail {
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.m3-card-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.m3-card-item__aside {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+}
+
+.m3-card-item__amount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-teal-500);
+  line-height: 1.35;
+}
+
+.m3-card-item__action {
+  font-size: 10px;
+  color: var(--color-teal-500);
+  line-height: 1.35;
+}
+
+.m3-card-item__chevron {
+  width: 16px;
+  height: 16px;
+  color: #d1d5db;
+  flex-shrink: 0;
+}
+
+.m3-card-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  padding: 0 4px;
+}
+
+.m3-card-section-title--with-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.m3-card-empty {
+  padding: 2rem;
+  text-align: center;
+}
+
+.m3-card-item--lg {
+  padding: var(--ds-card-p-lg);
 }
 
 /* ── 家庭保障總覽：壽險／醫療入口 ── */

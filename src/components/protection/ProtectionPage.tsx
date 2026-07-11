@@ -1,7 +1,6 @@
 import { Button, Modal } from '@heroui/react'
 import {
   ChevronLeft,
-  ChevronRight,
   Lock,
   PenLine,
   Plus,
@@ -15,10 +14,21 @@ import {
 } from '../../data/mockData'
 import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
+import {
+  CardItem,
+  CardItemChevron,
+  CardItemMain,
+  CardItemRow,
+  CardItemSubtitle,
+  CardItemTags,
+  CardItemTitle,
+} from '../common/CardLayout'
 import { DocumentVault } from '../common/DocumentVault'
 import { EventFormModal } from '../common/EventFormModal'
 import { MemberAvatar } from '../common/MemberAvatar'
-import { PolicySourceLabel, PolicySourceLegend } from '../common/PolicySourceLabel'
+import { PolicyListCard } from '../common/PolicyListCard'
+import { PolicySourceLegend } from '../common/PolicySourceLabel'
+import { POLICY_TYPE_LABELS } from '../../data/policyLabels'
 import { SuccessBanner } from '../common/StateViews'
 import {
   countMemberPolicies,
@@ -37,27 +47,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 
-const POLICY_STATUS_BADGES: Partial<Record<Policy['status'], string>> = {
-  expiring: 'bg-amber-50 text-amber-600',
-  pending: 'bg-red-50 text-red-600',
-  expired: 'bg-gray-100 text-gray-500',
-}
 
-const POLICY_STATUS_LABELS: Partial<Record<Policy['status'], string>> = {
-  expiring: '即將到期',
-  pending: '待補件',
-  expired: '已到期',
-}
-
-const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
-  life: '壽險',
-  health: '醫療',
-  accident: '意外',
-  longterm: '長照',
-  savings: '年金',
-  disability: '失能',
-  critical: '重大疾病',
-}
 
 type ProtectionSubTab = 'members' | 'policies'
 
@@ -336,14 +326,14 @@ export function ProtectionPage() {
                 id={`member-gap-section-${group.gapKey}`}
                 className="mb-4 scroll-mt-28"
               >
-                <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-0.5">
-                  {group.category}
-                </h5>
+                <p className="m3-card-section-title mb-2 px-0.5">{group.category}</p>
                 {group.policies.map(({ policy: p }) => (
-                  <button
+                  <PolicyListCard
                     key={p.id}
                     id={`member-policy-${p.id}`}
-                    type="button"
+                    policy={p}
+                    showMember={false}
+                    highlighted={highlightedPolicyId === p.id}
                     onClick={() =>
                       setSelectedPolicy({
                         policy: p,
@@ -352,32 +342,7 @@ export function ProtectionPage() {
                         avatarSeed: selectedMember.avatarSeed,
                       })
                     }
-                    className={`m3-card p-3 mb-2 w-full text-left transition-colors hover:bg-sand-50/80 active:bg-sand-100/60 scroll-mt-28 ${highlightedPolicyId === p.id ? 'member-policy-card--highlight' : ''}`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium block truncate">{p.name}</span>
-                        <span className="text-[10px] text-gray-400">{p.insurer}</span>
-                      </div>
-                      <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
-                        {POLICY_TYPE_LABELS[p.type]}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      受益人：{p.beneficiary} · 到期 {p.expiryDate}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                      <PolicySourceLabel source={p.source} />
-                      {p.status !== 'active' && POLICY_STATUS_BADGES[p.status] && (
-                        <span className={`m3-chip ${POLICY_STATUS_BADGES[p.status]}`}>
-                          {POLICY_STATUS_LABELS[p.status]}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex justify-end mt-1">
-                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                    </div>
-                  </button>
+                  />
                 ))}
               </div>
                 ))
@@ -465,38 +430,46 @@ export function ProtectionPage() {
               ).length
 
               return (
-                <button
+                <CardItem
                   key={member.id}
+                  as="button"
+                  interactive
+                  className="m3-card-item--lg active:bg-sand-50"
                   onClick={() => setSelectedMemberId(member.id)}
-                  className="m3-card p-4 w-full flex items-center gap-3 active:bg-sand-50"
                 >
-                  <MemberAvatar
-                    name={member.name}
-                    seed={member.avatarSeed}
-                    index={members.indexOf(member)}
-                  />
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm font-semibold">{member.name}</p>
-                    <p className="text-xs text-gray-400">
-                      {member.age} 歲 · {ROLE_LABELS[member.role]} · {member.policies.length} 張保單
-                    </p>
-                    {memberTodoCount > 0 && (
-                      <span
-                        className={`inline-flex mt-1.5 m3-chip ${
-                          urgentTodoCount > 0
-                            ? 'bg-red-50 text-red-600'
-                            : 'bg-amber-50 text-amber-600'
-                        }`}
-                      >
-                        {memberTodoCount} 項待辦
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Shield className="w-4 h-4 text-teal-400" />
-                    <ChevronRight className="w-4 h-4 text-gray-300" />
-                  </div>
-                </button>
+                  <CardItemRow className="items-center">
+                    <div className="m3-card-item__media">
+                      <MemberAvatar
+                        name={member.name}
+                        seed={member.avatarSeed}
+                        index={members.indexOf(member)}
+                      />
+                    </div>
+                    <CardItemMain>
+                      <CardItemTitle className="font-semibold">{member.name}</CardItemTitle>
+                      <CardItemSubtitle>
+                        {member.age} 歲 · {ROLE_LABELS[member.role]} · {member.policies.length} 張保單
+                      </CardItemSubtitle>
+                      {memberTodoCount > 0 ? (
+                        <CardItemTags>
+                          <span
+                            className={`m3-chip ${
+                              urgentTodoCount > 0
+                                ? 'bg-red-50 text-red-600'
+                                : 'bg-amber-50 text-amber-600'
+                            }`}
+                          >
+                            {memberTodoCount} 項待辦
+                          </span>
+                        </CardItemTags>
+                      ) : null}
+                    </CardItemMain>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Shield className="w-4 h-4 text-teal-400" />
+                      <CardItemChevron />
+                    </div>
+                  </CardItemRow>
+                </CardItem>
               )
             })}
             <Button

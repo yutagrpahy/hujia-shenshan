@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { ChevronRight } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import {
@@ -13,6 +12,17 @@ import {
 } from '../../data/claims'
 import type { ClaimRecord, PolicyWithMember } from '../../types'
 import { formatCurrency } from '../../utils/calculations'
+import {
+  CardItem,
+  CardItemChevron,
+  CardItemDetail,
+  CardItemMain,
+  CardItemMeta,
+  CardItemMetaLabel,
+  CardItemRow,
+  CardItemSubtitle,
+  CardItemTitle,
+} from '../common/CardLayout'
 import { ClaimProgressRing, claimRingTone } from '../common/ClaimProgressRing'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
@@ -48,39 +58,44 @@ function ClaimCard({
   const statusTone = CLAIM_STATUS_GROUP[claim.claimStatus].tone
 
   return (
-    <button
-      type="button"
+    <CardItem
+      as="button"
+      interactive
+      className={`claim-card claim-card--${statusTone}`}
       onClick={() => onSelect(claim)}
-      className={`claim-card claim-card--${statusTone} m3-card p-3.5 w-full text-left flex items-start gap-3 transition-colors hover:bg-sand-50/80 active:bg-sand-100/60`}
     >
-      <ClaimProgressRing
-        progress={claim.progress}
-        tone={ringTone}
-        label={`${claim.progress}%`}
-      />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <MemberAvatar name={claim.memberName} seed={claim.avatarSeed} size="xs" />
-          <span className="text-xs font-medium text-teal-700 truncate">{claim.memberName}</span>
-          <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
-            {claim.statusLabel}
-          </span>
+      <CardItemRow>
+        <div className="m3-card-item__media">
+          <ClaimProgressRing
+            progress={claim.progress}
+            tone={ringTone}
+            label={`${claim.progress}%`}
+          />
         </div>
-        <p className="text-sm font-medium text-gray-800 truncate">{claim.policyName}</p>
-        <p className="text-[10px] text-gray-400 mt-0.5">
-          {claim.eventLabel} · {claim.insurer}
-        </p>
-        <p className="text-xs text-gray-500 mt-1.5 leading-relaxed line-clamp-2">
-          {claim.statusSummary}
-        </p>
-        {claim.amount ? (
-          <p className="text-xs font-semibold text-teal-700 mt-1">
-            理賠金額 {formatCurrency(claim.amount)}
-          </p>
-        ) : null}
-      </div>
-      <ChevronRight className="w-4 h-4 text-gray-300 shrink-0 mt-1" />
-    </button>
+        <CardItemMain>
+          <CardItemMeta>
+            <MemberAvatar name={claim.memberName} seed={claim.avatarSeed} size="xs" />
+            <CardItemMetaLabel>{claim.memberName}</CardItemMetaLabel>
+            <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
+              {claim.statusLabel}
+            </span>
+          </CardItemMeta>
+          <CardItemTitle>{claim.policyName}</CardItemTitle>
+          <CardItemSubtitle>
+            {claim.eventLabel} · {claim.insurer}
+          </CardItemSubtitle>
+          <CardItemDetail className="text-gray-500 line-clamp-2">
+            {claim.statusSummary}
+          </CardItemDetail>
+          {claim.amount ? (
+            <CardItemDetail className="text-teal-700 font-semibold text-xs mt-1">
+              理賠金額 {formatCurrency(claim.amount)}
+            </CardItemDetail>
+          ) : null}
+        </CardItemMain>
+        <CardItemChevron className="mt-1" />
+      </CardItemRow>
+    </CardItem>
   )
 }
 
