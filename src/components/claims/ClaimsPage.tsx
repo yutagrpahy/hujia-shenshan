@@ -132,9 +132,9 @@ export function ClaimsPage() {
   }
 
   const tabEmptyMessage: Record<ClaimTab, string> = {
-    pending: '目前沒有待處理的理賠或保單作業',
-    in_progress: '目前沒有進行中的理賠案件',
-    completed: '目前沒有已完成的理賠給付紀錄',
+    pending: '目前沒有需要補件的理賠案件',
+    in_progress: '目前沒有審核中或待給付的理賠案件',
+    completed: '目前沒有已結案的理賠紀錄',
   }
 
   return (
@@ -152,7 +152,7 @@ export function ClaimsPage() {
 
       {claims.length === 0 ? (
         <div className="m3-card p-8 text-center">
-          <p className="text-sm text-gray-500">目前沒有理賠或保單作業項目</p>
+          <p className="text-sm text-gray-500">目前沒有任何理賠案件</p>
         </div>
       ) : tabClaims.length === 0 ? (
         <div className="m3-card p-8 text-center">

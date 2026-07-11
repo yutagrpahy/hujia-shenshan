@@ -5,7 +5,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { useMemo } from 'react'
-import { buildFamilyClaims } from '../../data/claims'
+import { buildFamilyClaims, countClaimActionItems } from '../../data/claims'
 import { useEffect, useRef } from 'react'
 import { useApp } from '../../context/AppContext'
 import { useCollapsingHeader } from '../../hooks/useCollapsingHeader'
@@ -138,7 +138,7 @@ export function AppShell({ children }: AppShellProps) {
   const hidePageTitle = currentTab === 'protection' && selectedMemberId !== null
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const claimActionCount = useMemo(
-    () => buildFamilyClaims(members).filter((claim) => claim.isError).length,
+    () => countClaimActionItems(buildFamilyClaims(members)),
     [members],
   )
   const currentUser = members.find((m) => m.id === currentUserId)

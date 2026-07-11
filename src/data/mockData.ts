@@ -199,6 +199,7 @@ export const initialMembers: FamilyMember[] = [
         status: 'active',
         source: 'union',
       },
+      // DEMO: 理賠待補件情境（claims.ts p11）— 結案後從 CLAIM_BY_POLICY 移除即可
       {
         id: 'p11',
         name: '實支實付醫療險',
@@ -257,7 +258,6 @@ export const initialMembers: FamilyMember[] = [
         status: 'active',
         source: 'union',
       },
-      // DEMO: 理賠完成後（保單有效）— 復原待補件時改回 status: 'pending'
       {
         id: 'p7',
         name: '新實支實付醫療險',

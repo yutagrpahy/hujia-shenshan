@@ -19,8 +19,40 @@ interface ClaimTemplate {
   updatedAt: string
 }
 
+/**
+ * 僅收錄「已出險且保單仍有效」的理賠案件。
+ * 保單到期、續保、核保待補件等行政事項由待辦／通知處理，不進入理賠頁。
+ */
 const CLAIM_BY_POLICY: Record<string, ClaimTemplate> = {
-  // DEMO: 王雅婷 p7 理賠完成後 — 復原待補件時改回 pending_docs / progress 42
+  // 待處理：王美玲住院醫療理賠待補件
+  p11: {
+    claimStatus: 'pending_docs',
+    progress: 38,
+    statusLabel: '待補件',
+    statusSummary:
+      '住院醫療理賠已受理，尚需補充診斷證明書與住院費用明細，請於 14 天內完成補件。',
+    isError: true,
+    updatedAt: '2026-07-09',
+  },
+  // 進行中：王美玲長照給付審核
+  p3: {
+    claimStatus: 'in_review',
+    progress: 55,
+    statusLabel: '申請理賠中',
+    statusSummary: '長照給付申請已受理，照護機構評估報告審核中，預估 10 個工作天內通知結果。',
+    isError: false,
+    updatedAt: '2026-07-06',
+  },
+  // 進行中：王建國意外理賠核准待給付
+  p8: {
+    claimStatus: 'approved',
+    progress: 88,
+    statusLabel: '核准待給付',
+    statusSummary: '意外理賠已核准 NT$ 420,000，預計 5 個工作天內匯入指定帳戶。',
+    isError: false,
+    updatedAt: '2026-07-07',
+  },
+  // 已完成：王雅婷醫療理賠已給付
   p7: {
     claimStatus: 'paid',
     progress: 100,
@@ -29,63 +61,24 @@ const CLAIM_BY_POLICY: Record<string, ClaimTemplate> = {
     isError: false,
     updatedAt: '2026-07-12',
   },
-  p1: {
-    claimStatus: 'in_review',
-    progress: 68,
-    statusLabel: '申請理賠中',
-    statusSummary: '身故理賠案件已受理，目前進行保單與受益人資料核對。',
-    isError: false,
-    updatedAt: '2026-07-08',
-  },
-  p3: {
-    claimStatus: 'in_review',
-    progress: 55,
-    statusLabel: '申請理賠中',
-    statusSummary: '長照給付申請已受理，照護機構評估報告審核中。',
-    isError: false,
-    updatedAt: '2026-07-06',
-  },
-  p8: {
-    claimStatus: 'approved',
-    progress: 88,
-    statusLabel: '核准待給付',
-    statusSummary: '意外理賠已核准，預計 5 個工作天內匯入指定帳戶。',
-    isError: false,
-    updatedAt: '2026-07-07',
-  },
+  // 已完成：王雅婷意外理賠（歷史結案）
   p4: {
     claimStatus: 'paid',
     progress: 100,
     statusLabel: '已給付',
-    statusSummary: '理賠款項已匯入，請留意帳戶入帳通知。',
+    statusSummary: '意外醫療理賠款項 NT$ 86,500 已於 2026/06/15 匯入，本案結案。',
     isError: false,
     updatedAt: '2026-06-15',
   },
-}
-
-const POLICY_STATUS_FALLBACK: Partial<
-  Record<Policy['status'], Omit<ClaimTemplate, 'updatedAt'> & { updatedAt?: string }>
-> = {
-  pending: {
-    claimStatus: 'pending_docs',
-    progress: 40,
-    statusLabel: '待補件',
-    statusSummary: '理賠審核需補充文件，請儘快聯繫業務員確認補件清單。',
-    isError: true,
-  },
-  expiring: {
-    claimStatus: 'renewal',
-    progress: 75,
-    statusLabel: '續保提醒',
-    statusSummary: '保單即將到期，請安排續保以避免保障空窗。',
-    isError: true,
-  },
-  expired: {
+  // 已完成：王小美門診理賠駁回（保單仍有效，屬理賠結案而非保單到期）
+  p18: {
     claimStatus: 'rejected',
     progress: 100,
-    statusLabel: '已到期',
-    statusSummary: '無法受理新理賠，可洽業務員評估重新投保。',
-    isError: true,
+    statusLabel: '理賠駁回',
+    statusSummary:
+      '門診手術費用不在保單給付範圍內，保險公司已寄發駁回函。如有疑義可於 30 日內提出申覆。',
+    isError: false,
+    updatedAt: '2026-06-20',
   },
 }
 
@@ -100,10 +93,9 @@ export const CLAIM_STATUS_LABELS: Record<ClaimStatus, string> = {
 
 export const CLAIM_STATUS_ORDER: ClaimStatus[] = [
   'pending_docs',
-  'rejected',
-  'renewal',
   'in_review',
   'approved',
+  'rejected',
   'paid',
 ]
 
@@ -112,7 +104,7 @@ export const CLAIM_STATUS_GROUP: Record<
   { title: string; tone: 'danger' | 'warning' | 'info' | 'success' }
 > = {
   pending_docs: { title: '待補件 · 需立即處理', tone: 'danger' },
-  rejected: { title: '理賠異常 · 需關注', tone: 'danger' },
+  rejected: { title: '理賠駁回 · 可申覆', tone: 'danger' },
   renewal: { title: '續保提醒', tone: 'warning' },
   in_review: { title: '申請理賠中', tone: 'info' },
   approved: { title: '核准待給付', tone: 'info' },
@@ -120,17 +112,8 @@ export const CLAIM_STATUS_GROUP: Record<
 }
 
 function resolveClaimTemplate(policy: Policy): ClaimTemplate | null {
-  const statusFallback = POLICY_STATUS_FALLBACK[policy.status]
-  if (statusFallback) {
-    return {
-      ...statusFallback,
-      updatedAt: statusFallback.updatedAt ?? '2026-07-01',
-    }
-  }
-  if (policy.status === 'active' && CLAIM_BY_POLICY[policy.id]) {
-    return CLAIM_BY_POLICY[policy.id]
-  }
-  return null
+  if (policy.status !== 'active') return null
+  return CLAIM_BY_POLICY[policy.id] ?? null
 }
 
 export function buildFamilyClaims(members: FamilyMember[]): ClaimRecord[] {
@@ -174,9 +157,9 @@ export function getClaimByPolicyId(
 export type ClaimTab = 'pending' | 'in_progress' | 'completed'
 
 export const CLAIM_TAB_STATUSES: Record<ClaimTab, ClaimStatus[]> = {
-  pending: ['pending_docs', 'rejected', 'renewal'],
+  pending: ['pending_docs'],
   in_progress: ['in_review', 'approved'],
-  completed: ['paid'],
+  completed: ['paid', 'rejected'],
 }
 
 export const CLAIM_TAB_LABELS: Record<ClaimTab, string> = {
@@ -205,4 +188,9 @@ export function groupClaimsByStatus(claims: ClaimRecord[], tab?: ClaimTab) {
       items: claims.filter((claim) => claim.claimStatus === status),
     }))
     .filter((group) => group.items.length > 0)
+}
+
+/** 理賠頁導覽徽章：僅計入需使用者補件的案件 */
+export function countClaimActionItems(claims: ClaimRecord[]): number {
+  return claims.filter((claim) => claim.claimStatus === 'pending_docs').length
 }

@@ -207,6 +207,26 @@ function buildClaimScenario(
         },
       ],
     },
+    rejected: {
+      statusLabel: '理賠駁回',
+      statusTone: 'danger',
+      situationTitle: '理賠結案 · 給付駁回',
+      situationSummary: claim.statusSummary,
+      ctas: [
+        {
+          id: 'appeal',
+          label: '申請理賠申覆',
+          description: '示意：上傳補充說明與佐證文件',
+          variant: 'primary',
+        },
+        {
+          id: 'call-agent',
+          label: '聯絡保險業務員',
+          description: '了解駁回原因與申覆期限',
+          variant: 'secondary',
+        },
+      ],
+    },
   }
 
   return scenarios[claim.claimStatus] ?? null
@@ -248,23 +268,27 @@ function buildScenario(
   }
 
   if (policy.status === 'pending') {
+    const isUnderwriting = policy.coverage <= 0 && policy.type === 'life'
     return {
-      statusLabel: '待補件',
-      statusTone: 'danger',
-      situationTitle: '理賠審核中 · 需補充文件',
-      situationSummary:
-        '您的理賠申請已受理，但審核單位通知需補充診斷證明與費用明細。請於 14 天內完成補件，以免案件逾期結案。',
+      statusLabel: isUnderwriting ? '核保中' : '申請待補件',
+      statusTone: 'warning',
+      situationTitle: isUnderwriting ? '新保單核保中' : '新保單申請待補件',
+      situationSummary: isUnderwriting
+        ? '保單申請已送件，核保單位審查中。保額核定後將自動更新至家庭保障地圖。'
+        : '新保單申請需補齊要保書或體檢報告，請聯繫業務員確認補件清單與期限。',
       ctas: [
         {
-          id: 'upload-docs',
-          label: '上傳證明文件',
-          description: '示意：上傳診斷書、收據與費用清單',
+          id: 'track-underwriting',
+          label: isUnderwriting ? '查詢核保進度' : '上傳申請文件',
+          description: isUnderwriting
+            ? '示意：查看核保階段與預估生效日'
+            : '示意：上傳要保書、體檢報告等申請文件',
           variant: 'primary',
         },
         {
-          id: 'ask-agent',
-          label: '請洽詢保險業務員',
-          description: '確認補件格式與理賠進度',
+          id: 'call-agent',
+          label: '聯絡保險業務員',
+          description: '確認申請進度與補件事項',
           variant: 'secondary',
         },
       ],
