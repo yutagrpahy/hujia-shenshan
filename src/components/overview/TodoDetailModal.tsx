@@ -39,6 +39,9 @@ export function TodoDetailModal({
       <Modal.Container placement={isMobile ? 'bottom' : 'center'}>
         <Modal.Dialog>
           <Modal.CloseTrigger />
+          <Modal.Header>
+            <Modal.Heading>待辦詳情</Modal.Heading>
+          </Modal.Header>
           <Modal.Body>
             {todo && (
               <StackBlock>

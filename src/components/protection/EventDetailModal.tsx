@@ -41,6 +41,9 @@ export function EventDetailModal({
       <Modal.Container placement={isMobile ? 'bottom' : 'center'}>
         <Modal.Dialog>
           <Modal.CloseTrigger />
+          <Modal.Header>
+            <Modal.Heading>規劃事件詳情</Modal.Heading>
+          </Modal.Header>
           <Modal.Body>
             {event && (
               <StackBlock>
