@@ -19,7 +19,7 @@ function GapBreakdownCard({ breakdown }: { breakdown: GapBreakdownDisplay }) {
   return (
     <div className="m3-card-filled p-4 ds-stack-list-loose">
       <div>
-        <p className="text-xs font-semibold text-teal-700">{breakdown.category} · 缺口試算</p>
+        <p className="text-xs font-semibold text-teal-700">{breakdown.category} · 目標保障試算</p>
         <p className="text-[10px] text-gray-400 mt-1">{breakdown.formula}</p>
       </div>
       <StackList>
@@ -60,7 +60,7 @@ export function PolicyRecommendationPanel({
         <CardSectionTitle
           icon={Shield}
           subtitle={
-            gapRow ? '（針對上述缺口補強）' : undefined
+            gapRow ? '（針對上述目標保障補強）' : undefined
           }
         >
           推薦保單

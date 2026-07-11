@@ -135,7 +135,7 @@ export function formatWan(amount: number): string {
   return `${(amount / 10000).toFixed(0)} 萬`
 }
 
-/** 保障缺口數值顯示（清楚標示單位，避免 2/5 萬元/月 混淆） */
+/** 目標保障數值顯示（清楚標示單位，避免 2/5 萬元/月 混淆） */
 export function formatGapAmount(value: number, unit: string): string {
   const display = Number.isInteger(value) ? String(value) : value.toFixed(1)
   const isMonthly = unit.includes('月')
@@ -161,12 +161,12 @@ function getTargetValue(
   return map[gapKey]
 }
 
-/** 依總覽保障缺口分類，彙整單一成員保單 */
+/** 依總覽目標保障分類，彙整單一成員保單 */
 export function groupMemberPoliciesByGapCategory(member: FamilyMember): PolicyCategoryGroup[] {
   return groupPoliciesByGapCategory([member]).filter((group) => group.policies.length > 0)
 }
 
-/** 依總覽保障缺口分類，彙整全家保單（每張保單僅歸入一類） */
+/** 依總覽目標保障分類，彙整全家保單（每張保單僅歸入一類） */
 export function groupPoliciesByGapCategory(members: FamilyMember[]): PolicyCategoryGroup[] {
   const buckets = new Map<CoverageGap['gapKey'] | 'other', PolicyWithMember[]>()
   for (const { gapKey } of GAP_DEFS) {
@@ -659,8 +659,8 @@ export function buildCoverageGapBreakdown(
     category: gap.category,
     isMonthly,
     formula: isMonthly
-      ? '每月缺口 ＝ 家庭目標（萬元／月）− 現有保障（萬元／月）'
-      : '保障缺口 ＝ 家庭目標（萬元）− 現有保障（萬元）',
+      ? '每月待補足額 ＝ 家庭目標（萬元／月）− 現有保障（萬元／月）'
+      : '待補足額 ＝ 家庭目標（萬元）− 現有保障（萬元）',
     profileNote: buildProfileNote(
       profile,
       gap.category,
@@ -678,7 +678,7 @@ export function buildCoverageGapBreakdown(
         tone: 'current',
       },
       {
-        label: isMonthly ? '每月缺口' : '保障缺口',
+        label: isMonthly ? '每月待補足額' : '待補足額',
         value: formatGapAmount(gapValue, gap.unit),
         tone: 'gap',
       },
@@ -745,14 +745,14 @@ function attachBoostLabels(
       const closes = gapTwd > 0 ? Math.min(100, Math.round((boost.monthly / gapTwd) * 100)) : 0
       return {
         ...rec,
-        estimatedBoostLabel: `預估補足每月 ${formatCurrency(boost.monthly)}${closes > 0 ? `（約填補 ${closes}% 缺口）` : ''}`,
+        estimatedBoostLabel: `預估補足每月 ${formatCurrency(boost.monthly)}${closes > 0 ? `（約填補 ${closes}% 待補足額）` : ''}`,
       }
     }
     if (!isMonthly && boost.coverage) {
       const closes = gapTwd > 0 ? Math.min(100, Math.round((boost.coverage / gapTwd) * 100)) : 0
       return {
         ...rec,
-        estimatedBoostLabel: `預估增加 ${formatWan(boost.coverage)} 保額${closes > 0 ? `（約填補 ${closes}% 缺口）` : ''}`,
+        estimatedBoostLabel: `預估增加 ${formatWan(boost.coverage)} 保額${closes > 0 ? `（約填補 ${closes}% 待補足額）` : ''}`,
       }
     }
     return rec
@@ -773,7 +773,7 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
       {
         name: '南山人壽健康滿百防癌定期保險',
         type: 'critical',
-        reason: '針對癌症提供分階段給付，適合補強癌症保障缺口',
+        reason: '針對癌症提供分階段給付，適合補強癌症目標保障',
         estimatedPremium: 2800,
       },
       {
@@ -789,7 +789,7 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
     },
   },
   death: {
-    narrative: '身故保障仍有缺口，建議提升壽險保額，確保家人生活無虞。',
+    narrative: '身故保障尚未達標，建議提升壽險保額，確保家人生活無虞。',
     recommendations: [
       {
         name: '富邦人壽樂齡終身壽險增額',
@@ -801,31 +801,31 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
     recommendedAdvisor: { ...DEFAULT_ADVISOR, reason: '擅長身故保障與受益人安排' },
   },
   medical: {
-    narrative: '醫療實支實付保障仍有缺口，建議補強住院與手術理賠額度。',
+    narrative: '醫療實支實付保障尚未達標，建議補強住院與手術理賠額度。',
     recommendations: [
       {
         name: '國泰人壽新實支實付醫療險',
         type: 'health',
-        reason: '補足醫療住院與手術實支實付缺口',
+        reason: '補足醫療住院與手術實支實付待補足額',
         estimatedPremium: 2400,
       },
     ],
     recommendedAdvisor: { ...DEFAULT_ADVISOR, reason: '醫療險與實支實付規劃經驗豐富' },
   },
   longterm: {
-    narrative: '長照月給付仍有缺口，建議評估商業長照險搭配政府長照 2.0 資源。',
+    narrative: '長照月給付尚未達標，建議評估商業長照險搭配政府長照 2.0 資源。',
     recommendations: [
       {
         name: '新光人壽長照尊榮定期保險',
         type: 'longterm',
-        reason: '補足長照月給付缺口',
+        reason: '補足長照月給付待補足額',
         estimatedPremium: 3500,
       },
     ],
     recommendedAdvisor: { ...DEFAULT_ADVISOR, reason: '熟悉長照 2.0 與商業長照險搭配' },
   },
   disability: {
-    narrative: '失能收入替代仍有缺口，建議補強失能後每月固定給付。',
+    narrative: '失能收入替代尚未達標，建議補強失能後每月固定給付。',
     recommendations: [
       {
         name: '國泰人壽樂活失能扶助保險',
@@ -888,7 +888,7 @@ export function simulateScenario(
     breakdown = {
       category: gapDef.category,
       isMonthly: true,
-      formula: '每月缺口 ＝ 每月需求 − 現有理賠（每月）',
+      formula: '每月待補足額 ＝ 每月需求 − 現有理賠（每月）',
       profileNote: `${buildProfileNote(profile, gapDef.category, formatGapAmount(familyTarget, gapDef.unit))} 此成員現有 ${formatGapAmount(currentWan, gapDef.unit)}，家庭合計 ${formatGapAmount(familyCurrentWan, gapDef.unit)}。`,
       rows: [
         {
@@ -902,7 +902,7 @@ export function simulateScenario(
           tone: 'current',
         },
         {
-          label: '每月缺口',
+          label: '每月待補足額',
           value: formatCurrency(gapAmount),
           tone: 'gap',
         },
@@ -919,7 +919,7 @@ export function simulateScenario(
       'longterm-care': '長期照護',
       retirement: '退休',
     }
-    narrative = `若 ${member.name} 在 ${input.age} 歲發生${eventLabels[input.event] ?? '此情境'}，每月生活需求約 ${formatCurrency(needTwd)}，現有相關保單每月可給付 ${formatCurrency(memberCurrentTwd)}，每月缺口 ${formatCurrency(gapAmount)}。下方推薦保單專為補足此缺口設計。`
+    narrative = `若 ${member.name} 在 ${input.age} 歲發生${eventLabels[input.event] ?? '此情境'}，每月生活需求約 ${formatCurrency(needTwd)}，現有相關保單每月可給付 ${formatCurrency(memberCurrentTwd)}，每月尚待補足 ${formatCurrency(gapAmount)}。下方推薦保單專為補足此目標保障設計。`
   } else {
     const needTwd = member.monthlyExpense * 12 * LUMP_SUM_YEARS
     gapAmount = Math.max(0, needTwd - memberCurrentTwd)
@@ -932,7 +932,7 @@ export function simulateScenario(
     breakdown = {
       category: input.event === 'accident' ? '意外保障' : gapDef.category,
       isMonthly: false,
-      formula: `保障缺口 ＝ 建議保額 − 現有${policyLabel}保額`,
+      formula: `待補足額 ＝ 建議保額 − 現有${policyLabel}保額`,
       profileNote: `${buildProfileNote(profile, gapDef.category, formatGapAmount(familyTarget, gapDef.unit))} 建議保額依「月支出 × 12 個月 × ${LUMP_SUM_YEARS} 年」估算約 ${needWan} 萬元。`,
       rows: [
         {
@@ -946,7 +946,7 @@ export function simulateScenario(
           tone: 'current',
         },
         {
-          label: '保障缺口',
+          label: '待補足額',
           value: `${gapWan} 萬元`,
           tone: 'gap',
         },
@@ -960,8 +960,8 @@ export function simulateScenario(
 
     narrative =
       input.event === 'accident'
-        ? `若 ${member.name} 在 ${input.age} 歲發生意外，現有意外險保額 ${currentWan} 萬元，建議至少 ${needWan} 萬元（約 ${LUMP_SUM_YEARS} 年家庭支出），保障缺口 ${gapWan} 萬元。`
-        : `若 ${member.name} 在 ${input.age} 歲不幸身故，現有壽險保額 ${currentWan} 萬元，建議至少 ${needWan} 萬元（約 ${LUMP_SUM_YEARS} 年家庭支出），保障缺口 ${gapWan} 萬元。`
+        ? `若 ${member.name} 在 ${input.age} 歲發生意外，現有意外險保額 ${currentWan} 萬元，建議至少 ${needWan} 萬元（約 ${LUMP_SUM_YEARS} 年家庭支出），尚待補足 ${gapWan} 萬元。`
+        : `若 ${member.name} 在 ${input.age} 歲不幸身故，現有壽險保額 ${currentWan} 萬元，建議至少 ${needWan} 萬元（約 ${LUMP_SUM_YEARS} 年家庭支出），尚待補足 ${gapWan} 萬元。`
   }
 
   const baseRecs = GAP_RECOMMENDATIONS[config.gapKey]
@@ -971,7 +971,7 @@ export function simulateScenario(
           {
             name: '南山人壽安心守護意外險',
             type: 'accident',
-            reason: '補足意外身故／失能一次性理賠缺口',
+            reason: '補足意外身故／失能一次性理賠待補足額',
             estimatedPremium: 1200,
           },
           ...GAP_RECOMMENDATIONS.death.recommendations.slice(0, 1),
@@ -1043,7 +1043,7 @@ export function generateAIResponse(
         ? `\n\n⚠️ 保障中斷：\n${lapsedLines}\n\n建議儘快為 ${lapsedLongterm.map((e) => e.name).join('、')} 評估重新投保。`
         : ''
 
-    return `您家庭目前的長照保障：\n\n${activeLines || '• 尚無有效長照月給付保單'}${lapsedNote}\n\n家庭合計有效月給付約 ${formatCurrency(totalMonthly)}，距離「穩健守護」目標 8 萬元／月尚有缺口。\n\n建議為王建國夫婦評估長照險加碼。`
+    return `您家庭目前的長照保障：\n\n${activeLines || '• 尚無有效長照月給付保單'}${lapsedNote}\n\n家庭合計有效月給付約 ${formatCurrency(totalMonthly)}，距離「穩健守護」目標 8 萬元／月尚待補足。\n\n建議為王建國夫婦評估長照險加碼。`
   }
 
   if (q.includes('受益人') || q.includes('雅婷')) {
@@ -1054,5 +1054,5 @@ export function generateAIResponse(
     return `台灣遺產稅試算（王建國家庭）：\n\n• 估計遺產淨額：約 3,500 萬元\n• 預估遺產稅：約 451 萬元\n\n💡 善用每年 244 萬贈與免稅額，保險金受益人指定不列入遺產。`
   }
 
-  return `您好！我是護家神山 AI 保障顧問。\n\n我可以協助您：\n• 分析家庭保障缺口\n• 模擬人生事件對財務的影響\n• 推薦適合的保險商品與專屬顧問\n\n請告訴我您想了解的面向，或使用情境模擬選單。`
+  return `您好！我是護家神山 AI 保障顧問。\n\n我可以協助您：\n• 分析家庭目標保障\n• 模擬人生事件對財務的影響\n• 推薦適合的保險商品與專屬顧問\n\n請告訴我您想了解的面向，或使用情境模擬選單。`
 }

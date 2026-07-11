@@ -153,7 +153,7 @@ export function OverviewPage() {
                     ? '保障充足'
                     : coverage.healthScore >= 60
                       ? '部分建議補強'
-                      : '有多項缺口需關注'}
+                      : '有多項目標保障待補強'}
                 </p>
                 <button
                   onClick={() => openHealthProfile('compare')}
@@ -174,7 +174,7 @@ export function OverviewPage() {
         </div>
       </PageSection>
 
-      <PageSection title="保障缺口" fullWidth>
+      <PageSection title="目標保障" fullWidth>
         <div className="gap-cards-list">
           {sortedGaps.map((gap) => {
             const pct =

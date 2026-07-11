@@ -9,7 +9,7 @@ const CHAT_FEATURES = [
 
 const SIMULATE_FEATURES = [
   '失能、長照、身故',
-  '試算缺口與月給付',
+  '試算目標保障與月給付',
   '選成員一鍵分析',
 ]
 

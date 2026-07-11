@@ -814,7 +814,7 @@ export const initialDocuments: SecureDocument[] = [
 
 export const EVENT_FORM_PLACEHOLDERS = {
   name: '例如：父親長照需求評估、退休年金規劃檢視',
-  description: 'AI 建議：描述事件背景、預期時程與目前保障缺口，方便家人協作討論',
+  description: 'AI 建議：描述事件背景、預期時程與目前目標保障差距，方便家人協作討論',
   fundsNeeded: '預估所需資金，如 50000（選填）',
 }
 

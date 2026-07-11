@@ -722,7 +722,7 @@ body {
   margin-top: var(--ds-space-tight);
 }
 
-/* ── 保障缺口達標獎勵（無背景光暈，避免遮擋文字）── */
+/* ── 目標保障達標獎勵（無背景光暈，避免遮擋文字）── */
 .gap-card--achieved {
   border-color: rgba(45, 122, 112, 0.5);
   background: var(--color-surface-container);
@@ -806,7 +806,7 @@ body {
   animation: gap-badge-pop 0.5s ease-out;
 }
 
-/* ── 保障缺口進度條：粗細一致，以用色區分狀態 ── */
+/* ── 目標保障進度條：粗細一致，以用色區分狀態 ── */
 .gap-progress {
   height: 10px;
   overflow: hidden;
@@ -1244,7 +1244,7 @@ body {
 }
 
 .member-avatar {
-  border-radius: var(--ds-radius-avatar);
+  border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -1382,7 +1382,7 @@ button.m3-chip {
 }
 
 .advisor-avatar {
-  border-radius: var(--ds-radius-avatar);
+  border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }

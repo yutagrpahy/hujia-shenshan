@@ -235,7 +235,7 @@ export function AdvisorPage() {
             </div>
             <p className="text-sm font-semibold text-gray-700">設定模擬條件</p>
             <p className="text-xs text-gray-400 mt-1.5 leading-relaxed max-w-[240px]">
-              在下方選擇成員、年齡與人生情境，即可試算保障缺口
+              在下方選擇成員、年齡與人生情境，即可試算目標保障
             </p>
           </div>
         ) : (

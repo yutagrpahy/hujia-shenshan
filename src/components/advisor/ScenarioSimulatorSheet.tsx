@@ -14,7 +14,7 @@ export const SCENARIO_OPTIONS: ScenarioEventType[] = [
 ]
 
 const SCENARIO_HINTS: Record<ScenarioEventType, string> = {
-  disability: '估算失能後每月缺口',
+  disability: '估算失能後每月待補足額',
   'longterm-care': '檢視長照月給付是否足夠',
   death: '試算身故保額與家庭支出',
   accident: '評估意外理賠覆蓋率',
