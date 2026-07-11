@@ -94,9 +94,6 @@ export function ProtectionPage() {
   const {
     members,
     todos,
-    systemTodos,
-    persistedTodos,
-    dismissedRuleIds,
     familyEvents,
     documents,
     currentUserId,
@@ -437,13 +434,13 @@ export function ProtectionPage() {
         <section className="w-full max-w-full min-w-0">
           <StackList className="protection-grid">
             {members.map((member) => {
+              const memberTodos = todos.filter((todo) => todo.memberId === member.id)
+              const memberEvents = familyEvents.filter((event) =>
+                event.memberIds.includes(member.id),
+              )
               const { total: memberTodoCount, hasUrgent } = countMemberReminders(
-                member.id,
-                members,
-                systemTodos,
-                persistedTodos,
-                familyEvents,
-                dismissedRuleIds,
+                memberTodos,
+                memberEvents,
               )
 
               return (
