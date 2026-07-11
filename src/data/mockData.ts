@@ -490,7 +490,8 @@ export const initialMembers: FamilyMember[] = [
         status: 'expired',
         source: 'union',
       },
-      // DEMO: 王阿公長照保單已過期，p23 重新投保申請中 — 復原舊情境時移除 p23、改回 p22 active
+      // DEMO: 王阿公長照月給付 p23 已投保成功；p22 為前次到期保單（失效）
+      // 復原「投保中」：p23 改 pending + reapplyOf；復原「已過期待評估」：移除 p23、改 p22 active
       {
         id: 'p22',
         name: '長照分期給付保險',
@@ -515,9 +516,8 @@ export const initialMembers: FamilyMember[] = [
         eventPayout: 0,
         premium: 2800,
         beneficiary: '王建國',
-        expiryDate: '2031-03-31',
-        status: 'pending',
-        reapplyOf: 'p22',
+        expiryDate: '2031-07-12',
+        status: 'active',
         source: 'union',
       },
     ],
@@ -565,7 +565,17 @@ export const initialHistoryTodos: TodoItem[] = [
     completed: true,
     completedAt: '2026-07-08',
     source: 'manual',
-    eventId: 'fe1',
+  },
+  {
+    id: 'h-agong-longterm-active',
+    title: '王阿公長照月給付保險核保通過並生效',
+    memberId: 'm4',
+    memberName: '王阿公',
+    policyId: 'p23',
+    urgency: 'medium',
+    completed: true,
+    completedAt: '2026-07-12',
+    source: 'manual',
   },
   // DEMO: 王雅婷 p7 補件完成紀錄 — 復原時移除此項
   {
@@ -630,22 +640,19 @@ export const archivedNotifications: AppNotification[] = [
     read: true,
     memberId: 'm5',
   },
+  {
+    id: 'archive:n-agong-p23',
+    type: 'policy-purchase',
+    title: '保單申購完成',
+    message: '王阿公的「富邦人壽長照月給付保險」已於 2026/07/12 生效，月給付 NT$ 20,000',
+    date: '2026-07-12',
+    read: true,
+    memberId: 'm4',
+  },
 ]
 
 export const initialFamilyEvents: FamilyEvent[] = [
-  {
-    id: 'fe1',
-    name: '父親長照重新投保',
-    type: 'longterm-care',
-    date: '2026-07-20',
-    frequency: 'once',
-    fundsNeeded: 50000,
-    urgency: 'high',
-    description:
-      '王阿公富邦長照月給 2 萬已於 2026/03 到期，重新投保申請已於 7/8 送件，目前核保審查中，預估 7/20 前通知結果',
-    memberIds: ['m4'],
-    createdBy: '王建國',
-  },
+  // DEMO: 王阿公長照已投保成功 — 復原「投保中」時加回 fe1（父親長照重新投保）
   {
     id: 'fe2',
     name: '王建國退休規劃',

@@ -24,9 +24,7 @@ export function isPolicyApplicationInProgress(policy: Policy): boolean {
 }
 
 /** 投保中進度（示範資料；對齊理賠進行中的進度環） */
-const POLICY_APPLICATION_PROGRESS: Partial<Record<string, number>> = {
-  p23: 52,
-}
+const POLICY_APPLICATION_PROGRESS: Partial<Record<string, number>> = {}
 
 export function getPolicyApplicationProgress(policy: Policy): number {
   return POLICY_APPLICATION_PROGRESS[policy.id] ?? 45
