@@ -238,34 +238,32 @@ export function TodoCalendarPanel({
               ))}
             </div>
             <span className="calendar-toolbar__period">{formatPeriodLabel(anchor, viewMode)}</span>
-          </div>
-
-          <div className="calendar-body">
-            <div
-              className="calendar-body__surface"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              {renderCalendarView()}
-            </div>
-            <div className="calendar-body__nav" aria-label="切換週期">
+            <div className="calendar-toolbar__nav" aria-label="切換週期">
               <button
                 type="button"
                 onClick={() => shiftPeriod(-1)}
-                className="m3-icon-btn"
+                className="calendar-toolbar__nav-btn"
                 aria-label="上一段"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-500" />
+                <ChevronLeft className="w-4 h-4" aria-hidden />
               </button>
               <button
                 type="button"
                 onClick={() => shiftPeriod(1)}
-                className="m3-icon-btn"
+                className="calendar-toolbar__nav-btn"
                 aria-label="下一段"
               >
-                <ChevronRight className="w-4 h-4 text-gray-500" />
+                <ChevronRight className="w-4 h-4" aria-hidden />
               </button>
             </div>
+          </div>
+
+          <div
+            className="calendar-body__surface"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {renderCalendarView()}
           </div>
 
           <div className="ds-section-divider ds-section-inner">
