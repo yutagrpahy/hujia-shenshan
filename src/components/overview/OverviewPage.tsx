@@ -6,7 +6,6 @@ import {
   Sparkles,
   SquareArrowOutUpRight,
   Trophy,
-  Users,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { publicAsset } from '../../utils/publicAsset'
@@ -239,7 +238,6 @@ export function OverviewPage() {
                   )}
                 </p>
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <Users className="w-3 h-3 text-teal-500 shrink-0" />
                   {gap.gapMembers.map((entry) => {
                     const member = members.find((m) => m.id === entry.memberId)
                     const tone = entry.hasCoverage ? 'covered' : 'uncovered'
