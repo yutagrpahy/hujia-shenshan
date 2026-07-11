@@ -62,35 +62,22 @@ function TierOverviewCard({
 
 interface HealthProfileHeroSummaryProps {
   profile: ProtectionLifeProfile
-  healthScore: number
-  healthStatusText: string
   onOpenCurrent: () => void
   onOpenCompare: () => void
 }
 
-/** 歡迎語列 — 保障健康度與分級摘要（預設收合，漸進揭露） */
+/** 歡迎語列 — 家庭保險健康分級摘要（預設收合，漸進揭露） */
 export function HealthProfileHeroSummary({
   profile,
-  healthScore,
-  healthStatusText,
   onOpenCurrent,
   onOpenCompare,
 }: HealthProfileHeroSummaryProps) {
   const [expanded, setExpanded] = useState(false)
   const tierOption = PROTECTION_TIER_OPTIONS.find((tier) => tier.tier === profile.tier)
-  const scoreTone =
-    healthScore >= 80
-      ? 'health-hero-summary__score--high'
-      : healthScore >= 60
-        ? 'health-hero-summary__score--mid'
-        : 'health-hero-summary__score--low'
 
   return (
     <div className="health-hero-summary">
       <div className="health-hero-summary__meta">
-        <span className={`health-hero-summary__score m3-chip ${scoreTone}`}>
-          保障健康度 {healthScore} 分
-        </span>
         <button
           type="button"
           onClick={onOpenCurrent}
@@ -116,7 +103,6 @@ export function HealthProfileHeroSummary({
           {tierOption && (
             <p className="health-hero-summary__subtitle">{tierOption.subtitle}</p>
           )}
-          <p className="health-hero-summary__status">{healthStatusText}</p>
           <p className="health-hero-summary__intro">
             分級定義家庭期望的保障生活，作為健康度滿分基準。
           </p>

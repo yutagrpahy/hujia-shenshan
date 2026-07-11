@@ -2,6 +2,7 @@ import {
   AlertCircle,
   BookOpen,
   ChevronRight,
+  Heart,
   Sparkles,
   SquareArrowOutUpRight,
   Trophy,
@@ -69,6 +70,12 @@ export function OverviewPage() {
       }),
     [coverage.gaps],
   )
+  const scoreColor =
+    coverage.healthScore >= 80
+      ? 'text-teal-600'
+      : coverage.healthScore >= 60
+        ? 'text-teal-700'
+        : 'text-teal-800'
   const healthStatusText =
     coverage.healthScore >= 80
       ? '保障充足'
@@ -103,8 +110,6 @@ export function OverviewPage() {
           <p className="text-xs text-gray-500 mt-1">{roleLabel}</p>
           <HealthProfileHeroSummary
             profile={protectionProfile}
-            healthScore={coverage.healthScore}
-            healthStatusText={healthStatusText}
             onOpenCurrent={() => openHealthProfile('current')}
             onOpenCompare={() => openHealthProfile('compare')}
           />
@@ -118,7 +123,41 @@ export function OverviewPage() {
       )}
 
       <PageSection title="家庭保障總覽" fullWidth>
-        <FamilyCoverageOverview members={members} />
+        <div className="m3-card m3-card--section">
+          <div className="ds-section-inner">
+            <div className="flex items-center gap-4">
+              <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f1ed" strokeWidth="3" />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.5"
+                    fill="none"
+                    stroke="#2d7a70"
+                    strokeWidth="3"
+                    strokeDasharray={`${coverage.healthScore} 100`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Heart className={`w-4 h-4 ${scoreColor}`} />
+                  <span className={`text-lg md:text-xl font-bold ${scoreColor}`}>
+                    {coverage.healthScore}
+                  </span>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm md:text-base font-semibold text-gray-800">保障健康度</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  依「{coverage.healthTierLabel}」分級計算 · {healthStatusText}
+                </p>
+              </div>
+            </div>
+
+            <FamilyCoverageOverview members={members} />
+          </div>
+        </div>
       </PageSection>
 
       <PageSection title="目標保障" fullWidth>
