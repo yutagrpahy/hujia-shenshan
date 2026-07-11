@@ -287,8 +287,8 @@ export function ProtectionPage() {
           </div>
         </div>
 
-        <section className="member-policies-panel">
-          <div className="flex justify-end mb-3">
+        <section>
+          <div className="flex justify-end mb-1">
             <Button
               size="sm"
               variant="secondary"
@@ -300,6 +300,7 @@ export function ProtectionPage() {
             </Button>
           </div>
 
+          <div className="member-policies-panel">
           {selectedMember.policies.length === 0 ? (
             <>
               <PolicySourceLegend />
@@ -383,6 +384,7 @@ export function ProtectionPage() {
               )}
             </>
           )}
+          </div>
         </section>
 
         <div className="member-detail-follow-block">
