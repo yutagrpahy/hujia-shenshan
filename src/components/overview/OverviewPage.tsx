@@ -174,12 +174,12 @@ export function OverviewPage() {
                     {achieved ? (
                       <span className="m3-chip gap-achieved-badge shrink-0">
                         <Trophy className="w-3 h-3" />
-                        已達標
+                        目標達成
                       </span>
                     ) : isUrgent ? (
                       <span className="m3-chip gap-urgent-badge shrink-0">
                         <AlertCircle className="w-3 h-3" />
-                        存在風險
+                        高風險
                       </span>
                     ) : null}
                   </div>
