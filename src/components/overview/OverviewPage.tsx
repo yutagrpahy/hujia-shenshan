@@ -1,6 +1,5 @@
 import {
   AlertCircle,
-  BookOpen,
   ChevronRight,
   Heart,
   Sparkles,
@@ -27,7 +26,6 @@ import {
 
   CardItemMetaLabel,
   CardItemTriAction,
-  CardItemTriIndicator,
   CardItemTriMain,
   CardItemTriRow,
   CardItemTitle,
@@ -313,17 +311,12 @@ export function OverviewPage() {
         <div className="education-grid">
           {education.map((item) => (
             <CardItem key={item.id} className="m3-card-item--lg">
-              <CardItemTriRow>
+              <CardItemTriRow className="education-card-row">
                 <CardItemTriMain>
                   <CardItemMetaLabel className="text-[10px]">{item.stage}</CardItemMetaLabel>
                   <CardItemTitle>{item.title}</CardItemTitle>
                   <CardItemDetail>{item.duration}</CardItemDetail>
                 </CardItemTriMain>
-                <CardItemTriIndicator>
-                  <div className="m3-icon-wrap m3-icon-wrap--md">
-                    <BookOpen className="w-5 h-5 text-teal-500" />
-                  </div>
-                </CardItemTriIndicator>
                 <CardItemTriAction>
                   <span className="education-external-icon-wrap" title="將開啟外部網站">
                     <SquareArrowOutUpRight

@@ -2069,6 +2069,10 @@ button.m3-chip {
   gap: var(--ds-space-grid);
 }
 
+.m3-card-item__row--tri.education-card-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .education-external-icon-wrap {
   display: inline-flex;
   align-items: center;
