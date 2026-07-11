@@ -54,6 +54,12 @@ export function getFamilyMascotUrl(): string {
   return publicAsset('/app-icon.png')
 }
 
-export function getAdvisorAvatarUrl(advisorSeed = 'advisor-linjiajung'): string {
-  return buildDiceBearUrl(advisorSeed, 'e8f2f0', 'edd5c0')
+/** AI 顧問頭像 — Lucide Bot 輪廓延伸（ISC），見 public/advisor-bot.svg */
+export function getAiAdvisorAvatarUrl(): string {
+  return publicAsset('/advisor-bot.svg')
+}
+
+/** 人壽業務顧問頭像 */
+export function getAgentAvatarUrl(agentName: string): string {
+  return getMemberAvatarUrl(agentName)
 }

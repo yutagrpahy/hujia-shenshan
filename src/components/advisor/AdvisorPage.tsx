@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext'
 import { useElementHeight } from '../../hooks/useElementHeight'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { useMobileKeyboardOffset } from '../../hooks/useMobileKeyboardOffset'
-import { getAdvisorAvatarUrl } from '../../utils/avatars'
+import { getAiAdvisorAvatarUrl } from '../../utils/avatars'
 import { AI_SUGGESTIONS } from '../../data/mockData'
 import { buildAdvisorContext } from '../../services/buildAdvisorContext'
 import { fetchAdvisorChatReply, toAdvisorHistory } from '../../services/aiAdvisorChat'
@@ -243,7 +243,7 @@ export function AdvisorPage() {
             {isWelcomeTyping && (
               <div className="flex justify-start">
                 <img
-                  src={getAdvisorAvatarUrl()}
+                  src={getAiAdvisorAvatarUrl()}
                   alt="AI 顧問"
                   className="advisor-avatar advisor-avatar--ring w-8 h-8 shrink-0 mr-2 mt-1"
                 />
@@ -260,7 +260,7 @@ export function AdvisorPage() {
               >
                 {msg.role === 'assistant' && (
                   <img
-                    src={getAdvisorAvatarUrl()}
+                    src={getAiAdvisorAvatarUrl()}
                     alt="AI 顧問"
                     className="advisor-avatar advisor-avatar--ring w-8 h-8 shrink-0 mr-2 mt-1"
                   />
@@ -277,7 +277,7 @@ export function AdvisorPage() {
             {isThinking && (
               <div className="flex justify-start">
                 <img
-                  src={getAdvisorAvatarUrl()}
+                  src={getAiAdvisorAvatarUrl()}
                   alt=""
                   className="advisor-avatar advisor-avatar--ring w-8 h-8 shrink-0 mr-2 mt-1"
                 />

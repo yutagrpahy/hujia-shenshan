@@ -1,5 +1,5 @@
 import { ArrowRight, FlaskConical, MessageSquare } from 'lucide-react'
-import { getAdvisorAvatarUrl } from '../../utils/avatars'
+import { getAiAdvisorAvatarUrl } from '../../utils/avatars'
 
 const CHAT_FEATURES = [
   '即時問答保障疑問',
@@ -23,7 +23,7 @@ export function AdvisorWelcome({
   return (
     <div className="flex flex-col items-center py-4 px-1 max-w-lg mx-auto w-full min-h-0">
       <img
-        src={getAdvisorAvatarUrl()}
+        src={getAiAdvisorAvatarUrl()}
         alt="AI 顧問"
         className="advisor-avatar advisor-avatar--hero w-12 h-12 mb-3"
       />

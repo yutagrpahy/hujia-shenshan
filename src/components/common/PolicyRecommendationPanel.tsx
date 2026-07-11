@@ -6,7 +6,7 @@ import type {
 } from '../../types'
 import { formatCurrency } from '../../utils/calculations'
 import { CardSectionTitle, PageStack, StackList } from './CardLayout'
-import { getAdvisorAvatarUrl } from '../../utils/avatars'
+import { getAgentAvatarUrl } from '../../utils/avatars'
 
 function GapBreakdownCard({ breakdown }: { breakdown: GapBreakdownDisplay }) {
   const toneClass = (tone?: string) => {
@@ -89,7 +89,7 @@ export function PolicyRecommendationPanel({
         <CardSectionTitle icon={UserCircle}>推薦顧問</CardSectionTitle>
         <div className="m3-card-warm p-4 flex gap-3">
           <img
-            src={getAdvisorAvatarUrl()}
+            src={getAgentAvatarUrl(recommendedAdvisor.name)}
             alt={recommendedAdvisor.name}
             className="member-avatar member-avatar--default w-12 h-12 shrink-0"
           />

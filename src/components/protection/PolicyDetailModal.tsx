@@ -11,7 +11,7 @@ import { useApp } from '../../context/AppContext'
 import { buildPolicyDetailContext } from '../../data/policyDetails'
 import { CardSectionTitle, StackBlock, StackList } from '../common/CardLayout'
 import { PolicySourceLabel } from '../common/PolicySourceLabel'
-import { getAdvisorAvatarUrl } from '../../utils/avatars'
+import { getAgentAvatarUrl } from '../../utils/avatars'
 import type { PolicyWithMember } from '../../types'
 import { MemberAvatar } from '../common/MemberAvatar'
 
@@ -144,7 +144,7 @@ export function PolicyDetailModal({
                 <CardSectionTitle icon={UserCircle}>專屬保險業務員</CardSectionTitle>
                 <div className="flex gap-3">
                   <img
-                    src={getAdvisorAvatarUrl()}
+                    src={getAgentAvatarUrl(agent.name)}
                     alt={agent.name}
                     className="member-avatar member-avatar--default w-12 h-12 shrink-0"
                   />

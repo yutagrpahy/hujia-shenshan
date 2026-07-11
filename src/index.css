@@ -1432,8 +1432,9 @@ button.m3-chip {
 
 .advisor-avatar {
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: contain;
   flex-shrink: 0;
+  background: linear-gradient(135deg, #edf7f5, #d4efec);
 }
 
 .advisor-avatar--ring {
