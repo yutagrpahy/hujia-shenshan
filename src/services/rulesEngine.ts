@@ -1,10 +1,12 @@
 import {
   buildFamilyClaims,
   CLAIM_STATUS_LABELS,
-  CLAIM_TODO_STATUSES,
   CLAIM_TODO_TITLES,
 } from '../data/claims'
-import { getPolicyStatusLabel } from '../data/policyLabels'
+import {
+  getPolicyStatusLabel,
+  resolvePolicySystemTodoTrigger,
+} from '../data/policyLabels'
 import { calculateGapPercent, computeCoverageSummary } from '../utils/calculations'
 import type {
   AppNotification,
@@ -104,24 +106,17 @@ export function countMemberPolicyClaimStatusReminders(
 
   for (const policy of member.policies) {
     const claim = claimByPolicyId.get(policy.id)
+    const trigger = resolvePolicySystemTodoTrigger(policy, claim)
+    if (!trigger) continue
 
-    if (claim && CLAIM_TODO_STATUSES.includes(claim.claimStatus)) {
-      if (policy.status === 'pending') continue
-      const ruleId = claimStatusRuleId(claim.claimStatus, claim.policyId)
-      if (dismissedRuleIds.has(ruleId)) continue
-      count++
-      if (claim.claimStatus === 'pending_docs' || claim.claimStatus === 'rejected') {
-        hasUrgent = true
-      }
-      continue
-    }
-
-    const ruleId = policyStatusRuleId(policy)
+    const ruleId =
+      trigger.kind === 'claim_docs'
+        ? claimStatusRuleId(trigger.claim.claimStatus, trigger.claim.policyId)
+        : policyStatusRuleId(trigger.policy)
     if (!ruleId || dismissedRuleIds.has(ruleId)) continue
+
     count++
-    if (policy.status === 'expired' || policy.status === 'pending') {
-      hasUrgent = true
-    } else if (policy.status === 'expiring' && !policy.autoRenew) {
+    if (trigger.kind === 'claim_docs' || trigger.kind === 'expired' || trigger.kind === 'renewal') {
       hasUrgent = true
     }
   }
@@ -136,38 +131,22 @@ export function deriveSystemTodos(
 ): TodoItem[] {
   const todos: TodoItem[] = []
   const owner = members.find((member) => member.role === 'owner') ?? members[0]
+  const claims = buildFamilyClaims(members)
+  const claimByPolicyId = new Map(claims.map((claim) => [claim.policyId, claim]))
 
   for (const member of members) {
     for (const policy of member.policies) {
-      if (policy.status === 'expiring') {
-        const ruleId = policy.autoRenew ? `auto_renewal:${policy.id}` : `renewal:${policy.id}`
-        if (dismissedRuleIds.has(ruleId)) continue
-        todos.push({
-          id: `sys-${ruleId}`,
-          ruleId,
-          title: policy.autoRenew
-            ? `確認「${policy.insurer}${policy.name}」自動續保`
-            : `續保「${policy.insurer}${policy.name}」`,
-          memberId: member.id,
-          memberName: member.name,
-          policyId: policy.id,
-          urgency: policy.autoRenew ? 'medium' : 'high',
-          dueDate: policy.expiryDate,
-          completed: false,
-          source: 'system',
-        })
-      }
+      const claim = claimByPolicyId.get(policy.id)
+      const trigger = resolvePolicySystemTodoTrigger(policy, claim)
+      if (!trigger) continue
 
-      if (policy.status === 'pending') {
-        const ruleId = `pending:${policy.id}`
+      if (trigger.kind === 'renewal') {
+        const ruleId = `renewal:${policy.id}`
         if (dismissedRuleIds.has(ruleId)) continue
-        const isUnderwriting = policy.coverage <= 0 && policy.type === 'life'
         todos.push({
           id: `sys-${ruleId}`,
           ruleId,
-          title: isUnderwriting
-            ? `追蹤「${policy.name}」核保進度`
-            : `補齊「${policy.name}」申請文件`,
+          title: `續保「${policy.insurer}${policy.name}」`,
           memberId: member.id,
           memberName: member.name,
           policyId: policy.id,
@@ -176,9 +155,10 @@ export function deriveSystemTodos(
           completed: false,
           source: 'system',
         })
+        continue
       }
 
-      if (policy.status === 'expired') {
+      if (trigger.kind === 'expired') {
         const ruleId = `expired:${policy.id}`
         if (dismissedRuleIds.has(ruleId)) continue
         todos.push({
@@ -189,10 +169,30 @@ export function deriveSystemTodos(
           memberName: member.name,
           policyId: policy.id,
           urgency: 'high',
+          dueDate: policy.expiryDate,
           completed: false,
           source: 'system',
         })
+        continue
       }
+
+      const ruleId = claimStatusRuleId(trigger.claim.claimStatus, trigger.claim.policyId)
+      if (dismissedRuleIds.has(ruleId)) continue
+      const titleBuilder = CLAIM_TODO_TITLES[trigger.claim.claimStatus]
+      if (!titleBuilder) continue
+
+      todos.push({
+        id: `sys-${ruleId}`,
+        ruleId,
+        title: titleBuilder(trigger.claim),
+        memberId: trigger.claim.memberId,
+        memberName: trigger.claim.memberName,
+        policyId: trigger.claim.policyId,
+        urgency: 'high',
+        dueDate: trigger.claim.updatedAt,
+        completed: false,
+        source: 'system',
+      })
     }
   }
 
@@ -214,38 +214,6 @@ export function deriveSystemTodos(
       memberName: owner?.name ?? '家庭',
       urgency: gap.current <= 0 ? 'high' : 'medium',
       dueDate: undefined,
-      completed: false,
-      source: 'system',
-    })
-  }
-
-  const claims = buildFamilyClaims(members)
-  for (const claim of claims) {
-    if (!CLAIM_TODO_STATUSES.includes(claim.claimStatus)) continue
-
-    const policy = findPolicyOwner(members, claim.policyId)?.policies.find(
-      (item) => item.id === claim.policyId,
-    )
-    if (policy?.status === 'pending') continue
-
-    const ruleId = claimStatusRuleId(claim.claimStatus, claim.policyId)
-    if (dismissedRuleIds.has(ruleId)) continue
-
-    const titleBuilder = CLAIM_TODO_TITLES[claim.claimStatus]
-    if (!titleBuilder) continue
-
-    todos.push({
-      id: `sys-${ruleId}`,
-      ruleId,
-      title: titleBuilder(claim),
-      memberId: claim.memberId,
-      memberName: claim.memberName,
-      policyId: claim.policyId,
-      urgency:
-        claim.claimStatus === 'pending_docs' || claim.claimStatus === 'rejected'
-          ? 'high'
-          : 'medium',
-      dueDate: claim.updatedAt,
       completed: false,
       source: 'system',
     })

@@ -111,19 +111,14 @@ export const CLAIM_STATUS_GROUP: Record<
   paid: { title: '已給付', tone: 'success' },
 }
 
-/** 需產生系統待辦的理賠狀態（已給付除外） */
-export const CLAIM_TODO_STATUSES: ClaimStatus[] = [
-  'pending_docs',
-  'in_review',
-  'approved',
-  'rejected',
-]
+/**
+ * 需產生系統待辦的理賠狀態：僅「待處理」（待補件）。
+ * 理賠頁「進行中」（申請中、核准待給付）與「已結案」（已給付、駁回）不計入待辦。
+ */
+export const CLAIM_TODO_STATUSES: ClaimStatus[] = ['pending_docs']
 
 export const CLAIM_TODO_TITLES: Partial<Record<ClaimStatus, (claim: ClaimRecord) => string>> = {
   pending_docs: (claim) => `補齊「${claim.policyName}」理賠文件`,
-  in_review: (claim) => `追蹤「${claim.policyName}」理賠進度`,
-  approved: (claim) => `確認「${claim.policyName}」理賠給付`,
-  rejected: (claim) => `處理「${claim.policyName}」理賠駁回`,
 }
 
 function resolveClaimTemplate(policy: Policy): ClaimTemplate | null {
@@ -182,6 +177,31 @@ export const CLAIM_TAB_LABELS: Record<ClaimTab, string> = {
   pending: '待處理',
   in_progress: '進行中',
   completed: '已結案',
+}
+
+/** 理賠頁「進行中」頁籤對應狀態（進度環唯一顯示條件） */
+export const CLAIM_IN_PROGRESS_STATUSES = CLAIM_TAB_STATUSES.in_progress
+
+export function isClaimInProgressStatus(claimStatus: ClaimStatus): boolean {
+  return (CLAIM_IN_PROGRESS_STATUSES as readonly ClaimStatus[]).includes(claimStatus)
+}
+
+/**
+ * 保單／理賠進度環：全站僅理賠「進行中」（申請中、核准待給付）顯示。
+ * 待處理（待補件）、已結案（已給付、駁回）與無理賠紀錄皆不顯示。
+ */
+export function shouldShowPolicyProgressRing(claimStatus: ClaimStatus): boolean {
+  return isClaimInProgressStatus(claimStatus)
+}
+
+/** 理賠列表等情境：頁籤為進行中且狀態屬進行中時才顯示進度環 */
+export function shouldShowClaimProgressRing(
+  claim: ClaimRecord | null | undefined,
+  options?: { claimsTab?: ClaimTab },
+): boolean {
+  if (!claim) return false
+  if (options?.claimsTab && options.claimsTab !== 'in_progress') return false
+  return shouldShowPolicyProgressRing(claim.claimStatus)
 }
 
 export function countClaimsByTab(claims: ClaimRecord[]) {

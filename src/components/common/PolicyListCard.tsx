@@ -3,7 +3,7 @@ import { getPolicyCardStatusChip } from '../../data/policyLabels'
 import { getPolicyParties } from '../../data/policyDetails'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
-import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
+import { ClaimProgressSlot } from './ClaimProgressRing'
 import {
   CardItem,
   CardItemChevron,
@@ -14,7 +14,6 @@ import {
   CardItemTags,
   CardItemTitle,
   CardItemTriAction,
-  CardItemTriIndicator,
   CardItemTriMain,
   CardItemTriRow,
 } from './CardLayout'
@@ -80,16 +79,7 @@ export function PolicyListCard({
         </CardItemTags>
       </CardItemTriMain>
 
-      {hasClaim ? (
-        <CardItemTriIndicator>
-          <ClaimProgressRing
-            progress={claim.progress}
-            tone={claimRingTone(claim.claimStatus, claim.isError)}
-            size={44}
-            label={`${claim.progress}%`}
-          />
-        </CardItemTriIndicator>
-      ) : null}
+      <ClaimProgressSlot claim={claim} />
 
       {onClick ? (
         <CardItemTriAction>

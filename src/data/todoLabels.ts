@@ -1,9 +1,32 @@
+import { mergeTodos } from '../services/rulesEngine'
 import type { FamilyEvent, TodoItem, TodoUrgency } from '../types'
 
-export const TODO_SOURCE_LABELS: Record<TodoItem['source'], string> = {
+/** 個人待辦來源標籤（僅兩種；不含緊急度與事件類型） */
+export const TODO_SOURCE_DISPLAY = {
   system: '系統提醒',
-  event: '保障規劃',
   manual: '手動新增',
+} as const
+
+const ENGINE_SYSTEM_RULE_KINDS = new Set(['renewal', 'expired', 'claim_docs', 'gap'])
+
+/** 規則引擎產生的系統待辦（對齊保單標籤狀態與保障缺口） */
+export function isEngineSystemTodo(todo: Pick<TodoItem, 'ruleId'>): boolean {
+  if (!todo.ruleId) return false
+  return ENGINE_SYSTEM_RULE_KINDS.has(todo.ruleId.split(':')[0])
+}
+
+export function getTodoSourceDisplayLabel(todo: Pick<TodoItem, 'ruleId' | 'source'>): string {
+  return isEngineSystemTodo(todo) ? TODO_SOURCE_DISPLAY.system : TODO_SOURCE_DISPLAY.manual
+}
+
+function isPersistedTodoVisible(todo: TodoItem): boolean {
+  if (todo.completed) return false
+  if (todo.source === 'system' && !isEngineSystemTodo(todo)) return false
+  return true
+}
+
+export function filterActivePersistedTodos(todos: TodoItem[]): TodoItem[] {
+  return todos.filter(isPersistedTodoVisible)
 }
 
 const TODO_URGENCY_CHIP_CLASS: Record<TodoUrgency, string> = {
@@ -32,6 +55,22 @@ const URGENCY_RANK: Record<TodoUrgency, number> = {
   high: 0,
   medium: 1,
   low: 2,
+}
+
+/**
+ * 成員有效待辦：系統產生（deriveSystemTodos，已排除有效保單與理賠進行中／已結案）
+ * ＋ persisted 手動／事件待辦（未完成）。
+ */
+export function buildMemberActiveTodos(
+  memberId: string,
+  systemTodos: TodoItem[],
+  persistedTodos: TodoItem[],
+): TodoItem[] {
+  const systemForMember = systemTodos.filter((todo) => todo.memberId === memberId)
+  const persistedForMember = persistedTodos.filter(
+    (todo) => todo.memberId === memberId && isPersistedTodoVisible(todo),
+  )
+  return mergeTodos(systemForMember, persistedForMember)
 }
 
 /** 成員詳情：合併待辦與未連結事件的規劃項目 */
@@ -73,13 +112,19 @@ export function buildMemberPlanningItems(
 
 /**
  * 家庭成員待辦數（與成員詳情「個人待辦」列表同一套邏輯）：
- * 1. 合併後的待辦（系統依保單／理賠／缺口產生 ＋ 手動／事件 persisted）
- * 2. 加上尚未連結待辦的獨立規劃事件
+ * 1. 系統產生待辦（未達成保單／理賠／缺口狀態）
+ * 2. 手動／事件 persisted 待辦（未完成）
+ * 3. 尚未連結待辦的獨立規劃事件
+ *
+ * 不計入的系統狀態：有效保單、到期自動續保、理賠進行中／已結案、缺口達成率 >50% 等。
  */
 export function countMemberReminders(
-  memberTodos: TodoItem[],
+  memberId: string,
+  systemTodos: TodoItem[],
+  persistedTodos: TodoItem[],
   memberEvents: FamilyEvent[],
 ): { total: number; hasUrgent: boolean } {
+  const memberTodos = buildMemberActiveTodos(memberId, systemTodos, persistedTodos)
   const planningItems = buildMemberPlanningItems(memberTodos, memberEvents)
 
   return {

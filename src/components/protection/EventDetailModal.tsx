@@ -7,7 +7,8 @@ import {
   URGENCY_LABELS,
 } from '../../data/mockData'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
-import { getTodoSourceChipClass, getTodoUrgencyChipClass, TODO_SOURCE_LABELS } from '../../data/todoLabels'
+import { getTodoUrgencyChipClass } from '../../data/todoLabels'
+import { TodoSourceChip } from '../common/TodoSourceChip'
 import { formatCurrency } from '../../utils/calculations'
 import type { FamilyEvent, FamilyMember } from '../../types'
 
@@ -77,9 +78,7 @@ export function EventDetailModal({
                   <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(event.urgency)}`}>
                     {URGENCY_LABELS[event.urgency]}
                   </span>
-                  <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
-                    {TODO_SOURCE_LABELS.event}
-                  </span>
+                  <TodoSourceChip />
                 </div>
                 <p className="text-[10px] text-gray-400">建立者：{event.createdBy}</p>
               </StackBlock>

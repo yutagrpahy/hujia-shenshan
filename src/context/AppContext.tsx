@@ -17,6 +17,7 @@ import {
   initialMembers,
   initialTodos,
 } from '../data/mockData'
+import { filterActivePersistedTodos } from '../data/todoLabels'
 import {
   deriveNotifications,
   deriveSystemTodos,
@@ -148,9 +149,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [members, protectionProfile, dismissedRuleIds],
   )
 
+  const activePersistedTodos = useMemo(
+    () => filterActivePersistedTodos(persistedTodos),
+    [persistedTodos],
+  )
+
   const todos = useMemo(
-    () => mergeTodos(systemTodos, persistedTodos),
-    [systemTodos, persistedTodos],
+    () => mergeTodos(systemTodos, activePersistedTodos),
+    [systemTodos, activePersistedTodos],
   )
 
   const notifications = useMemo(() => {
@@ -277,7 +283,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         dueDate: event.date,
         completed: true,
         completedAt: new Date().toISOString().split('T')[0],
-        source: 'event',
+        source: 'manual',
         eventId: event.id,
       }
 
@@ -363,7 +369,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       urgency: input.urgency,
       dueDate: input.date,
       completed: false,
-      source: 'event',
+      source: 'manual',
       eventId: event.id,
     }
     setPersistedTodos((prev) => [...prev, todo])
@@ -525,7 +531,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       memberCount,
       todos,
       systemTodos,
-      persistedTodos,
+      persistedTodos: activePersistedTodos,
       dismissedRuleIds,
       historyTodos,
       notifications,
@@ -571,7 +577,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       memberCount,
       todos,
       systemTodos,
-      persistedTodos,
+      activePersistedTodos,
       dismissedRuleIds,
       historyTodos,
       notifications,

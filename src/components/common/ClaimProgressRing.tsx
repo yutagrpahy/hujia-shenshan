@@ -1,5 +1,6 @@
-import type { ClaimStatus } from '../../types'
-import { CLAIM_STATUS_GROUP } from '../../data/claims'
+import { CLAIM_STATUS_GROUP, shouldShowClaimProgressRing, type ClaimTab } from '../../data/claims'
+import type { ClaimRecord, ClaimStatus } from '../../types'
+import { CardItemTriIndicator } from './CardLayout'
 
 const TONE_STROKES = {
   danger: '#d97055',
@@ -23,7 +24,7 @@ export function claimRingTone(
         : 'info'
 }
 
-export function ClaimProgressRing({
+function ClaimProgressRing({
   progress,
   tone = 'info',
   size = 40,
@@ -59,5 +60,32 @@ export function ClaimProgressRing({
         </span>
       ) : null}
     </div>
+  )
+}
+
+/**
+ * 全站保單／理賠進度環唯一入口。
+ * 理賠頁請傳入 claimsTab；總覽／保單列表僅依理賠狀態判斷。
+ */
+export function ClaimProgressSlot({
+  claim,
+  size = 44,
+  claimsTab,
+}: {
+  claim?: ClaimRecord | null
+  size?: number
+  claimsTab?: ClaimTab
+}) {
+  if (!shouldShowClaimProgressRing(claim, { claimsTab })) return null
+
+  return (
+    <CardItemTriIndicator>
+      <ClaimProgressRing
+        progress={claim!.progress}
+        tone={claimRingTone(claim!.claimStatus, claim!.isError)}
+        size={size}
+        label={`${claim!.progress}%`}
+      />
+    </CardItemTriIndicator>
   )
 }

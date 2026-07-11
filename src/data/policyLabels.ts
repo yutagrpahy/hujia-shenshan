@@ -1,5 +1,15 @@
-import { CLAIM_STATUS_GROUP, CLAIM_STATUS_LABELS } from './claims'
+import {
+  CLAIM_STATUS_GROUP,
+  CLAIM_STATUS_LABELS,
+  CLAIM_TODO_STATUSES,
+} from './claims'
 import type { ClaimRecord, Policy } from '../types'
+
+/** 保單卡片標籤狀態觸發的系統待辦（與 getPolicyCardStatusChip 對齊） */
+export type PolicySystemTodoTrigger =
+  | { kind: 'renewal'; policy: Policy }
+  | { kind: 'expired'; policy: Policy }
+  | { kind: 'claim_docs'; claim: ClaimRecord }
 
 export const POLICY_TYPE_LABELS: Record<Policy['type'], string> = {
   life: '壽險',
@@ -83,4 +93,31 @@ export function getPolicyCardStatusChip(
 ): PolicyStatusChip | null {
   if (claim) return getClaimStatusChip(claim)
   return getPolicyStatusChip(policy)
+}
+
+/**
+ * 依保單卡片標籤判斷是否產生系統待辦。
+ * 有效／核保中／到期自動續保／理賠進行中／理賠已結案 → 不產生。
+ * 即將到期、已失效、理賠待補件 → 產生。
+ */
+export function resolvePolicySystemTodoTrigger(
+  policy: Policy,
+  claim?: ClaimRecord | null,
+): PolicySystemTodoTrigger | null {
+  if (claim) {
+    if (CLAIM_TODO_STATUSES.includes(claim.claimStatus)) {
+      return { kind: 'claim_docs', claim }
+    }
+    return null
+  }
+
+  if (policy.status === 'expiring' && !policy.autoRenew) {
+    return { kind: 'renewal', policy }
+  }
+
+  if (policy.status === 'expired') {
+    return { kind: 'expired', policy }
+  }
+
+  return null
 }

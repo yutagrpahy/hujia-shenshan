@@ -13,7 +13,11 @@ import {
   STAGE_LABELS,
 } from '../../data/mockData'
 import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
-import { countMemberReminders, getTodoCountChipClass } from '../../data/todoLabels'
+import {
+  buildMemberActiveTodos,
+  countMemberReminders,
+  getTodoCountChipClass,
+} from '../../data/todoLabels'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import {
   CardItem,
@@ -93,7 +97,8 @@ export function ProtectionPage() {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const {
     members,
-    todos,
+    systemTodos,
+    persistedTodos,
     familyEvents,
     documents,
     currentUserId,
@@ -250,7 +255,11 @@ export function ProtectionPage() {
   ])
 
   if (selectedMember) {
-    const memberTodos = todos.filter((t) => t.memberId === selectedMember.id)
+    const memberTodos = buildMemberActiveTodos(
+      selectedMember.id,
+      systemTodos,
+      persistedTodos,
+    )
     const memberDocs = documents.filter((d) => d.ownerMemberId === selectedMember.id)
     const memberEvents = familyEvents.filter((e) => e.memberIds.includes(selectedMember.id))
     const isSelf = selectedMember.id === currentUserId
@@ -434,12 +443,13 @@ export function ProtectionPage() {
         <section className="w-full max-w-full min-w-0">
           <StackList className="protection-grid">
             {members.map((member) => {
-              const memberTodos = todos.filter((todo) => todo.memberId === member.id)
               const memberEvents = familyEvents.filter((event) =>
                 event.memberIds.includes(member.id),
               )
               const { total: memberTodoCount, hasUrgent } = countMemberReminders(
-                memberTodos,
+                member.id,
+                systemTodos,
+                persistedTodos,
                 memberEvents,
               )
 

@@ -1,7 +1,7 @@
 import { Modal } from '@heroui/react'
 import { ChevronDown, ChevronUp, Shield } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { getClaimByPolicyId } from '../../data/claims'
+import { getClaimByPolicyId, isClaimInProgressStatus } from '../../data/claims'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type {
   AccidentPayoutGroup,
@@ -38,7 +38,11 @@ export function AccidentPayoutPanel({
   const hasMore = groups.length > VISIBLE_LIMIT
 
   const activeClaimCount = useMemo(
-    () => items.filter((item) => getClaimByPolicyId(members, item.id)).length,
+    () =>
+      items.filter((item) => {
+        const claim = getClaimByPolicyId(members, item.id)
+        return claim ? isClaimInProgressStatus(claim.claimStatus) : false
+      }).length,
     [items, members],
   )
 
@@ -68,9 +72,10 @@ export function AccidentPayoutPanel({
         </CardSectionTitle>
         <StackList>
           {visibleGroups.map((group) => {
-            const groupClaims = group.items.filter((item) =>
-              getClaimByPolicyId(members, item.id),
-            )
+            const groupClaims = group.items.filter((item) => {
+              const claim = getClaimByPolicyId(members, item.id)
+              return claim ? isClaimInProgressStatus(claim.claimStatus) : false
+            })
             return (
               <GroupSummaryCard
                 key={group.eventType}

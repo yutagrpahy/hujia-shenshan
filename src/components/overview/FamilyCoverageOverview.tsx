@@ -1,7 +1,7 @@
 import { Modal } from '@heroui/react'
 import { ChevronRight, HeartPulse, ShieldCheck } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { getClaimByPolicyId } from '../../data/claims'
+import { getClaimByPolicyId, isClaimInProgressStatus } from '../../data/claims'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type {
   FamilyCoverageDomainSummary,
@@ -13,8 +13,6 @@ import { computeFamilyCoverageDomains, formatCurrency } from '../../utils/calcul
 import { CardSectionTitle, StackBlock, StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
-
-const ACTIVE_CLAIM_STATUSES = ['in_review', 'approved', 'pending_docs'] as const
 
 function formatHeadlineAmount(amount: number): string {
   if (amount === 0) return '0 萬'
@@ -38,7 +36,7 @@ function countActiveClaims(members: FamilyMember[], summary: FamilyCoverageDomai
   const policyIds = summary.subcategories.flatMap((group) => group.items.map((item) => item.id))
   return policyIds.filter((id) => {
     const claim = getClaimByPolicyId(members, id)
-    return claim && ACTIVE_CLAIM_STATUSES.includes(claim.claimStatus as (typeof ACTIVE_CLAIM_STATUSES)[number])
+    return claim ? isClaimInProgressStatus(claim.claimStatus) : false
   }).length
 }
 

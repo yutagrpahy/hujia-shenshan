@@ -1,7 +1,7 @@
 import { Modal } from '@heroui/react'
 import { ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { getClaimByPolicyId } from '../../data/claims'
+import { getClaimByPolicyId, isClaimInProgressStatus } from '../../data/claims'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type {
   FamilyMember,
@@ -49,7 +49,7 @@ export function NonAccidentCoveragePanel({
     const policyIds = new Set(groups.flatMap((group) => group.items.map((item) => item.id)))
     return [...policyIds].filter((id) => {
       const claim = getClaimByPolicyId(members, id)
-      return claim && ['in_review', 'approved', 'pending_docs'].includes(claim.claimStatus)
+      return claim ? isClaimInProgressStatus(claim.claimStatus) : false
     }).length
   }, [groups, members])
 
@@ -96,7 +96,7 @@ export function NonAccidentCoveragePanel({
             {visibleGroups.map((group) => {
               const groupClaims = group.items.filter((item) => {
                 const claim = getClaimByPolicyId(members, item.id)
-                return claim && ['in_review', 'approved', 'pending_docs'].includes(claim.claimStatus)
+                return claim ? isClaimInProgressStatus(claim.claimStatus) : false
               })
               return (
                 <GroupSummaryCard

@@ -7,12 +7,8 @@ import {
   FREQUENCY_LABELS,
   URGENCY_LABELS,
 } from '../../data/mockData'
-import {
-  buildMemberPlanningItems,
-  getTodoSourceChipClass,
-  getTodoUrgencyChipClass,
-  TODO_SOURCE_LABELS,
-} from '../../data/todoLabels'
+import { buildMemberPlanningItems, getTodoUrgencyChipClass } from '../../data/todoLabels'
+import { TodoSourceChip } from '../common/TodoSourceChip'
 import { CardSectionTitle, StackList, TextModalLink } from '../common/CardLayout'
 import { TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
@@ -97,7 +93,7 @@ export function MemberTodosSection({
   return (
     <section>
       <CardSectionTitle
-        subtitle="待辦提醒與保障規劃事件"
+        subtitle="待辦提醒與手動事項"
         actions={
           <Button
             size="sm"
@@ -131,9 +127,7 @@ export function MemberTodosSection({
                     <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(item.data.urgency)}`}>
                       {URGENCY_LABELS[item.data.urgency]}
                     </span>
-                    <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
-                      {TODO_SOURCE_LABELS[item.data.source]}
-                    </span>
+                    <TodoSourceChip todo={item.data} />
                   </>
                 }
               />
@@ -164,9 +158,7 @@ export function MemberTodosSection({
                     <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(item.data.urgency)}`}>
                       {URGENCY_LABELS[item.data.urgency]}
                     </span>
-                    <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
-                      {TODO_SOURCE_LABELS.event}
-                    </span>
+                    <TodoSourceChip />
                   </>
                 }
               />
@@ -196,7 +188,7 @@ export function MemberTodosSection({
                 urgency: pendingCompleteEvent.urgency,
                 dueDate: pendingCompleteEvent.date,
                 completed: false,
-                source: 'event',
+                source: 'manual',
               }
             : null
         }

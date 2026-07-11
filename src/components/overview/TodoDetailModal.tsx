@@ -3,11 +3,8 @@ import { DetailEditLink, StackBlock, StackList } from '../common/CardLayout'
 import { Calendar, Check, User } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
-import {
-  getTodoSourceChipClass,
-  getTodoUrgencyChipClass,
-  TODO_SOURCE_LABELS,
-} from '../../data/todoLabels'
+import { getTodoUrgencyChipClass } from '../../data/todoLabels'
+import { TodoSourceChip } from '../common/TodoSourceChip'
 import type { TodoItem } from '../../types'
 
 export function TodoDetailModal({
@@ -58,9 +55,7 @@ export function TodoDetailModal({
                   <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(todo.urgency)}`}>
                     {URGENCY_LABELS[todo.urgency]}
                   </span>
-                  <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
-                    {TODO_SOURCE_LABELS[todo.source]}
-                  </span>
+                  <TodoSourceChip todo={todo} />
                 </div>
               </StackBlock>
             )}

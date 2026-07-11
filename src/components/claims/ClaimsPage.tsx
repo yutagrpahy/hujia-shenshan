@@ -24,11 +24,10 @@ import {
   CardItemSubtitle,
   CardItemTitle,
   CardItemTriAction,
-  CardItemTriIndicator,
   CardItemTriMain,
   CardItemTriRow,
 } from '../common/CardLayout'
-import { ClaimProgressRing, claimRingTone } from '../common/ClaimProgressRing'
+import { ClaimProgressSlot } from '../common/ClaimProgressRing'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
 
@@ -54,12 +53,13 @@ function SegmentTab({
 
 function ClaimCard({
   claim,
+  claimsTab,
   onSelect,
 }: {
   claim: ClaimRecord
+  claimsTab: ClaimTab
   onSelect: (claim: ClaimRecord) => void
 }) {
-  const ringTone = claimRingTone(claim.claimStatus, claim.isError)
   const statusTone = CLAIM_STATUS_GROUP[claim.claimStatus].tone
 
   return (
@@ -91,14 +91,7 @@ function ClaimCard({
             </CardItemDetail>
           ) : null}
         </CardItemTriMain>
-        <CardItemTriIndicator>
-          <ClaimProgressRing
-            progress={claim.progress}
-            tone={ringTone}
-            size={44}
-            label={`${claim.progress}%`}
-          />
-        </CardItemTriIndicator>
+        <ClaimProgressSlot claim={claim} claimsTab={claimsTab} />
         <CardItemTriAction>
           <CardItemChevron />
         </CardItemTriAction>
@@ -167,7 +160,12 @@ export function ClaimsPage() {
       ) : (
         <StackList className="claims-list">
           {tabClaims.map((claim) => (
-            <ClaimCard key={claim.id} claim={claim} onSelect={openPolicyDetail} />
+            <ClaimCard
+              key={claim.id}
+              claim={claim}
+              claimsTab={activeTab}
+              onSelect={openPolicyDetail}
+            />
           ))}
         </StackList>
       )}

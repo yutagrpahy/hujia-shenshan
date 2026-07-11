@@ -1,7 +1,7 @@
 import type { ClaimRecord, FamilyMember, PolicyWithMember } from '../../types'
 import { CLAIM_STATUS_GROUP } from '../../data/claims'
 import { getPolicyCardStatusChip } from '../../data/policyLabels'
-import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
+import { ClaimProgressSlot } from './ClaimProgressRing'
 import {
   CardItem,
   CardItemChevron,
@@ -11,7 +11,6 @@ import {
   CardItemSubtitle,
   CardItemTitle,
   CardItemTriAction,
-  CardItemTriIndicator,
   CardItemTriMain,
   CardItemTriRow,
 } from './CardLayout'
@@ -85,16 +84,7 @@ export function CoverageListItem({
         </CardItemDetail>
       </CardItemTriMain>
 
-      {hasClaim ? (
-        <CardItemTriIndicator>
-          <ClaimProgressRing
-            progress={claim.progress}
-            tone={claimRingTone(claim.claimStatus, claim.isError)}
-            size={44}
-            label={`${claim.progress}%`}
-          />
-        </CardItemTriIndicator>
-      ) : null}
+      <ClaimProgressSlot claim={claim} />
 
       {isClickable ? (
         <CardItemTriAction>

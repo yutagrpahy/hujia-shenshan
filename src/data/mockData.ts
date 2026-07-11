@@ -509,19 +509,11 @@ export const initialMembers: FamilyMember[] = [
   },
 ]
 
-/** 手動與事件待辦；系統待辦由 rulesEngine 依保單／缺口即時產生 */
+/**
+ * 手動與事件待辦；系統待辦由 rulesEngine 依保單／缺口即時產生。
+ * DEMO 個人待辦空白：m3 王雅婷、m6 王小美（見 initialFamilyEvents 註解）。
+ */
 export const initialTodos: TodoItem[] = [
-  {
-    id: 't2',
-    title: '更新意外險受益人（雅婷結婚）',
-    memberId: 'm3',
-    memberName: '王雅婷',
-    policyId: 'p4',
-    urgency: 'medium',
-    dueDate: '2026-04-30',
-    completed: false,
-    source: 'system',
-  },
   {
     id: 't3',
     title: '王阿公長照保單已到期，評估重新投保',
@@ -530,18 +522,8 @@ export const initialTodos: TodoItem[] = [
     urgency: 'high',
     dueDate: '2026-05-15',
     completed: false,
-    source: 'event',
-    eventId: 'fe1',
-  },
-  {
-    id: 't4',
-    title: '檢視退休年金規劃',
-    memberId: 'm1',
-    memberName: '王建國',
-    urgency: 'medium',
-    dueDate: '2026-06-01',
-    completed: false,
     source: 'manual',
+    eventId: 'fe1',
   },
   {
     id: 't5',
@@ -552,30 +534,10 @@ export const initialTodos: TodoItem[] = [
     urgency: 'medium',
     dueDate: '2026-04-15',
     completed: false,
-    source: 'event',
+    source: 'manual',
     eventId: 'fe4',
   },
-  {
-    id: 't6',
-    title: '王小美護理職業險年度健檢提醒',
-    memberId: 'm6',
-    memberName: '王小美',
-    policyId: 'p19',
-    urgency: 'low',
-    dueDate: '2026-07-01',
-    completed: false,
-    source: 'manual',
-  },
-  {
-    id: 't8',
-    title: '家族保障健康分級年度檢視',
-    memberId: 'm1',
-    memberName: '王建國',
-    urgency: 'medium',
-    dueDate: '2026-07-11',
-    completed: false,
-    source: 'manual',
-  },
+  // DEMO: 王小美個人待辦空白 — 復原空白情境時加回 t6（手動待辦）
 ]
 
 export const initialHistoryTodos: TodoItem[] = [
@@ -679,18 +641,7 @@ export const initialFamilyEvents: FamilyEvent[] = [
     memberIds: ['m1'],
     createdBy: '王建國',
   },
-  {
-    id: 'fe3',
-    name: '雅婷購屋頭期款',
-    type: 'home',
-    date: '2027-03-01',
-    frequency: 'once',
-    fundsNeeded: 2000000,
-    urgency: 'low',
-    description: '第一間自住公寓頭期款規劃',
-    memberIds: ['m3'],
-    createdBy: '王雅婷',
-  },
+  // DEMO: 王雅婷個人待辦空白 — 復原空白情境時加回 fe3（購屋頭期款規劃）
   {
     id: 'fe4',
     name: '子安新婚保障檢視',
@@ -703,18 +654,7 @@ export const initialFamilyEvents: FamilyEvent[] = [
     memberIds: ['m5'],
     createdBy: '王子安',
   },
-  {
-    id: 'fe5',
-    name: '小美護理執照續期',
-    type: 'education',
-    date: '2026-09-01',
-    frequency: 'once',
-    fundsNeeded: 8000,
-    urgency: 'low',
-    description: '護理師執照續期與醫護職業意外險保障檢視',
-    memberIds: ['m6'],
-    createdBy: '王小美',
-  },
+  // DEMO: 王小美個人待辦空白 — 復原空白情境時加回 fe5（護理執照續期）
 ]
 
 export const educationContents: EducationContent[] = [

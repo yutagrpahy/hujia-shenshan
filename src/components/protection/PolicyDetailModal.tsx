@@ -22,16 +22,6 @@ const STATUS_STYLES = {
   info: 'bg-sand-100 text-gray-600 border-sand-200',
 }
 
-const POLICY_TYPE_LABELS: Record<PolicyWithMember['policy']['type'], string> = {
-  life: '壽險',
-  health: '醫療',
-  accident: '意外',
-  longterm: '長照',
-  savings: '年金',
-  disability: '失能',
-  critical: '重大疾病',
-}
-
 export function PolicyDetailModal({
   item,
   isOpen,
@@ -74,9 +64,6 @@ export function PolicyDetailModal({
                       {policy.insurer} · 被保人 {detail.memberName}
                     </p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
-                      <span className="m3-chip bg-teal-50 text-teal-600">
-                        {POLICY_TYPE_LABELS[policy.type]}
-                      </span>
                       <span
                         className={`m3-chip border ${STATUS_STYLES[detail.statusTone]}`}
                       >
