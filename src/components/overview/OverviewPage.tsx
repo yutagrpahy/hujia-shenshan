@@ -29,9 +29,7 @@ import {
   CardItemMetaLabel,
   CardItemRow,
   CardItemTitle,
-  CardSectionTitle,
-  PageStack,
-  Section,
+  PageSection,
 } from '../common/CardLayout'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
@@ -89,7 +87,7 @@ export function OverviewPage() {
   }
 
   return (
-    <PageStack className="overview-grid">
+    <div className="overview-grid">
       <div className="hero-banner overview-grid--hero">
         <div className="hero-banner__mask" aria-hidden>
           <img
@@ -120,62 +118,61 @@ export function OverviewPage() {
         </div>
       )}
 
-      <Section>
-        <CardSectionTitle>家庭保障總覽</CardSectionTitle>
-
-        <div className="m3-card p-4 md:p-6 w-full max-w-full min-w-0">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
-            <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f1ed" strokeWidth="3" />
-              <circle
-                cx="18"
-                cy="18"
-                r="15.5"
-                fill="none"
-                stroke="#2d7a70"
-                strokeWidth="3"
-                strokeDasharray={`${coverage.healthScore} 100`}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <Heart className={`w-4 h-4 ${scoreColor}`} />
-              <span className={`text-lg md:text-xl font-bold ${scoreColor}`}>
-                {coverage.healthScore}
-              </span>
+      <PageSection title="家庭保障總覽" fullWidth>
+        <div className="m3-card m3-card--section">
+          <div className="ds-section-inner">
+            <div className="flex items-center gap-4">
+              <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f1ed" strokeWidth="3" />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.5"
+                    fill="none"
+                    stroke="#2d7a70"
+                    strokeWidth="3"
+                    strokeDasharray={`${coverage.healthScore} 100`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Heart className={`w-4 h-4 ${scoreColor}`} />
+                  <span className={`text-lg md:text-xl font-bold ${scoreColor}`}>
+                    {coverage.healthScore}
+                  </span>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm md:text-base font-semibold text-gray-800">保障健康度</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  依「{coverage.healthTierLabel}」分級計算 ·{' '}
+                  {coverage.healthScore >= 80
+                    ? '保障充足'
+                    : coverage.healthScore >= 60
+                      ? '部分建議補強'
+                      : '有多項缺口需關注'}
+                </p>
+                <button
+                  onClick={() => openHealthProfile('compare')}
+                  className="text-[10px] text-teal-600 font-medium mt-1 hover:underline"
+                >
+                  查看家庭保險健康分級 →
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm md:text-base font-semibold text-gray-800">保障健康度</p>
-            <p className="text-xs text-gray-400 mt-0.5">
-              依「{coverage.healthTierLabel}」分級計算 ·{' '}
-              {coverage.healthScore >= 80
-                ? '保障充足'
-                : coverage.healthScore >= 60
-                  ? '部分建議補強'
-                  : '有多項缺口需關注'}
-            </p>
-            <button
-              onClick={() => openHealthProfile('compare')}
-              className="text-[10px] text-teal-600 font-medium mt-1 hover:underline"
-            >
-              查看家庭保險健康分級 →
-            </button>
+
+            <HealthProfileEntry
+              profile={protectionProfile}
+              onOpen={() => openHealthProfile('current')}
+            />
+
+            <FamilyCoverageOverview members={members} />
           </div>
         </div>
+      </PageSection>
 
-        <HealthProfileEntry
-          profile={protectionProfile}
-          onOpen={() => openHealthProfile('current')}
-        />
-
-        <FamilyCoverageOverview members={members} />
-        </div>
-      </Section>
-
-      <Section>
-        <CardSectionTitle>保障缺口</CardSectionTitle>
+      <PageSection title="保障缺口" fullWidth>
         <div className="gap-cards-list">
           {sortedGaps.map((gap) => {
             const pct =
@@ -317,15 +314,14 @@ export function OverviewPage() {
             )
           })}
         </div>
-      </Section>
+      </PageSection>
 
       <TodoCalendarPanel
         todos={todos}
         onViewMember={(memberId) => navigateToMember(memberId)}
       />
 
-      <Section className="overview-grid--full">
-        <CardSectionTitle>推薦內容</CardSectionTitle>
+      <PageSection title="推薦內容" fullWidth>
         <div className="grid grid-cols-1 md:grid-cols-3 education-grid">
           {education.map((item) => (
             <CardItem key={item.id} className="m3-card-item--lg">
@@ -347,7 +343,7 @@ export function OverviewPage() {
             </CardItem>
           ))}
         </div>
-      </Section>
+      </PageSection>
 
       <HealthProfileModal
         isOpen={showHealthProfile}
@@ -363,6 +359,6 @@ export function OverviewPage() {
         onOpenChange={(open) => !open && setSelectedGap(null)}
       />
 
-    </PageStack>
+    </div>
   )
 }

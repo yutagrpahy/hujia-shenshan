@@ -90,9 +90,7 @@ export function HealthProfileEntry({ profile, onOpen, compact }: HealthProfileEn
         <ClipboardList className="w-5 h-5 text-teal-600" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-semibold text-teal-600 uppercase tracking-wide">
-          家庭保險健康分級
-        </p>
+        <p className="m3-card-eyebrow">家庭保險健康分級</p>
         <p className="text-sm font-semibold text-gray-800">
           第 {profile.tier} 級 · {profile.tierLabel}
         </p>

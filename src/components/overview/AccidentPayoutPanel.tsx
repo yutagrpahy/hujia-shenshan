@@ -10,7 +10,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 import { formatCurrency, groupAccidentPayouts } from '../../utils/calculations'
-import { StackList } from '../common/CardLayout'
+import { CardSectionTitle, StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { GroupSummaryCard } from '../common/GroupSummaryCard'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
@@ -45,11 +45,8 @@ export function AccidentPayoutPanel({
   if (groups.length === 0) {
     return (
       <div>
-        <div className="flex items-center gap-1.5 mb-2">
-          <Shield className="w-3.5 h-3.5 text-teal-600" />
-          <span className="text-xs font-medium text-gray-600">意外保障額</span>
-        </div>
-        <p className="text-xs text-gray-400 px-1">尚無意外保障額項目</p>
+        <CardSectionTitle icon={Shield}>意外保障額</CardSectionTitle>
+        <p className="text-xs text-gray-400">尚無意外保障額項目</p>
       </div>
     )
   }
@@ -57,17 +54,18 @@ export function AccidentPayoutPanel({
   return (
     <>
       <div>
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <Shield className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-            <span className="text-xs font-medium text-gray-600">意外保障額</span>
-          </div>
-          {activeClaimCount > 0 && (
-            <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
-              {activeClaimCount} 件進行中
-            </span>
-          )}
-        </div>
+        <CardSectionTitle
+          icon={Shield}
+          actions={
+            activeClaimCount > 0 ? (
+              <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
+                {activeClaimCount} 件進行中
+              </span>
+            ) : undefined
+          }
+        >
+          意外保障額
+        </CardSectionTitle>
         <StackList>
           {visibleGroups.map((group) => {
             const groupClaims = group.items.filter((item) =>

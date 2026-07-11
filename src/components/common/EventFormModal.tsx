@@ -1,5 +1,5 @@
 import { Button, Modal } from '@heroui/react'
-import { StackForm } from './CardLayout'
+import { FormLabel, StackForm } from './CardLayout'
 import {
   EVENT_FORM_PLACEHOLDERS,
   EVENT_TYPE_LABELS,
@@ -39,7 +39,7 @@ export function EventFormModal({
           <Modal.Body>
             <StackForm>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">事件名稱 *</label>
+                <FormLabel>事件名稱 *</FormLabel>
                 <input
                   value={eventInput.name}
                   onChange={(e) => setEventInput((prev) => ({ ...prev, name: e.target.value }))}
@@ -48,7 +48,7 @@ export function EventFormModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">事件類型（選填）</label>
+                <FormLabel>事件類型（選填）</FormLabel>
                 <select
                   value={eventInput.type ?? ''}
                   onChange={(e) =>
@@ -68,7 +68,7 @@ export function EventFormModal({
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">事件日期（選填）</label>
+                <FormLabel>事件日期（選填）</FormLabel>
                 <input
                   type="date"
                   value={eventInput.date ?? ''}
@@ -77,7 +77,7 @@ export function EventFormModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">事件頻率</label>
+                <FormLabel>事件頻率</FormLabel>
                 <select
                   value={eventInput.frequency}
                   onChange={(e) =>
@@ -96,7 +96,7 @@ export function EventFormModal({
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">所需資金</label>
+                <FormLabel>所需資金</FormLabel>
                 <input
                   type="number"
                   value={eventInput.fundsNeeded}
@@ -108,7 +108,7 @@ export function EventFormModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">緊急程度</label>
+                <FormLabel>緊急程度</FormLabel>
                 <div className="flex gap-2">
                   {(['high', 'medium', 'low'] as TodoUrgency[]).map((urgency) => (
                     <button
@@ -125,7 +125,7 @@ export function EventFormModal({
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">事件描述（選填）</label>
+                <FormLabel>事件描述（選填）</FormLabel>
                 <textarea
                   value={eventInput.description ?? ''}
                   onChange={(e) =>
@@ -137,7 +137,7 @@ export function EventFormModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">關聯成員</label>
+                <FormLabel>關聯成員</FormLabel>
                 <div className="flex flex-wrap gap-2">
                   {members.map((member) => (
                     <button

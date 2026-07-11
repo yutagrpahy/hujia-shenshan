@@ -23,6 +23,7 @@ import {
   CardItemTags,
   CardItemTitle,
   CardSectionTitle,
+  FormLabel,
   PageStack,
   StackForm,
   StackList,
@@ -302,7 +303,7 @@ export function ProtectionPage() {
             </>
           ) : (
             <>
-              <div className="m3-segment mb-3 grid grid-cols-2 gap-1">
+              <div className="m3-segment grid grid-cols-2 gap-1">
                 <SegmentTab
                   active={memberPolicyTab === 'effective'}
                   label={`有效保單 (${memberPolicyCounts.effective})`}
@@ -324,32 +325,36 @@ export function ProtectionPage() {
                     : '目前沒有失效保單'}
                 </p>
               ) : (
-                filteredMemberPolicyGroups.map((group) => (
-              <div
-                key={group.gapKey}
-                id={`member-gap-section-${group.gapKey}`}
-                className="mb-4 scroll-mt-28"
-              >
-                <CardSectionTitle className="px-0">{group.category}</CardSectionTitle>
-                {group.policies.map(({ policy: p }) => (
-                  <PolicyListCard
-                    key={p.id}
-                    id={`member-policy-${p.id}`}
-                    policy={p}
-                    showMember={false}
-                    highlighted={highlightedPolicyId === p.id}
-                    onClick={() =>
-                      setSelectedPolicy({
-                        policy: p,
-                        memberId: selectedMember.id,
-                        memberName: selectedMember.name,
-                        avatarSeed: selectedMember.avatarSeed,
-                      })
-                    }
-                  />
-                ))}
-              </div>
-                ))
+                <StackList loose>
+                  {filteredMemberPolicyGroups.map((group) => (
+                    <div
+                      key={group.gapKey}
+                      id={`member-gap-section-${group.gapKey}`}
+                      className="scroll-mt-28"
+                    >
+                      <CardSectionTitle>{group.category}</CardSectionTitle>
+                      <StackList>
+                        {group.policies.map(({ policy: p }) => (
+                          <PolicyListCard
+                            key={p.id}
+                            id={`member-policy-${p.id}`}
+                            policy={p}
+                            showMember={false}
+                            highlighted={highlightedPolicyId === p.id}
+                            onClick={() =>
+                              setSelectedPolicy({
+                                policy: p,
+                                memberId: selectedMember.id,
+                                memberName: selectedMember.name,
+                                avatarSeed: selectedMember.avatarSeed,
+                              })
+                            }
+                          />
+                        ))}
+                      </StackList>
+                    </div>
+                  ))}
+                </StackList>
               )}
             </>
           )}
@@ -504,7 +509,7 @@ export function ProtectionPage() {
                   { key: 'occupation', label: '職業', type: 'text' },
                 ].map(({ key, label, type }) => (
                   <div key={key}>
-                    <label className="text-xs text-gray-500 mb-1 block">{label}</label>
+                    <FormLabel>{label}</FormLabel>
                     <input
                       type={type}
                       value={String(newMember[key as keyof NewMemberInput] ?? '')}
@@ -519,7 +524,7 @@ export function ProtectionPage() {
                   </div>
                 ))}
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">角色</label>
+                  <FormLabel>角色</FormLabel>
                   <select
                     value={newMember.role}
                     onChange={(e) =>
@@ -584,7 +589,7 @@ function AddPolicyModal({
             </div>
             <StackForm>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">保單名稱 *</label>
+                <FormLabel>保單名稱 *</FormLabel>
                 <input
                   value={newPolicy.name}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, name: e.target.value }))}
@@ -593,7 +598,7 @@ function AddPolicyModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">保險公司 *</label>
+                <FormLabel>保險公司 *</FormLabel>
                 <input
                   value={newPolicy.insurer}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, insurer: e.target.value }))}
@@ -602,7 +607,7 @@ function AddPolicyModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">保單類型 *</label>
+                <FormLabel>保單類型 *</FormLabel>
                 <select
                   value={newPolicy.type}
                   onChange={(e) =>
@@ -619,7 +624,7 @@ function AddPolicyModal({
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">受益人</label>
+                <FormLabel>受益人</FormLabel>
                 <input
                   value={newPolicy.beneficiary ?? ''}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, beneficiary: e.target.value }))}
@@ -628,7 +633,7 @@ function AddPolicyModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">到期日（選填）</label>
+                <FormLabel>到期日（選填）</FormLabel>
                 <input
                   type="date"
                   value={newPolicy.expiryDate ?? ''}
@@ -637,7 +642,7 @@ function AddPolicyModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">保障金額（選填）</label>
+                <FormLabel>保障金額（選填）</FormLabel>
                 <input
                   type="number"
                   value={newPolicy.coverage ?? 0}

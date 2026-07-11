@@ -9,7 +9,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 import { formatCurrency, formatWan, groupNonAccidentCoverage } from '../../utils/calculations'
-import { StackList } from '../common/CardLayout'
+import { CardSectionTitle, StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { GroupSummaryCard } from '../common/GroupSummaryCard'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
@@ -55,18 +55,19 @@ export function NonAccidentCoveragePanel({
 
   return (
     <>
-      <div className="m3-card-filled p-4 mb-3">
-        <div className="flex items-center justify-between gap-2 mb-1">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
-            <span className="text-xs font-medium text-teal-600">非意外保障額</span>
-          </div>
-          {activeClaimCount > 0 && (
+      <CardSectionTitle
+        icon={ShieldCheck}
+        actions={
+          activeClaimCount > 0 ? (
             <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
               {activeClaimCount} 件理賠進行中
             </span>
-          )}
-        </div>
+          ) : undefined
+        }
+      >
+        非意外保障額
+      </CardSectionTitle>
+      <div className="m3-card-filled p-4">
         <p className="text-xl md:text-2xl font-bold text-teal-700">{formatWan(totalAmount)}</p>
         <p className="text-[10px] text-teal-600/80 mt-1 leading-relaxed">{NON_ACCIDENT_SCOPE_NOTE}</p>
 

@@ -68,21 +68,22 @@ export function ProfilePage() {
       </div>
 
       <div className="m3-card p-4">
-        <div className="ds-card-header">
-          <h4 className="m3-card-section-title m3-card-section-title--with-icon">
-            <User className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-            個人基本資料
-          </h4>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="border-teal-200 text-teal-700 shrink-0"
-            onPress={() => setShowEditProfile(true)}
-          >
-            <Pencil className="w-3.5 h-3.5" />
-            編輯
-          </Button>
-        </div>
+        <CardSectionTitle
+          icon={User}
+          actions={
+            <Button
+              size="sm"
+              variant="secondary"
+              className="border-teal-200 text-teal-700 shrink-0"
+              onPress={() => setShowEditProfile(true)}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              編輯
+            </Button>
+          }
+        >
+          個人基本資料
+        </CardSectionTitle>
         {[
           ['姓名', currentUser.name],
           ['年齡', `${currentUser.age} 歲`],
@@ -103,30 +104,23 @@ export function ProfilePage() {
       </div>
 
       <div className="m3-card p-4">
-        <div className="flex items-start gap-3">
-          <div className="m3-icon-wrap m3-icon-wrap--md shrink-0">
-            <Link2 className="w-5 h-5 text-teal-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase">保單資料來源綁定</h4>
-            <p className="text-sm font-semibold text-gray-800 mt-1 leading-snug">
-              {UNION_INFO_SYSTEM_NAME}
-            </p>
-            <p className="text-xs text-teal-700 font-medium mt-1.5">
-              {unionSyncEnabled ? '已綁定' : '已取消綁定'}
-            </p>
-            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-              {unionSyncEnabled
-                ? `已透過${UNION_POLICY_CHIP_LABEL}同步 ${unionPolicyCount} 張保單，全站保障、理賠與總覽資料將即時連動。`
-                : `${UNION_POLICY_CHIP_LABEL}保單已從全站隱藏，自行登載保單不受影響。可隨時重新綁定恢復同步。`}
-            </p>
-            <p className="text-[10px] text-gray-400 mt-2">最近同步：2026-07-08 09:30</p>
-          </div>
-        </div>
+        <CardSectionTitle icon={Link2}>保單資料來源綁定</CardSectionTitle>
+        <p className="text-sm font-semibold text-gray-800 leading-snug">
+          {UNION_INFO_SYSTEM_NAME}
+        </p>
+        <p className="text-xs text-teal-700 font-medium mt-1.5">
+          {unionSyncEnabled ? '已綁定' : '已取消綁定'}
+        </p>
+        <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+          {unionSyncEnabled
+            ? `已透過${UNION_POLICY_CHIP_LABEL}同步 ${unionPolicyCount} 張保單，全站保障、理賠與總覽資料將即時連動。`
+            : `${UNION_POLICY_CHIP_LABEL}保單已從全站隱藏，自行登載保單不受影響。可隨時重新綁定恢復同步。`}
+        </p>
+        <p className="text-[10px] text-gray-400 mt-2">最近同步：2026-07-08 09:30</p>
         <Button
           fullWidth
           variant="secondary"
-          className={`mt-4 ${unionSyncEnabled ? 'border-red-100 text-red-600' : 'border-teal-200 text-teal-700'}`}
+          className={`mt-[var(--ds-space-block)] ${unionSyncEnabled ? 'border-red-100 text-red-600' : 'border-teal-200 text-teal-700'}`}
           onPress={() => setShowUnionConfirm(true)}
         >
           {unionSyncEnabled ? '取消綁定資訊系統' : '重新綁定資訊系統'}
@@ -147,7 +141,7 @@ export function ProfilePage() {
       </Section>
 
       <div className="m3-card p-4">
-        <p className="text-xs text-gray-400 ds-section-header">
+        <p className="text-xs text-gray-400 mb-[var(--ds-space-form)]">
           此 App 依登入帳號顯示您的家庭與保單資料。以下為登出示意。
         </p>
         <Button

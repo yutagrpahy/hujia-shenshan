@@ -96,7 +96,7 @@ export function StackBlock({
 }
 
 /**
- * 區域標題列：標題與下方內容固定 8px（--ds-space-title-content）
+ * 區域標題列：全站 12px 大寫灰字，與下方內容固定 8px（--ds-space-title-content）
  */
 export function CardSectionTitle({
   children,
@@ -105,6 +105,7 @@ export function CardSectionTitle({
   subtitle,
   actions,
   className = '',
+  as: Tag = 'h3',
 }: {
   children: ReactNode
   icon?: LucideIcon
@@ -112,26 +113,76 @@ export function CardSectionTitle({
   subtitle?: ReactNode
   actions?: ReactNode
   className?: string
+  as?: 'h2' | 'h3' | 'h4'
 }) {
   return (
     <div
-      className={`ds-section-header flex items-center justify-between gap-2 ${className}`.trim()}
+      className={`ds-section-header flex items-start justify-between gap-2 ${className}`.trim()}
     >
-      <div className="min-w-0">
-        <h3
-          className={`m3-card-section-title ${
-            Icon ? 'm3-card-section-title--with-icon' : ''
+      <div className="min-w-0 flex-1">
+        <Tag
+          className={`m3-section-title ${
+            Icon ? 'm3-section-title--with-icon' : ''
           }`}
         >
           {Icon ? <Icon className="w-3.5 h-3.5 text-teal-500 shrink-0" /> : null}
           {children}
-        </h3>
+        </Tag>
         {subtitle ? <p className="ds-section-subtitle">{subtitle}</p> : null}
       </div>
       {actions ?? (count != null ? (
-        <span className="text-[10px] text-gray-400 shrink-0">{count}</span>
+        <span className="m3-section-meta">{count}</span>
       ) : null)}
     </div>
+  )
+}
+
+/** 頁面區段：標題 + 內容，間距與字級全站一致 */
+export function PageSection({
+  title,
+  icon,
+  count,
+  subtitle,
+  actions,
+  className = '',
+  fullWidth = false,
+  children,
+}: {
+  title: ReactNode
+  icon?: LucideIcon
+  count?: ReactNode
+  subtitle?: ReactNode
+  actions?: ReactNode
+  className?: string
+  fullWidth?: boolean
+  children: ReactNode
+}) {
+  return (
+    <Section
+      className={`${fullWidth ? 'overview-grid--full' : ''} ${className}`.trim()}
+    >
+      <CardSectionTitle
+        icon={icon}
+        count={count}
+        subtitle={subtitle}
+        actions={actions}
+      >
+        {title}
+      </CardSectionTitle>
+      {children}
+    </Section>
+  )
+}
+
+export function FormLabel({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <label className={`m3-field-label ${className}`.trim()}>{children}</label>
   )
 }
 

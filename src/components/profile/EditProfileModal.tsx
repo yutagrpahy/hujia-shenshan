@@ -1,5 +1,5 @@
 import { Button, Modal } from '@heroui/react'
-import { StackForm } from '../common/CardLayout'
+import { FormLabel, StackForm } from '../common/CardLayout'
 import { useEffect, useState } from 'react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type { FamilyMember, UpdateMemberProfileInput } from '../../types'
@@ -65,7 +65,7 @@ export function EditProfileModal({
                 { key: 'monthlyExpense', label: '月支出', type: 'number' },
               ].map((field) => (
                 <div key={field.key}>
-                  <label className="text-xs text-gray-500 mb-1 block">{field.label}</label>
+                  <FormLabel>{field.label}</FormLabel>
                   <input
                     type={field.type}
                     value={form[field.key as keyof UpdateMemberProfileInput]}

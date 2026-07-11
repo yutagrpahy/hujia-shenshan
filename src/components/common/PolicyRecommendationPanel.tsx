@@ -85,21 +85,20 @@ export function PolicyRecommendationPanel({
         </StackList>
       </div>
 
-      <div className="m3-card-warm p-4 flex gap-3">
-        <img
-          src={getAdvisorAvatarUrl()}
-          alt={recommendedAdvisor.name}
-          className="member-avatar member-avatar--default w-12 h-12 shrink-0"
-        />
-        <div>
-          <p className="text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
-            <UserCircle className="w-3.5 h-3.5" />
-            推薦顧問
-          </p>
-          <p className="text-sm font-semibold text-gray-800">{recommendedAdvisor.name}</p>
-          <p className="text-xs text-teal-600">{recommendedAdvisor.title}</p>
-          <p className="text-xs text-gray-400 mt-1">{recommendedAdvisor.phone}</p>
-          <p className="text-xs text-gray-500 mt-2">{recommendedAdvisor.reason}</p>
+      <div>
+        <CardSectionTitle icon={UserCircle}>推薦顧問</CardSectionTitle>
+        <div className="m3-card-warm p-4 flex gap-3">
+          <img
+            src={getAdvisorAvatarUrl()}
+            alt={recommendedAdvisor.name}
+            className="member-avatar member-avatar--default w-12 h-12 shrink-0"
+          />
+          <div>
+            <p className="text-sm font-semibold text-gray-800">{recommendedAdvisor.name}</p>
+            <p className="text-xs text-teal-600">{recommendedAdvisor.title}</p>
+            <p className="text-xs text-gray-400 mt-1">{recommendedAdvisor.phone}</p>
+            <p className="text-xs text-gray-500 mt-2">{recommendedAdvisor.reason}</p>
+          </div>
         </div>
       </div>
     </PageStack>

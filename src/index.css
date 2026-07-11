@@ -101,6 +101,13 @@ body {
   --ds-space-tight: var(--ds-space-1);          /* 極緊湊列 */
   --ds-space-inset: var(--ds-space-4);          /* 面板內距 */
   --ds-space-grid: var(--ds-space-3);           /* 網格 gap */
+  --ds-space-section-inner: var(--ds-space-3);  /* 區塊卡片內群組 */
+
+  /* 區域標題字級（全站唯一標準） */
+  --ds-section-title-size: 0.75rem;   /* 12px */
+  --ds-section-meta-size: 0.625rem;    /* 10px */
+  --ds-card-eyebrow-size: 0.625rem;    /* 10px，卡片內輔助標籤 */
+  --ds-field-label-size: 0.75rem;      /* 12px，表單欄位 */
 }
 
 /* ── 間距佈局工具（對應 M3 語意角色）── */
@@ -123,15 +130,77 @@ body {
 
 .ds-section-header {
   margin-bottom: var(--ds-space-title-content);
-  padding-left: var(--ds-space-tight);
-  padding-right: var(--ds-space-tight);
+}
+
+.ds-section-divider {
+  padding-top: var(--ds-space-section-inner);
+  border-top: 1px solid var(--color-outline);
 }
 
 .ds-section-subtitle {
-  font-size: 10px;
+  font-size: var(--ds-section-meta-size);
   color: #9ca3af;
   margin: var(--ds-space-tight) 0 0;
   line-height: 1.35;
+}
+
+.ds-section-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-section-inner);
+}
+
+.m3-section-title,
+.m3-card-section-title {
+  font-size: var(--ds-section-title-size);
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.35;
+  margin: 0;
+  padding: 0;
+}
+
+.m3-section-title--with-icon,
+.m3-card-section-title--with-icon {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline);
+}
+
+.m3-section-meta {
+  font-size: var(--ds-section-meta-size);
+  font-weight: 500;
+  color: #9ca3af;
+  line-height: 1.35;
+  flex-shrink: 0;
+}
+
+.m3-card-eyebrow {
+  font-size: var(--ds-card-eyebrow-size);
+  font-weight: 600;
+  color: var(--color-teal-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.m3-field-label {
+  display: block;
+  font-size: var(--ds-field-label-size);
+  color: var(--color-on-surface-variant);
+  margin-bottom: var(--ds-space-tight);
+  line-height: 1.35;
+}
+
+.m3-card--section {
+  padding: var(--ds-space-inset);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ds-card-header {
@@ -893,23 +962,6 @@ body {
   flex-shrink: 0;
 }
 
-.m3-card-section-title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.35;
-  margin: 0;
-  padding: 0;
-}
-
-.m3-card-section-title--with-icon {
-  display: flex;
-  align-items: center;
-  gap: var(--ds-space-inline);
-}
-
 .m3-card-empty {
   padding: 2rem;
   text-align: center;
@@ -923,6 +975,14 @@ body {
 .family-coverage-card {
   border-radius: 20px;
   border: none;
+}
+
+.family-coverage-card__label {
+  font-size: var(--ds-card-eyebrow-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
 }
 
 .family-coverage-card--life {
@@ -1892,6 +1952,13 @@ button.m3-chip {
    10→14  11→15  12→17  14→20  16→22  18→25  20→28 (px)
 */
 @media (max-width: 599px) {
+  :root {
+    --ds-section-title-size: 0.875rem;
+    --ds-section-meta-size: 0.75rem;
+    --ds-card-eyebrow-size: 0.75rem;
+    --ds-field-label-size: 0.875rem;
+  }
+
   @theme {
     --text-xs: 0.875rem;
     --text-sm: 1.0625rem;

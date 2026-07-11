@@ -1,5 +1,5 @@
 import { Button, Modal } from '@heroui/react'
-import { StackForm } from './CardLayout'
+import { FormLabel, StackForm } from './CardLayout'
 import { useEffect, useState } from 'react'
 import { URGENCY_LABELS } from '../../data/mockData'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
@@ -53,7 +53,7 @@ export function TodoEditModal({
           <Modal.Body>
             <StackForm>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">標題 *</label>
+                <FormLabel>標題 *</FormLabel>
                 <input
                   value={form.title}
                   onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
@@ -61,7 +61,7 @@ export function TodoEditModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">到期日（選填）</label>
+                <FormLabel>到期日（選填）</FormLabel>
                 <input
                   type="date"
                   value={form.dueDate ?? ''}
@@ -70,7 +70,7 @@ export function TodoEditModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">緊急程度</label>
+                <FormLabel>緊急程度</FormLabel>
                 <div className="flex gap-2">
                   {(['high', 'medium', 'low'] as TodoUrgency[]).map((urgency) => (
                     <button

@@ -10,7 +10,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 import { computeFamilyCoverageDomains, formatCurrency } from '../../utils/calculations'
-import { StackBlock, StackList } from '../common/CardLayout'
+import { CardSectionTitle, StackBlock, StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
 
@@ -79,7 +79,7 @@ function CoverageEntryCard({
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 min-w-0">
           <Icon className={`w-4 h-4 shrink-0 family-coverage-card__icon`} />
-          <span className="text-xs font-medium family-coverage-card__label">{summary.label}</span>
+          <span className="family-coverage-card__label">{summary.label}</span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {activeClaimCount > 0 && (
@@ -148,14 +148,12 @@ function CoverageDetailModal({
 
                 {summary.subcategories.map((group) => (
                   <section key={group.subcategoryType}>
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        {group.subcategoryLabel}
-                      </p>
-                      <p className="text-xs font-semibold text-teal-700 shrink-0">
-                        {formatItemAmount(group.totalAmount, group.isMonthly)}
-                      </p>
-                    </div>
+                    <CardSectionTitle
+                      as="h4"
+                      count={formatItemAmount(group.totalAmount, group.isMonthly)}
+                    >
+                      {group.subcategoryLabel}
+                    </CardSectionTitle>
                     <StackList>
                       {group.items.map((item) => {
                         const member = findMemberByPolicyId(members, item.id)
@@ -208,7 +206,7 @@ export function FamilyCoverageOverview({ members }: { members: FamilyMember[] })
 
   return (
     <>
-      <div className="family-coverage-overview ds-stack-list-loose mt-4">
+      <div className="family-coverage-overview ds-stack-list-loose">
         <CoverageEntryCard
           summary={domains.life}
           variant="life"
