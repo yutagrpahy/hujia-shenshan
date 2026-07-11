@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BookOpen,
   ChevronRight,
-  Heart,
   Sparkles,
   Trophy,
   Users,
@@ -17,7 +16,7 @@ import { useApp } from '../../context/AppContext'
 import { ROLE_LABELS } from '../../data/mockData'
 
 import {
-  HealthProfileEntry,
+  HealthProfileHeroSummary,
   HealthProfileModal,
   type HealthProfileViewScope,
 } from '../common/HealthProfilePanel'
@@ -70,12 +69,12 @@ export function OverviewPage() {
       }),
     [coverage.gaps],
   )
-  const scoreColor =
+  const healthStatusText =
     coverage.healthScore >= 80
-      ? 'text-teal-600'
+      ? '保障充足'
       : coverage.healthScore >= 60
-        ? 'text-teal-700'
-        : 'text-teal-800'
+        ? '部分建議補強'
+        : '有多項目標保障待補強'
 
   const navigateGapMember = (gap: CoverageGap, entry: CoverageGap['gapMembers'][number]) => {
     if (entry.hasCoverage && entry.policyId) {
@@ -101,16 +100,14 @@ export function OverviewPage() {
         <div className="hero-banner__content">
           <p className="text-xs font-medium text-teal-600 mb-1">👋 早安，建國</p>
           <h3 className="text-lg font-bold text-gray-800">今天也要為家人守住幸福</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            {roleLabel} · 保障健康度 {coverage.healthScore} 分
-          </p>
-          <div className="mt-2">
-            <HealthProfileEntry
-              profile={protectionProfile}
-              onOpen={() => openHealthProfile('current')}
-              compact
-            />
-          </div>
+          <p className="text-xs text-gray-500 mt-1">{roleLabel}</p>
+          <HealthProfileHeroSummary
+            profile={protectionProfile}
+            healthScore={coverage.healthScore}
+            healthStatusText={healthStatusText}
+            onOpenCurrent={() => openHealthProfile('current')}
+            onOpenCompare={() => openHealthProfile('compare')}
+          />
         </div>
       </div>
 
@@ -121,57 +118,7 @@ export function OverviewPage() {
       )}
 
       <PageSection title="家庭保障總覽" fullWidth>
-        <div className="m3-card m3-card--section">
-          <div className="ds-section-inner">
-            <div className="flex items-center gap-4">
-              <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
-                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                  <circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f1ed" strokeWidth="3" />
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15.5"
-                    fill="none"
-                    stroke="#2d7a70"
-                    strokeWidth="3"
-                    strokeDasharray={`${coverage.healthScore} 100`}
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <Heart className={`w-4 h-4 ${scoreColor}`} />
-                  <span className={`text-lg md:text-xl font-bold ${scoreColor}`}>
-                    {coverage.healthScore}
-                  </span>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm md:text-base font-semibold text-gray-800">保障健康度</p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  依「{coverage.healthTierLabel}」分級計算 ·{' '}
-                  {coverage.healthScore >= 80
-                    ? '保障充足'
-                    : coverage.healthScore >= 60
-                      ? '部分建議補強'
-                      : '有多項目標保障待補強'}
-                </p>
-                <button
-                  onClick={() => openHealthProfile('compare')}
-                  className="text-[10px] text-teal-600 font-medium mt-1 hover:underline"
-                >
-                  查看家庭保險健康分級 →
-                </button>
-              </div>
-            </div>
-
-            <HealthProfileEntry
-              profile={protectionProfile}
-              onOpen={() => openHealthProfile('current')}
-            />
-
-            <FamilyCoverageOverview members={members} />
-          </div>
-        </div>
+        <FamilyCoverageOverview members={members} />
       </PageSection>
 
       <PageSection title="目標保障" fullWidth>

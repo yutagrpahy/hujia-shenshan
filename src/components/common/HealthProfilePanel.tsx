@@ -1,5 +1,5 @@
 import { Button, Modal } from '@heroui/react'
-import { Check, ChevronRight, ClipboardList, Sparkles } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, ClipboardList, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import {
   HEALTH_PROFILE_QUESTIONS,
@@ -57,6 +57,76 @@ function TierOverviewCard({
         ))}
       </div>
     </article>
+  )
+}
+
+interface HealthProfileHeroSummaryProps {
+  profile: ProtectionLifeProfile
+  healthScore: number
+  healthStatusText: string
+  onOpenCurrent: () => void
+  onOpenCompare: () => void
+}
+
+/** 歡迎語列 — 保障健康度與分級摘要（預設收合，漸進揭露） */
+export function HealthProfileHeroSummary({
+  profile,
+  healthScore,
+  healthStatusText,
+  onOpenCurrent,
+  onOpenCompare,
+}: HealthProfileHeroSummaryProps) {
+  const [expanded, setExpanded] = useState(false)
+  const tierOption = PROTECTION_TIER_OPTIONS.find((tier) => tier.tier === profile.tier)
+  const scoreTone =
+    healthScore >= 80
+      ? 'health-hero-summary__score--high'
+      : healthScore >= 60
+        ? 'health-hero-summary__score--mid'
+        : 'health-hero-summary__score--low'
+
+  return (
+    <div className="health-hero-summary">
+      <div className="health-hero-summary__meta">
+        <span className={`health-hero-summary__score m3-chip ${scoreTone}`}>
+          保障健康度 {healthScore} 分
+        </span>
+        <button
+          type="button"
+          onClick={onOpenCurrent}
+          className="inline-flex items-center gap-1 m3-chip health-hero-summary__tier"
+        >
+          <ClipboardList className="w-3 h-3" />
+          第 {profile.tier} 級 · {profile.tierLabel}
+          <ChevronRight className="w-3 h-3" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          className="health-hero-summary__toggle"
+          aria-expanded={expanded}
+        >
+          {expanded ? '收合' : '簡介'}
+          <ChevronDown className={`w-3 h-3 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="health-hero-summary__detail">
+          {tierOption && (
+            <p className="health-hero-summary__subtitle">{tierOption.subtitle}</p>
+          )}
+          <p className="health-hero-summary__status">{healthStatusText}</p>
+          <p className="health-hero-summary__intro">
+            分級定義家庭期望的保障生活，作為健康度滿分基準。
+          </p>
+          <button type="button" onClick={onOpenCompare} className="health-hero-summary__link">
+            查看五級分類
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
 
