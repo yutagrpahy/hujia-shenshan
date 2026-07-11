@@ -20,7 +20,7 @@ export function EmptyState({ onSetup }: EmptyStateProps) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70dvh] px-6 text-center">
-      <BrandLogo size={80} className="mb-6 shadow-md" />
+      <BrandLogo size={80} variant="mark" className="mb-6" />
       <h2 className="text-xl font-semibold text-teal-700 mb-2">歡迎來到護家神山</h2>
       <p className="text-sm text-gray-500 max-w-xs mb-2 leading-relaxed">
         讓我們一起為您的家庭建立專屬的保障地圖，視覺化每位家人的保障狀況。

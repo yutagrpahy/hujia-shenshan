@@ -79,7 +79,7 @@ function MobileShell({
       >
         <div className="flex items-center justify-between gap-2 min-w-0 w-full">
           <div className="brand-header-cluster min-w-0 flex-1">
-            <BrandLogo size={36} className="shrink-0 shadow-sm" />
+            <BrandLogo size={36} />
             <BrandHeader variant="mobile" />
           </div>
           <div className="flex items-center gap-2 shrink-0 min-w-0">
@@ -192,7 +192,7 @@ export function AppShell({ children }: AppShellProps) {
       <header className="desktop-top-nav warm-header">
         <div className="desktop-nav-inner">
           <div className="brand-header-cluster shrink-0">
-            <BrandLogo size={44} className="shrink-0 shadow-sm" />
+            <BrandLogo size={44} />
             <BrandHeader variant="desktop" />
           </div>
 
