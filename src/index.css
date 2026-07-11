@@ -1417,6 +1417,8 @@ button.m3-chip {
   border-radius: var(--ds-radius-segment);
   padding: var(--ds-segment-inset);
   gap: var(--ds-segment-gap);
+  border: 1px solid color-mix(in srgb, var(--color-outline) 72%, transparent);
+  box-shadow: 0 1px 3px rgba(45, 122, 112, 0.04);
 }
 
 .m3-segment-btn {
