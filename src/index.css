@@ -977,16 +977,11 @@ body {
   border-color: rgba(5, 150, 105, 0.22);
 }
 
+.policy-status-chip--expiring,
 .policy-status-chip--renew-none {
   background: linear-gradient(135deg, #fffbeb, #fef3c7);
   color: #b45309;
   border-color: rgba(217, 119, 6, 0.22);
-}
-
-.policy-status-chip--pending {
-  background: linear-gradient(135deg, #fff7ed, #ffedd5);
-  color: #c2410c;
-  border-color: rgba(234, 88, 12, 0.22);
 }
 
 .policy-status-chip--expired {

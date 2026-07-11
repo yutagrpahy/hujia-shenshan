@@ -1,5 +1,5 @@
 import { getClaimByPolicyId, CLAIM_STATUS_GROUP } from '../../data/claims'
-import { getPolicyStatusChip } from '../../data/policyLabels'
+import { getPolicyCardStatusChip } from '../../data/policyLabels'
 import { getPolicyParties } from '../../data/policyDetails'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
@@ -54,7 +54,7 @@ export function PolicyListCard({
         : null
   const resolvedAvatarSeed = avatarSeed ?? memberName
   const showIdentity = showMember && memberName && resolvedAvatarSeed
-  const statusChip = getPolicyStatusChip(policy)
+  const statusChip = getPolicyCardStatusChip(policy, claim)
 
   const content = (
     <CardItemTriRow>
@@ -63,11 +63,6 @@ export function PolicyListCard({
           <CardItemMeta>
             <MemberAvatar name={memberName} seed={resolvedAvatarSeed} size="sm" />
             <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
-            {hasClaim ? (
-              <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
-                {claim.statusLabel}
-              </span>
-            ) : null}
           </CardItemMeta>
         ) : null}
         <CardItemTitle>{policy.name}</CardItemTitle>
@@ -79,8 +74,8 @@ export function PolicyListCard({
         ) : null}
         <CardItemTags>
           <PolicySourceLabel source={policy.source} />
-          {!hasClaim && statusChip ? (
-            <span className={`m3-chip ${statusChip.className}`}>{statusChip.label}</span>
+          {statusChip ? (
+            <span className={`m3-chip shrink-0 ${statusChip.className}`}>{statusChip.label}</span>
           ) : null}
         </CardItemTags>
       </CardItemTriMain>

@@ -1,3 +1,6 @@
+import type { ClaimStatus } from '../../types'
+import { CLAIM_STATUS_GROUP } from '../../data/claims'
+
 const TONE_STROKES = {
   danger: '#d97055',
   warning: '#d97706',
@@ -7,13 +10,17 @@ const TONE_STROKES = {
 }
 
 export function claimRingTone(
-  claimStatus: string,
+  claimStatus: ClaimStatus,
   isError: boolean,
 ): keyof typeof TONE_STROKES {
   if (isError) return 'danger'
-  if (claimStatus === 'renewal') return 'warning'
-  if (claimStatus === 'paid') return 'success'
-  return 'info'
+  return CLAIM_STATUS_GROUP[claimStatus].tone === 'success'
+    ? 'success'
+    : CLAIM_STATUS_GROUP[claimStatus].tone === 'danger'
+      ? 'danger'
+      : CLAIM_STATUS_GROUP[claimStatus].tone === 'warning'
+        ? 'warning'
+        : 'info'
 }
 
 export function ClaimProgressRing({

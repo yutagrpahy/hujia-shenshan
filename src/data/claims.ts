@@ -38,7 +38,7 @@ const CLAIM_BY_POLICY: Record<string, ClaimTemplate> = {
   p3: {
     claimStatus: 'in_review',
     progress: 55,
-    statusLabel: '申請理賠中',
+    statusLabel: '理賠申請中',
     statusSummary: '長照給付申請已受理，照護機構評估報告審核中，預估 10 個工作天內通知結果。',
     isError: false,
     updatedAt: '2026-07-06',
@@ -83,7 +83,7 @@ const CLAIM_BY_POLICY: Record<string, ClaimTemplate> = {
 }
 
 export const CLAIM_STATUS_LABELS: Record<ClaimStatus, string> = {
-  in_review: '申請理賠中',
+  in_review: '理賠申請中',
   pending_docs: '待補件',
   approved: '核准待給付',
   rejected: '理賠駁回',
@@ -106,9 +106,24 @@ export const CLAIM_STATUS_GROUP: Record<
   pending_docs: { title: '待補件 · 需立即處理', tone: 'danger' },
   rejected: { title: '理賠駁回 · 可申覆', tone: 'danger' },
   renewal: { title: '續保提醒', tone: 'warning' },
-  in_review: { title: '申請理賠中', tone: 'info' },
-  approved: { title: '核准待給付', tone: 'info' },
-  paid: { title: '已完成給付', tone: 'success' },
+  in_review: { title: '理賠申請中', tone: 'success' },
+  approved: { title: '核准待給付', tone: 'success' },
+  paid: { title: '已給付', tone: 'success' },
+}
+
+/** 需產生系統待辦的理賠狀態（已給付除外） */
+export const CLAIM_TODO_STATUSES: ClaimStatus[] = [
+  'pending_docs',
+  'in_review',
+  'approved',
+  'rejected',
+]
+
+export const CLAIM_TODO_TITLES: Partial<Record<ClaimStatus, (claim: ClaimRecord) => string>> = {
+  pending_docs: (claim) => `補齊「${claim.policyName}」理賠文件`,
+  in_review: (claim) => `追蹤「${claim.policyName}」理賠進度`,
+  approved: (claim) => `確認「${claim.policyName}」理賠給付`,
+  rejected: (claim) => `處理「${claim.policyName}」理賠駁回`,
 }
 
 function resolveClaimTemplate(policy: Policy): ClaimTemplate | null {
@@ -136,6 +151,7 @@ export function buildFamilyClaims(members: FamilyMember[]): ClaimRecord[] {
         eventType: policy.type,
         amount: policy.eventPayout > 0 ? policy.eventPayout : policy.coverage,
         ...template,
+        statusLabel: CLAIM_STATUS_LABELS[template.claimStatus],
       })
     }
   }

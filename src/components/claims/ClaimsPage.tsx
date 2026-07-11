@@ -4,6 +4,7 @@ import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import {
   buildFamilyClaims,
   CLAIM_STATUS_GROUP,
+  CLAIM_STATUS_LABELS,
   CLAIM_STATUS_ORDER,
   CLAIM_TAB_LABELS,
   CLAIM_TAB_STATUSES,
@@ -74,7 +75,7 @@ function ClaimCard({
             <MemberAvatar name={claim.memberName} seed={claim.avatarSeed} size="sm" />
             <CardItemMetaLabel>{claim.memberName}</CardItemMetaLabel>
             <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
-              {claim.statusLabel}
+              {CLAIM_STATUS_LABELS[claim.claimStatus]}
             </span>
           </CardItemMeta>
           <CardItemTitle>{claim.policyName}</CardItemTitle>

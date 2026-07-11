@@ -195,8 +195,8 @@ function buildClaimScenario(
     >
   > = {
     in_review: {
-      statusLabel: '申請理賠中',
-      statusTone: 'info',
+      statusLabel: '理賠申請中',
+      statusTone: 'success',
       situationTitle: '補件完成 · 審核進行中',
       situationSummary:
         '您已完成補件，診斷證明與費用明細已收齊。理賠案件目前由核保單位審核，預估 7–14 個工作天內通知結果。',
@@ -237,7 +237,7 @@ function buildClaimScenario(
     },
     approved: {
       statusLabel: '核准待給付',
-      statusTone: 'info',
+      statusTone: 'success',
       situationTitle: '理賠核准',
       situationSummary: claim.statusSummary,
       ctas: [
@@ -337,7 +337,7 @@ function buildScenario(
     }
 
     return {
-      statusLabel: '到期不續保',
+      statusLabel: '即將到期',
       statusTone: 'warning',
       situationTitle: '續保提醒',
       situationSummary: `此保單將於 ${policy.expiryDate} 到期且不會自動續保。建議提前 30 天聯繫業務員評估續保或轉換方案，避免保障空窗。`,
@@ -388,8 +388,8 @@ function buildScenario(
 
   if (policy.status === 'expired') {
     return {
-      statusLabel: '已到期',
-      statusTone: 'danger',
+      statusLabel: '已失效',
+      statusTone: 'info',
       situationTitle: '保障已終止',
       situationSummary:
         '目前無法受理新的理賠。若仍有保障需求，建議重新評估投保方案。',

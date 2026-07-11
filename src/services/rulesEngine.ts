@@ -1,4 +1,9 @@
-import { buildFamilyClaims } from '../data/claims'
+import {
+  buildFamilyClaims,
+  CLAIM_STATUS_LABELS,
+  CLAIM_TODO_STATUSES,
+  CLAIM_TODO_TITLES,
+} from '../data/claims'
 import { getPolicyStatusLabel } from '../data/policyLabels'
 import { calculateGapPercent, computeCoverageSummary } from '../utils/calculations'
 import type {
@@ -71,16 +76,18 @@ export function deriveSystemTodos(
   for (const member of members) {
     for (const policy of member.policies) {
       if (policy.status === 'expiring') {
-        const ruleId = `renewal:${policy.id}`
+        const ruleId = policy.autoRenew ? `auto_renewal:${policy.id}` : `renewal:${policy.id}`
         if (dismissedRuleIds.has(ruleId)) continue
         todos.push({
           id: `sys-${ruleId}`,
           ruleId,
-          title: `續保「${policy.insurer}${policy.name}」`,
+          title: policy.autoRenew
+            ? `確認「${policy.insurer}${policy.name}」自動續保`
+            : `續保「${policy.insurer}${policy.name}」`,
           memberId: member.id,
           memberName: member.name,
           policyId: policy.id,
-          urgency: 'high',
+          urgency: policy.autoRenew ? 'medium' : 'high',
           dueDate: policy.expiryDate,
           completed: false,
           source: 'system',
@@ -149,23 +156,38 @@ export function deriveSystemTodos(
 
   const claims = buildFamilyClaims(members)
   for (const claim of claims) {
-    if (claim.claimStatus !== 'pending_docs') continue
+    if (!CLAIM_TODO_STATUSES.includes(claim.claimStatus)) continue
+
     const policy = findPolicyOwner(members, claim.policyId)?.policies.find(
       (item) => item.id === claim.policyId,
     )
     if (policy?.status === 'pending') continue
 
-    const ruleId = `claim_docs:${claim.policyId}`
+    const ruleKind =
+      claim.claimStatus === 'pending_docs'
+        ? 'claim_docs'
+        : claim.claimStatus === 'in_review'
+          ? 'claim_review'
+          : claim.claimStatus === 'approved'
+            ? 'claim_payout'
+            : 'claim_rejected'
+    const ruleId = `${ruleKind}:${claim.policyId}`
     if (dismissedRuleIds.has(ruleId)) continue
+
+    const titleBuilder = CLAIM_TODO_TITLES[claim.claimStatus]
+    if (!titleBuilder) continue
 
     todos.push({
       id: `sys-${ruleId}`,
       ruleId,
-      title: `補齊「${claim.policyName}」理賠文件`,
+      title: titleBuilder(claim),
       memberId: claim.memberId,
       memberName: claim.memberName,
       policyId: claim.policyId,
-      urgency: 'high',
+      urgency:
+        claim.claimStatus === 'pending_docs' || claim.claimStatus === 'rejected'
+          ? 'high'
+          : 'medium',
       dueDate: claim.updatedAt,
       completed: false,
       source: 'system',
@@ -213,8 +235,8 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
         notifications.push({
           id: `notif:policy-expired:${policy.id}`,
           type: 'policy-expiry',
-          title: '保單已失效',
-          message: `${member.name}的「${policy.name}」已到期，建議重新投保避免保障空窗`,
+          title: '已失效',
+          message: `${member.name}的「${policy.name}」已失效，建議重新投保避免保障空窗`,
           date: policy.expiryDate,
           read: false,
           memberId: member.id,
@@ -234,7 +256,7 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
     notifications.push({
       id: `notif:claim:${claim.id}`,
       type: 'claim-progress',
-      title: claim.statusLabel,
+      title: CLAIM_STATUS_LABELS[claim.claimStatus],
       message: `${claim.memberName}：${claim.statusSummary}`,
       date: claim.updatedAt,
       read: false,
@@ -317,7 +339,11 @@ function applySystemTodoCompletion(
       }
     }
     case 'gap':
-    case 'claim_docs': {
+    case 'claim_docs':
+    case 'claim_review':
+    case 'claim_payout':
+    case 'claim_rejected':
+    case 'auto_renewal': {
       const nextDismissed = new Set(dismissedRuleIds)
       nextDismissed.add(todo.ruleId)
       return { members, dismissedRuleIds: nextDismissed }
