@@ -110,7 +110,7 @@ function MobileShell({
         tabIndex={-1}
         className="main-content main-content--mobile main-content--mobile-scroll flex-1 min-h-0 min-w-0 w-full"
       >
-        <div className="content-container content-container--wide min-w-0 w-full">
+        <div className="content-container content-container--comfort min-w-0 w-full">
           {!hidePageTitle ? <h1 className="sr-only">{pageTitle}</h1> : null}
           {children}
         </div>
@@ -234,7 +234,7 @@ export function AppShell({ children }: AppShellProps) {
       </header>
 
       <main id="main-content" tabIndex={-1} className="main-content main-content--desktop">
-        <div className="content-container content-container--wide">
+        <div className="content-container content-container--comfort">
           {!hidePageTitle && <h1 className="page-title">{pageTitle}</h1>}
           {children}
         </div>

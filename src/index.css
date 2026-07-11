@@ -42,8 +42,11 @@
   --color-sand-50: #faf9f7;
   --color-sand-100: #f3f1ed;
   --color-sand-200: #e8e4dd;
-  --content-max: 45rem;
-  --content-wide: 70rem;
+  /* 閱讀舒適寬度（全站容器請用下列 token，勿硬編碼 max-width） */
+  --content-reading: 40rem;   /* 640px：單欄長文、表單 */
+  --content-comfort: 48rem;   /* 768px：主要內容區（卡片列表、儀表板） */
+  --content-wide: 52rem;      /* 832px：保留供未來雙欄儀表板，目前全站以 comfort 為準 */
+  --content-max: var(--content-reading);
   --font-brand: "Noto Serif TC", "Noto Sans TC", "PingFang TC", serif;
   --color-brand-wordmark: #0a3d2e;
   --color-brand-tagline: #1f5f57;
@@ -462,7 +465,7 @@ body {
 }
 
 .desktop-nav-inner {
-  max-width: var(--content-wide);
+  max-width: var(--content-comfort);
   margin: 0 auto;
   padding: 14px 24px;
   display: flex;
@@ -513,19 +516,28 @@ body {
 }
 
 .main-content--desktop {
-  padding: 32px 24px 48px;
+  padding: 32px max(20px, 4vw) 48px;
   display: flex;
   justify-content: center;
 }
 
 .content-container {
   width: 100%;
-  max-width: var(--content-max);
-  margin: 0 auto;
+  max-width: var(--content-comfort);
+  margin-inline: auto;
 }
 
+.content-container--reading {
+  max-width: var(--content-reading);
+}
+
+.content-container--comfort {
+  max-width: var(--content-comfort);
+}
+
+/* 舊別名，行為與 comfort 相同 */
 .content-container--wide {
-  max-width: var(--content-wide);
+  max-width: var(--content-comfort);
 }
 
 .page-title {
@@ -1895,6 +1907,8 @@ button.m3-chip {
 }
 
 .education-grid {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--ds-space-grid);
 }
 
@@ -1996,25 +2010,23 @@ button.m3-chip {
 }
 
 @media (min-width: 600px) {
-  .content-container--overview { max-width: var(--content-wide); }
   .overview-grid { grid-template-columns: 1fr 1fr; }
   .overview-grid--full { grid-column: 1 / -1; }
   .protection-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ds-space-grid); }
   .protection-grid--full { grid-column: 1 / -1; }
+  .education-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (min-width: 840px) {
   .overview-grid--hero { grid-column: 1 / -1; }
   .advisor-layout {
     display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) 17.5rem;
+    gap: var(--ds-space-block);
   }
 }
 
-@media (min-width: 1024px) {
-  .education-grid { grid-template-columns: repeat(3, 1fr); }
-}
+
 
 /* ── Compact 手機：字級層級（最小 14px）與全寬版面 ──
    比例基準：舊版最小 10px → 新版最小 14px（×1.4）

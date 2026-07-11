@@ -322,7 +322,7 @@ export function OverviewPage() {
       />
 
       <PageSection title="推薦內容" fullWidth>
-        <div className="grid grid-cols-1 md:grid-cols-3 education-grid">
+        <div className="education-grid">
           {education.map((item) => (
             <CardItem key={item.id} className="m3-card-item--lg">
               <CardItemRow className="items-center">
