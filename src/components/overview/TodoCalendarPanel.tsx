@@ -64,8 +64,7 @@ export function TodoCalendarPanel({
 
   const handleDaySelect = (day: Date) => {
     setSelectedDay(day)
-    const dayTodos = todosByDate.get(toDateKey(day)) ?? []
-    if (dayTodos.length === 1) setSelectedTodo(dayTodos[0])
+    setSelectedTodo(null)
   }
 
   const renderTodoBadge = (day: Date) => {
