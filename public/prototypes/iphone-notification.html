@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>護家神山 · iPhone 12 Pro 系統通知原型</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --phone-w: 390px;
+        --phone-h: 844px;
+        --radius: 47px;
+        --frame: #1c1c1e;
+        --ios-blue: #0a84ff;
+        --ios-text: #ffffff;
+        --ios-sub: rgba(255, 255, 255, 0.72);
+        --notif-bg: rgba(255, 255, 255, 0.82);
+        --notif-text: #1c1c1e;
+        --notif-sub: rgba(60, 60, 67, 0.6);
+        --brand: #2d7a70;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Noto Sans TC',
+          'PingFang TC', 'Helvetica Neue', sans-serif;
+        background: radial-gradient(ellipse at 50% 0%, #e8f4f2 0%, #d4e8e4 35%, #b8d4cf 100%);
+        color: #1a2e2b;
+        padding: 32px 20px 48px;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+
+      .page-header h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .page-header p {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: #3d5c56;
+        line-height: 1.55;
+      }
+
+      .scene-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .scene-tab {
+        border: none;
+        background: rgba(255, 255, 255, 0.65);
+        color: #2d5a52;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      }
+
+      .scene-tab.active {
+        background: var(--brand);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(45, 122, 112, 0.28);
+      }
+
+      .stage {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 36px;
+        flex-wrap: wrap;
+      }
+
+      .phone-shell {
+        position: relative;
+        width: calc(var(--phone-w) + 24px);
+        padding: 12px;
+        border-radius: calc(var(--radius) + 14px);
+        background: linear-gradient(145deg, #3a3a3c 0%, #1c1c1e 45%, #0b0b0c 100%);
+        box-shadow: 0 28px 70px rgba(16, 36, 32, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      }
+
+      .phone-shell::before {
+        content: 'iPhone 12 Pro';
+        position: absolute;
+        top: -26px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: #5a726c;
+        text-transform: uppercase;
+      }
+
+      .phone-screen {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: #000;
+      }
+
+      .wallpaper {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(165deg, #1a4a44 0%, #2d7a70 28%, #5ba89a 52%, #8ec9bc 78%, #c5e8df 100%);
+      }
+
+      .wallpaper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 70% 18%, rgba(255, 255, 255, 0.22), transparent 42%),
+          radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.18), transparent 50%);
+      }
+
+      .notch {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 162px;
+        height: 34px;
+        background: #000;
+        border-radius: 0 0 20px 20px;
+        z-index: 20;
+      }
+
+      .status-bar {
+        position: absolute;
+        top: 12px;
+        left: 0;
+        right: 0;
+        z-index: 15;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 28px;
+        color: var(--ios-text);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .status-icons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .status-icons svg {
+        display: block;
+      }
+
+      .lock-content {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 72px;
+        color: var(--ios-text);
+      }
+
+      .lock-date {
+        font-size: 20px;
+        font-weight: 500;
+        opacity: 0.92;
+        margin-bottom: 4px;
+      }
+
+      .lock-time {
+        font-size: 82px;
+        font-weight: 200;
+        letter-spacing: -3px;
+        line-height: 1;
+        text-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
+      }
+
+      .notifications {
+        position: absolute;
+        top: 196px;
+        left: 12px;
+        right: 12px;
+        z-index: 12;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .ios-banner {
+        background: var(--notif-bg);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border-radius: 18px;
+        padding: 12px 14px 13px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14), 0 1px 0 rgba(255, 255, 255, 0.55) inset;
+        animation: slideDown 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-18px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .ios-banner-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .app-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .ios-banner-meta {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--notif-sub);
+        font-weight: 500;
+      }
+
+      .ios-banner-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--notif-text);
+        line-height: 1.3;
+        margin-bottom: 2px;
+      }
+
+      .ios-banner-body {
+        font-size: 15px;
+        line-height: 1.38;
+        color: var(--notif-text);
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .ios-banner-foot {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 0.5px solid rgba(60, 60, 67, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--notif-sub);
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 7px;
+        border-radius: 6px;
+        background: rgba(45, 122, 112, 0.12);
+        color: var(--brand);
+        font-weight: 600;
+        font-size: 11px;
+      }
+
+      .home-indicator {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 134px;
+        height: 5px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.88);
+        z-index: 20;
+      }
+
+      .flashlight-camera {
+        position: absolute;
+        bottom: 28px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 46px;
+        z-index: 10;
+      }
+
+      .flash-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(12px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spec-panel {
+        flex: 1;
+        min-width: 280px;
+        max-width: 360px;
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 20px 22px;
+        box-shadow: 0 10px 32px rgba(30, 60, 54, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+      }
+
+      .spec-panel h2 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: var(--brand);
+      }
+
+      .spec-row {
+        display: grid;
+        grid-template-columns: 88px 1fr;
+        gap: 6px 10px;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        margin-bottom: 10px;
+      }
+
+      .spec-row dt {
+        color: #5f7a74;
+        font-weight: 600;
+      }
+
+      .spec-row dd {
+        color: #1f3530;
+      }
+
+      .spec-copy {
+        margin-top: 16px;
+        padding: 12px 14px;
+        background: #f3faf8;
+        border-radius: 12px;
+        border: 1px solid rgba(45, 122, 112, 0.14);
+        font-size: 0.8rem;
+        line-height: 1.55;
+        color: #2a4a44;
+      }
+
+      .scene {
+        display: none;
+      }
+
+      .scene.active {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 36px;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      /* Notification Center expanded */
+      .nc-screen .lock-content {
+        padding-top: 58px;
+      }
+
+      .nc-screen .lock-time {
+        font-size: 56px;
+      }
+
+      .nc-screen .notifications {
+        top: 148px;
+        bottom: 34px;
+        overflow-y: auto;
+        padding-bottom: 8px;
+      }
+
+      .nc-header {
+        width: 100%;
+        padding: 0 6px 8px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        text-align: left;
+      }
+
+      .nc-group-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.72);
+        padding: 8px 6px 6px;
+      }
+
+      .ios-banner.stacked {
+        animation: none;
+      }
+
+      .ios-banner.primary {
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.18);
+      }
+
+      @media (max-width: 900px) {
+        .spec-panel {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="page-header">
+        <h1>護家神山 · iPhone 12 Pro 系統通知原型</h1>
+        <p>
+          模擬 iOS 鎖定畫面橫幅通知：家人完成「目標保障」類別投保後，推播至家庭管理者的裝置。
+        </p>
+      </header>
+
+      <div class="scene-tabs" role="tablist">
+        <button class="scene-tab active" data-scene="lock" type="button">鎖定畫面橫幅</button>
+        <button class="scene-tab" data-scene="center" type="button">通知中心</button>
+      </div>
+
+      <!-- Scene 1: Lock screen banner -->
+      <div class="scene active" id="scene-lock">
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div class="wallpaper"></div>
+            <div class="notch"></div>
+            <div class="status-bar">
+              <span>10:42</span>
+              <div class="status-icons">
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none">
+                  <rect x="0" y="8" width="3" height="4" rx="0.8" fill="white" />
+                  <rect x="5" y="5" width="3" height="7" rx="0.8" fill="white" />
+                  <rect x="10" y="2" width="3" height="10" rx="0.8" fill="white" />
+                  <rect x="15" y="0" width="3" height="12" rx="0.8" fill="white" opacity="0.35" />
+                </svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="white">
+                  <path
+                    d="M8 2.4C5.6 2.4 3.4 3.3 1.8 4.9L0 3.1C2.1 1 4.9 0 8 0s5.9 1 8 3.1l-1.8 1.8C12.6 3.3 10.4 2.4 8 2.4zm0 3.6c-1.6 0-3 .6-4.1 1.6L2.1 5.8C3.6 4.3 5.7 3.6 8 3.6s4.4.7 5.9 2.2l-1.8 1.8C11 6.6 9.6 6 8 6zm0 3c-.9 0-1.7.3-2.3.9L8 12l2.3-2.1c-.6-.6-1.4-.9-2.3-.9z"
+                  />
+                </svg>
+                <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="22"
+                    height="12"
+                    rx="3.5"
+                    stroke="white"
+                    stroke-opacity="0.45"
+                  />
+                  <rect x="2" y="2" width="17" height="9" rx="2" fill="white" />
+                  <path
+                    d="M24 4.5h2a1.5 1.5 0 0 1 0 3h-2v-3z"
+                    fill="white"
+                    fill-opacity="0.45"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div class="lock-content">
+              <div class="lock-date">7月12日 週日</div>
+              <div class="lock-time">10:42</div>
+            </div>
+
+            <div class="notifications">
+              <article class="ios-banner" aria-label="護家神山系統通知">
+                <div class="ios-banner-header">
+                  <img
+                    class="app-icon"
+                    src="../app-icon.png"
+                    width="20"
+                    height="20"
+                    alt=""
+                  />
+                  <div class="ios-banner-meta">
+                    <span>護家神山</span>
+                    <span>剛剛</span>
+                  </div>
+                </div>
+                <div class="ios-banner-title">家人完成投保 · 長照月給付</div>
+                <p class="ios-banner-body">
+                  王阿公已成功投保「富邦人壽長照月給付保險」，月給付 NT$ 20,000
+                  已納入家庭目標保障。長照月給付達成率由 25% 更新為 50%。
+                </p>
+                <div class="ios-banner-foot">
+                  <span class="tag">目標保障</span>
+                  <span>點一下開啟護家神山查看詳情</span>
+                </div>
+              </article>
+            </div>
+
+            <div class="flashlight-camera">
+              <div class="flash-btn" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+                  <path d="M9 18h6M10 22h4M12 2v1M4.2 4.2l.7.7M19.1 4.9l-.7.7M2 12h1M21 12h1M7 16l-4 4M21 20l-4-4" />
+                  <path d="M12 6a6 6 0 0 0-4 10h8a6 6 0 0 0-4-10z" />
+                </svg>
+              </div>
+              <div class="flash-btn" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="12" cy="12" r="8" />
+                </svg>
+              </div>
+            </div>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+
+        <aside class="spec-panel">
+          <h2>通知文案規格（擬真）</h2>
+          <dl>
+            <div class="spec-row">
+              <dt>觸發情境</dt>
+              <dd>家人保單核保通過、保障生效</dd>
+            </div>
+            <div class="spec-row">
+              <dt>收件者</dt>
+              <dd>家庭管理者（王建國）iPhone 12 Pro</dd>
+            </div>
+            <div class="spec-row">
+              <dt>投保人</dt>
+              <dd>王阿公（父親，82 歲）</dd>
+            </div>
+            <div class="spec-row">
+              <dt>目標保障</dt>
+              <dd>長照月給付</dd>
+            </div>
+            <div class="spec-row">
+              <dt>保單商品</dt>
+              <dd>富邦人壽長照月給付保險</dd>
+            </div>
+            <div class="spec-row">
+              <dt>給付內容</dt>
+              <dd>月給付 NT$ 20,000／月</dd>
+            </div>
+            <div class="spec-row">
+              <dt>系統動作</dt>
+              <dd>同步家庭保障地圖、更新缺口達成率</dd>
+            </div>
+          </dl>
+          <div class="spec-copy">
+            <strong>推播邏輯：</strong>當任一家庭成員於「目標保障」五大類（身故、醫療、重大疾病、長照月給付、失能）完成投保且保單生效，即時推播至已綁定裝置的家庭管理者，附帶該類別達成率變化摘要。
+          </div>
+        </aside>
+      </div>
+
+      <!-- Scene 2: Notification Center -->
+      <div class="scene" id="scene-center">
+        <div class="phone-shell">
+          <div class="phone-screen nc-screen">
+            <div class="wallpaper"></div>
+            <div class="notch"></div>
+            <div class="status-bar">
+              <span>10:43</span>
+              <div class="status-icons">
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none">
+                  <rect x="0" y="8" width="3" height="4" rx="0.8" fill="white" />
+                  <rect x="5" y="5" width="3" height="7" rx="0.8" fill="white" />
+                  <rect x="10" y="2" width="3" height="10" rx="0.8" fill="white" />
+                  <rect x="15" y="0" width="3" height="12" rx="0.8" fill="white" opacity="0.35" />
+                </svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="white">
+                  <path
+                    d="M8 2.4C5.6 2.4 3.4 3.3 1.8 4.9L0 3.1C2.1 1 4.9 0 8 0s5.9 1 8 3.1l-1.8 1.8C12.6 3.3 10.4 2.4 8 2.4zm0 3.6c-1.6 0-3 .6-4.1 1.6L2.1 5.8C3.6 4.3 5.7 3.6 8 3.6s4.4.7 5.9 2.2l-1.8 1.8C11 6.6 9.6 6 8 6zm0 3c-.9 0-1.7.3-2.3.9L8 12l2.3-2.1c-.6-.6-1.4-.9-2.3-.9z"
+                  />
+                </svg>
+                <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+                  <rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="white" stroke-opacity="0.45" />
+                  <rect x="2" y="2" width="17" height="9" rx="2" fill="white" />
+                  <path d="M24 4.5h2a1.5 1.5 0 0 1 0 3h-2v-3z" fill="white" fill-opacity="0.45" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="lock-content">
+              <div class="lock-time">10:43</div>
+            </div>
+
+            <div class="notifications">
+              <div class="nc-header">通知中心</div>
+              <div class="nc-group-label">今天</div>
+
+              <article class="ios-banner primary stacked">
+                <div class="ios-banner-header">
+                  <img class="app-icon" src="../app-icon.png" width="20" height="20" alt="" />
+                  <div class="ios-banner-meta">
+                    <span>護家神山</span>
+                    <span>1 分鐘前</span>
+                  </div>
+                </div>
+                <div class="ios-banner-title">家人完成投保 · 長照月給付</div>
+                <p class="ios-banner-body">
+                  王阿公已成功投保「富邦人壽長照月給付保險」，月給付 NT$ 20,000
+                  已納入家庭目標保障。長照月給付達成率由 25% 更新為 50%。
+                </p>
+                <div class="ios-banner-foot">
+                  <span class="tag">目標保障</span>
+                  <span>保障總覽 · 長照月給付</span>
+                </div>
+              </article>
+
+              <article class="ios-banner stacked" style="opacity: 0.92">
+                <div class="ios-banner-header">
+                  <img class="app-icon" src="../app-icon.png" width="20" height="20" alt="" />
+                  <div class="ios-banner-meta">
+                    <span>護家神山</span>
+                    <span>3 小時前</span>
+                  </div>
+                </div>
+                <div class="ios-banner-title">投保進度更新</div>
+                <p class="ios-banner-body">
+                  王阿公的「長照月給付保險」核保審查中，預估 7/20 前通知結果。
+                </p>
+              </article>
+
+              <div class="nc-group-label">昨天</div>
+
+              <article class="ios-banner stacked" style="opacity: 0.85">
+                <div class="ios-banner-header">
+                  <img class="app-icon" src="../app-icon.png" width="20" height="20" alt="" />
+                  <div class="ios-banner-meta">
+                    <span>護家神山</span>
+                    <span>昨天 09:15</span>
+                  </div>
+                </div>
+                <div class="ios-banner-title">待辦提醒</div>
+                <p class="ios-banner-body">王美玲的住院醫療理賠待補件，請於 7/23 前完成。</p>
+              </article>
+            </div>
+
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+
+        <aside class="spec-panel">
+          <h2>通知中心情境</h2>
+          <p style="font-size: 0.84rem; line-height: 1.55; color: #2a4a44">
+            同一則「家人投保成功」通知在通知中心保留完整內容，並與前序「投保進度」「待辦提醒」形成時間軸，模擬真實使用者的推播歷程。
+          </p>
+          <div class="spec-copy" style="margin-top: 14px">
+            <strong>Deep Link（示意）：</strong><br />
+            hujia://coverage/gap/longterm?member=m4&amp;policy=p23
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.scene-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.scene-tab').forEach((t) => t.classList.remove('active'))
+          document.querySelectorAll('.scene').forEach((s) => s.classList.remove('active'))
+          tab.classList.add('active')
+          document.getElementById(`scene-${tab.dataset.scene}`).classList.add('active')
+        })
+      })
+    </script>
+  </body>
+</html>
