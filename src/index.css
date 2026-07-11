@@ -2015,10 +2015,11 @@ button.m3-chip {
   background: #f0fdfa;
 }
 
-.health-hero-summary__link {
+.m3-text-modal-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   min-height: var(--a11y-touch-min);
   padding: 0 12px;
   font-family: inherit;
@@ -2033,15 +2034,22 @@ button.m3-chip {
   text-decoration: underline;
   text-underline-offset: 2px;
   appearance: none;
+  white-space: nowrap;
   transition: color 0.15s ease, background 0.15s ease;
 }
 
-.health-hero-summary__link:hover {
+.m3-text-modal-link__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.m3-text-modal-link:hover {
   color: var(--color-a11y-focus);
   background: rgba(255, 255, 255, 0.6);
 }
 
-.health-hero-summary__link:focus-visible {
+.m3-text-modal-link:focus-visible {
   outline: 3px solid var(--color-a11y-focus);
   outline-offset: 2px;
 }

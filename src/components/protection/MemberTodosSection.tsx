@@ -7,7 +7,7 @@ import {
   FREQUENCY_LABELS,
   URGENCY_LABELS,
 } from '../../data/mockData'
-import { CardSectionTitle, StackList } from '../common/CardLayout'
+import { CardSectionTitle, StackList, TextModalLink } from '../common/CardLayout'
 import { TodoCompleteButton, TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
 import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
@@ -182,13 +182,12 @@ export function MemberTodosSection({
         subtitle="待辦提醒與保障規劃事件"
         actions={
           <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
+          <TextModalLink
             onClick={() => setShowCompleted(true)}
-            className="text-xs font-medium text-teal-600 hover:underline whitespace-nowrap"
+            aria-label="查看已完成事件"
           >
             已完成事件
-          </button>
+          </TextModalLink>
           <Button
             size="sm"
             variant="secondary"

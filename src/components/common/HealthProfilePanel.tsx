@@ -9,7 +9,7 @@ import {
 } from '../../data/healthProfile'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type { ProtectionLifeProfile } from '../../types'
-import { CardSectionTitle, PageStack, StackBlock, StackList } from './CardLayout'
+import { CardSectionTitle, PageStack, StackBlock, StackList, TextModalLink } from './CardLayout'
 
 const TARGET_LABELS: { key: keyof ProtectionLifeProfile['targets']; label: string; unit: string }[] =
   [
@@ -85,14 +85,12 @@ export function HealthProfileHeroSummary({
           第 {profile.tier} 級 · {profile.tierLabel}
           <ChevronRight className="w-3 h-3" aria-hidden />
         </button>
-        <button
-          type="button"
+        <TextModalLink
           onClick={onOpenCompare}
-          className="health-hero-summary__link"
           aria-label="查看其他家庭保險健康分級"
         >
           查看其他分級
-        </button>
+        </TextModalLink>
       </div>
     </div>
   )

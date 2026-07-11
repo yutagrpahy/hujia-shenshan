@@ -13,6 +13,20 @@ import type { LucideIcon } from 'lucide-react'
 import { ChevronRight } from 'lucide-react'
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
 
+/** 文字按鈕 — 點擊開啟視窗，統一附右箭頭 */
+export function TextModalLink({
+  children,
+  className = '',
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button type="button" className={`m3-text-modal-link ${className}`.trim()} {...props}>
+      <span>{children}</span>
+      <ChevronRight className="m3-text-modal-link__icon" aria-hidden />
+    </button>
+  )
+}
+
 type CardItemProps = {
   children: ReactNode
   className?: string
