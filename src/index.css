@@ -1049,8 +1049,27 @@ body {
   box-sizing: border-box;
 }
 
+/* 無指標欄時：主內容 Fill + 箭頭靠右（保單列表等） */
+.m3-card-item__row--tri:not(:has(.m3-card-item__tri-indicator > *)) {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.m3-card-item__row--tri:not(:has(.m3-card-item__tri-indicator > *)):not(
+    :has(.m3-card-item__tri-action > *)
+  ) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.m3-card-item__row--tri:not(:has(.m3-card-item__tri-indicator > *)) .m3-card-item__tri-action {
+  padding-top: 0;
+  align-self: center;
+  justify-content: flex-end;
+}
+
 .m3-card-item__tri-main {
   min-width: 0;
+  width: 100%;
 }
 
 .m3-card-item__tri-indicator {

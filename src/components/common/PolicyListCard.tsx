@@ -96,7 +96,11 @@ export function PolicyListCard({
         </CardItemTriIndicator>
       ) : null}
 
-      <CardItemTriAction>{onClick ? <CardItemChevron /> : null}</CardItemTriAction>
+      {onClick ? (
+        <CardItemTriAction>
+          <CardItemChevron />
+        </CardItemTriAction>
+      ) : null}
     </CardItemTriRow>
   )
 

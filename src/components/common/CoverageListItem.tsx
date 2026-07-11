@@ -100,9 +100,11 @@ export function CoverageListItem({
         </CardItemTriIndicator>
       ) : null}
 
-      <CardItemTriAction>
-        {isClickable ? <CardItemChevron /> : null}
-      </CardItemTriAction>
+      {isClickable ? (
+        <CardItemTriAction>
+          <CardItemChevron />
+        </CardItemTriAction>
+      ) : null}
     </CardItemTriRow>
   )
 
