@@ -2127,6 +2127,14 @@ button.m3-chip {
   outline-offset: 2px;
 }
 
+.modal-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 2.75rem;
+}
+
 .member-todos-footer {
   display: flex;
   margin-top: var(--ds-space-block);

@@ -1,6 +1,6 @@
 import { Button, Modal } from '@heroui/react'
 import { StackBlock, StackList } from '../common/CardLayout'
-import { Calendar, Pencil, RefreshCw, Users } from 'lucide-react'
+import { Calendar, Check, Pencil, RefreshCw, Users } from 'lucide-react'
 import {
   EVENT_TYPE_LABELS,
   FREQUENCY_LABELS,
@@ -16,18 +16,34 @@ const URGENCY_STYLES = {
   low: 'bg-sand-100 text-gray-500',
 }
 
+function DetailModalEditButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Button
+      size="sm"
+      variant="secondary"
+      className="border-teal-200 text-teal-700 shrink-0"
+      onPress={onPress}
+    >
+      <Pencil className="w-3.5 h-3.5" />
+      編輯
+    </Button>
+  )
+}
+
 export function EventDetailModal({
   event,
   members,
   isOpen,
   onOpenChange,
   onEdit,
+  onComplete,
 }: {
   event: FamilyEvent | null
   members: FamilyMember[]
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onEdit?: () => void
+  onComplete?: () => void
 }) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const linkedMembers = event
@@ -39,8 +55,9 @@ export function EventDetailModal({
       <Modal.Container placement={isMobile ? 'bottom' : 'center'}>
         <Modal.Dialog>
           <Modal.CloseTrigger />
-          <Modal.Header>
+          <Modal.Header className="modal-detail-header">
             <Modal.Heading>規劃事件詳情</Modal.Heading>
+            {onEdit ? <DetailModalEditButton onPress={onEdit} /> : null}
           </Modal.Header>
           <Modal.Body>
             {event && (
@@ -83,13 +100,19 @@ export function EventDetailModal({
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button slot="close" variant="secondary">
-              關閉
-            </Button>
-            {onEdit && (
-              <Button variant="secondary" className="border-teal-200 text-teal-700" onPress={onEdit}>
-                <Pencil className="w-3.5 h-3.5" />
-                編輯
+            {onComplete ? (
+              <>
+                <Button slot="close" variant="secondary">
+                  關閉
+                </Button>
+                <Button className="btn-accent" onPress={onComplete}>
+                  <Check className="w-4 h-4" />
+                  標示完成
+                </Button>
+              </>
+            ) : (
+              <Button slot="close" fullWidth variant="secondary">
+                關閉
               </Button>
             )}
           </Modal.Footer>

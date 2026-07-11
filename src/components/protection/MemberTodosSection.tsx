@@ -8,7 +8,7 @@ import {
   URGENCY_LABELS,
 } from '../../data/mockData'
 import { CardSectionTitle, StackList, TextModalLink } from '../common/CardLayout'
-import { TodoCompleteButton, TodoListCard } from '../common/TodoListCard'
+import { TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
 import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
 import { TodoEditModal } from '../common/TodoEditModal'
@@ -205,12 +205,6 @@ export function MemberTodosSection({
                 key={`todo-${item.data.id}`}
                 title={item.data.title}
                 onClick={() => setSelectedTodo(item.data)}
-                leading={
-                  <TodoCompleteButton
-                    onClick={() => setPendingCompleteTodo(item.data)}
-                    label="標記完成"
-                  />
-                }
                 tags={
                   <>
                     {item.data.dueDate ? (
@@ -231,12 +225,6 @@ export function MemberTodosSection({
                 title={item.data.name}
                 detail={item.data.description}
                 onClick={() => setSelectedEvent(item.data)}
-                leading={
-                  <TodoCompleteButton
-                    onClick={() => setPendingCompleteEvent(item.data)}
-                    label="標記完成"
-                  />
-                }
                 tags={
                   <>
                     {item.data.type ? (
@@ -314,6 +302,15 @@ export function MemberTodosSection({
             ? () => openEditForTodo(selectedTodo)
             : undefined
         }
+        onComplete={
+          selectedTodo
+            ? () => {
+                const todo = selectedTodo
+                setSelectedTodo(null)
+                setPendingCompleteTodo(todo)
+              }
+            : undefined
+        }
       />
 
       <EventDetailModal
@@ -324,6 +321,15 @@ export function MemberTodosSection({
         onEdit={
           selectedEvent
             ? () => openEditForEvent(selectedEvent)
+            : undefined
+        }
+        onComplete={
+          selectedEvent
+            ? () => {
+                const event = selectedEvent
+                setSelectedEvent(null)
+                setPendingCompleteEvent(event)
+              }
             : undefined
         }
       />

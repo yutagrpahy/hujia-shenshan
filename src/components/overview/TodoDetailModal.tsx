@@ -1,6 +1,6 @@
 import { Button, Modal } from '@heroui/react'
 import { StackBlock, StackList } from '../common/CardLayout'
-import { Calendar, Pencil, User } from 'lucide-react'
+import { Calendar, Check, Pencil, User } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
 import type { TodoItem } from '../../types'
@@ -17,18 +17,34 @@ const SOURCE_LABELS: Record<TodoItem['source'], string> = {
   manual: '手動新增',
 }
 
+function DetailModalEditButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Button
+      size="sm"
+      variant="secondary"
+      className="border-teal-200 text-teal-700 shrink-0"
+      onPress={onPress}
+    >
+      <Pencil className="w-3.5 h-3.5" />
+      編輯
+    </Button>
+  )
+}
+
 export function TodoDetailModal({
   todo,
   isOpen,
   onOpenChange,
   onViewMember,
   onEdit,
+  onComplete,
 }: {
   todo: TodoItem | null
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onViewMember?: () => void
   onEdit?: () => void
+  onComplete?: () => void
 }) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
 
@@ -37,8 +53,9 @@ export function TodoDetailModal({
       <Modal.Container placement={isMobile ? 'bottom' : 'center'}>
         <Modal.Dialog>
           <Modal.CloseTrigger />
-          <Modal.Header>
+          <Modal.Header className="modal-detail-header">
             <Modal.Heading>待辦詳情</Modal.Heading>
+            {onEdit ? <DetailModalEditButton onPress={onEdit} /> : null}
           </Modal.Header>
           <Modal.Body>
             {todo && (
@@ -68,14 +85,14 @@ export function TodoDetailModal({
             )}
           </Modal.Body>
           <Modal.Footer>
-            {onEdit ? (
+            {onComplete ? (
               <>
                 <Button slot="close" variant="secondary">
                   關閉
                 </Button>
-                <Button variant="secondary" className="border-teal-200 text-teal-700" onPress={onEdit}>
-                  <Pencil className="w-3.5 h-3.5" />
-                  編輯
+                <Button className="btn-accent" onPress={onComplete}>
+                  <Check className="w-4 h-4" />
+                  標示完成
                 </Button>
               </>
             ) : onViewMember ? (
