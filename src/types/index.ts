@@ -226,7 +226,7 @@ export interface GapMemberStatus {
   memberName: string
   /** 目前是否持有有效保障 */
   hasCoverage: boolean
-  /** 可導向的保單（有效優先，否則為同類失效保單） */
+  /** 有效保單 ID（僅 hasCoverage 時提供，供導覽捲動定位） */
   policyId?: string
 }
 

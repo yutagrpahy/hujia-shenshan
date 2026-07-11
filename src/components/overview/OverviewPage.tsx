@@ -25,7 +25,7 @@ import {
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
 import type { CoverageGap } from '../../types'
-import { findMemberGapPolicy, formatGapAmount } from '../../utils/calculations'
+import { formatGapAmount } from '../../utils/calculations'
 
 export function OverviewPage() {
   const {
@@ -66,19 +66,15 @@ export function OverviewPage() {
         ? 'text-teal-700'
         : 'text-teal-800'
 
-  const navigateGapMember = (
-    gap: CoverageGap,
-    memberId: string,
-    policyId?: string,
-  ) => {
-    const member = members.find((entry) => entry.id === memberId)
-    if (!member) return
-
-    const policy = findMemberGapPolicy(member, gap.gapKey, policyId)
-    navigateToMember(memberId, {
-      policyId: policy?.id ?? policyId,
-      gapKey: gap.gapKey,
-    })
+  const navigateGapMember = (gap: CoverageGap, entry: CoverageGap['gapMembers'][number]) => {
+    if (entry.hasCoverage && entry.policyId) {
+      navigateToMember(entry.memberId, {
+        policyId: entry.policyId,
+        gapKey: gap.gapKey,
+      })
+      return
+    }
+    navigateToMember(entry.memberId)
   }
 
   return (
@@ -274,26 +270,17 @@ export function OverviewPage() {
                       </>
                     )
 
-                    if (!entry.policyId) {
-                      return (
-                        <span
-                          key={entry.memberId}
-                          className={`inline-flex items-center gap-1 m3-chip ${chipClass}`}
-                        >
-                          {chipContent}
-                        </span>
-                      )
-                    }
-
                     return (
                       <button
                         key={entry.memberId}
                         type="button"
-                        onClick={() =>
-                          navigateGapMember(gap, entry.memberId, entry.policyId)
-                        }
+                        onClick={() => navigateGapMember(gap, entry)}
                         className={`inline-flex items-center gap-1 m3-chip transition-colors ${chipClass}`}
-                        title="點擊前往成員保單詳情"
+                        title={
+                          entry.hasCoverage
+                            ? '點擊前往成員保單詳情'
+                            : '點擊前往成員詳情'
+                        }
                       >
                         {chipContent}
                       </button>

@@ -46,16 +46,12 @@ function buildGapMemberStatuses(
       return useMonthly ? policy.monthlyPayout > 0 : policy.coverage > 0
     })
     const activePolicy = matching.find((policy) => isPolicyProvidingCoverage(policy))
-    const navigablePolicy =
-      activePolicy ??
-      matching.find((policy) => policy.status === 'expired') ??
-      matching[0]
 
     return {
       memberId: member.id,
       memberName: member.name,
       hasCoverage: !!activePolicy,
-      policyId: navigablePolicy?.id,
+      policyId: activePolicy?.id,
     }
   })
 }
