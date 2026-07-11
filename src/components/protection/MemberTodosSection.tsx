@@ -7,33 +7,21 @@ import {
   FREQUENCY_LABELS,
   URGENCY_LABELS,
 } from '../../data/mockData'
+import {
+  buildMemberPlanningItems,
+  getTodoSourceChipClass,
+  getTodoUrgencyChipClass,
+  TODO_SOURCE_LABELS,
+} from '../../data/todoLabels'
 import { CardSectionTitle, StackList, TextModalLink } from '../common/CardLayout'
 import { TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
 import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
 import { TodoDetailFlow } from '../common/TodoDetailFlow'
 import { formatCurrency } from '../../utils/calculations'
-import type { FamilyEvent, FamilyMember, NewEventInput, TodoItem, TodoUrgency } from '../../types'
+import type { FamilyEvent, FamilyMember, NewEventInput, TodoItem } from '../../types'
 import { EventDetailModal } from './EventDetailModal'
 import { MemberCompletedEventsModal } from './MemberCompletedEventsModal'
-
-const URGENCY_RANK: Record<TodoUrgency, number> = {
-  high: 0,
-  medium: 1,
-  low: 2,
-}
-
-const URGENCY_STYLES = {
-  high: 'bg-red-50 text-red-600',
-  medium: 'bg-amber-50 text-amber-600',
-  low: 'bg-sand-100 text-gray-500',
-}
-
-const SOURCE_LABELS: Record<TodoItem['source'], string> = {
-  system: '系統提醒',
-  event: '保障規劃',
-  manual: '手動新增',
-}
 
 const EMPTY_EVENT_INPUT: NewEventInput = {
   name: '',
@@ -44,43 +32,6 @@ const EMPTY_EVENT_INPUT: NewEventInput = {
   urgency: 'medium',
   description: '',
   memberIds: [],
-}
-
-type PlanningItem =
-  | { kind: 'todo'; urgency: TodoUrgency; sortDate?: string; data: TodoItem }
-  | { kind: 'event'; urgency: TodoUrgency; sortDate?: string; data: FamilyEvent }
-
-function buildPlanningItems(todos: TodoItem[], events: FamilyEvent[]): PlanningItem[] {
-  const eventIdsWithTodo = new Set(
-    todos.map((todo) => todo.eventId).filter((id): id is string => !!id),
-  )
-  const standaloneEvents = events.filter((event) => !eventIdsWithTodo.has(event.id))
-
-  const items: PlanningItem[] = [
-    ...todos.map((todo) => ({
-      kind: 'todo' as const,
-      urgency: todo.urgency,
-      sortDate: todo.dueDate,
-      data: todo,
-    })),
-    ...standaloneEvents.map((event) => ({
-      kind: 'event' as const,
-      urgency: event.urgency,
-      sortDate: event.date,
-      data: event,
-    })),
-  ]
-
-  return items.sort((a, b) => {
-    const urgencyDiff = URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency]
-    if (urgencyDiff !== 0) return urgencyDiff
-    if (a.sortDate && b.sortDate) return a.sortDate.localeCompare(b.sortDate)
-    if (a.sortDate) return -1
-    if (b.sortDate) return 1
-    const titleA = a.kind === 'todo' ? a.data.title : a.data.name
-    const titleB = b.kind === 'todo' ? b.data.title : b.data.name
-    return titleA.localeCompare(titleB, 'zh-TW')
-  })
 }
 
 function eventToInput(event: FamilyEvent): NewEventInput {
@@ -115,7 +66,7 @@ export function MemberTodosSection({
   const { members: allMembers, updateFamilyEvent, completeFamilyEvent } = useApp()
 
   const memberHistory = historyTodos.filter((todo) => todo.memberId === member.id)
-  const items = useMemo(() => buildPlanningItems(todos, events), [todos, events])
+  const items = useMemo(() => buildMemberPlanningItems(todos, events), [todos, events])
 
   const [pendingCompleteEvent, setPendingCompleteEvent] = useState<FamilyEvent | null>(null)
   const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null)
@@ -177,11 +128,11 @@ export function MemberTodosSection({
                     {item.data.dueDate ? (
                       <span className="text-[10px] text-gray-400">📅 {item.data.dueDate}</span>
                     ) : null}
-                    <span className={`m3-chip ${URGENCY_STYLES[item.data.urgency]}`}>
+                    <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(item.data.urgency)}`}>
                       {URGENCY_LABELS[item.data.urgency]}
                     </span>
-                    <span className="m3-chip m3-chip--muted border border-sand-200 bg-white">
-                      {SOURCE_LABELS[item.data.source]}
+                    <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
+                      {TODO_SOURCE_LABELS[item.data.source]}
                     </span>
                   </>
                 }
@@ -210,8 +161,11 @@ export function MemberTodosSection({
                         💰 {formatCurrency(item.data.fundsNeeded)}
                       </span>
                     ) : null}
-                    <span className={`m3-chip ${URGENCY_STYLES[item.data.urgency]}`}>
+                    <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(item.data.urgency)}`}>
                       {URGENCY_LABELS[item.data.urgency]}
+                    </span>
+                    <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
+                      {TODO_SOURCE_LABELS.event}
                     </span>
                   </>
                 }

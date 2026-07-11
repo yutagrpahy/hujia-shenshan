@@ -3,19 +3,12 @@ import { DetailEditLink, StackBlock, StackList } from '../common/CardLayout'
 import { Calendar, Check, User } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
+import {
+  getTodoSourceChipClass,
+  getTodoUrgencyChipClass,
+  TODO_SOURCE_LABELS,
+} from '../../data/todoLabels'
 import type { TodoItem } from '../../types'
-
-const URGENCY_STYLES: Record<string, string> = {
-  high: 'bg-red-50 text-red-600',
-  medium: 'bg-amber-50 text-amber-600',
-  low: 'bg-gray-100 text-gray-500',
-}
-
-const SOURCE_LABELS: Record<TodoItem['source'], string> = {
-  system: '系統提醒',
-  event: '保障規劃',
-  manual: '手動新增',
-}
 
 export function TodoDetailModal({
   todo,
@@ -62,11 +55,11 @@ export function TodoDetailModal({
                   )}
                 </StackList>
                 <div className="flex flex-wrap gap-2">
-                  <span className={`m3-chip ${URGENCY_STYLES[todo.urgency]}`}>
+                  <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(todo.urgency)}`}>
                     {URGENCY_LABELS[todo.urgency]}
                   </span>
-                  <span className="m3-chip m3-chip--muted">
-                    {SOURCE_LABELS[todo.source]}
+                  <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
+                    {TODO_SOURCE_LABELS[todo.source]}
                   </span>
                 </div>
               </StackBlock>

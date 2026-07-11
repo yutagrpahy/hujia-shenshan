@@ -271,15 +271,15 @@ export function mergeTodos(
   systemTodos: TodoItem[],
   persistedTodos: TodoItem[],
 ): TodoItem[] {
-  const persistedPolicyRules = new Set(
+  const persistedRuleIds = new Set(
     persistedTodos
-      .map((todo) => todo.policyId)
-      .filter((policyId): policyId is string => !!policyId),
+      .map((todo) => todo.ruleId)
+      .filter((ruleId): ruleId is string => !!ruleId),
   )
 
   const dedupedSystem = systemTodos.filter((todo) => {
-    if (!todo.policyId) return true
-    return !persistedPolicyRules.has(todo.policyId)
+    if (!todo.ruleId) return true
+    return !persistedRuleIds.has(todo.ruleId)
   })
 
   return [...dedupedSystem, ...persistedTodos]

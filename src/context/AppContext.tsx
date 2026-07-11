@@ -70,6 +70,8 @@ interface AppContextValue {
   members: FamilyMember[]
   memberCount: number
   todos: TodoItem[]
+  systemTodos: TodoItem[]
+  persistedTodos: TodoItem[]
   historyTodos: TodoItem[]
   notifications: AppNotification[]
   familyEvents: FamilyEvent[]
@@ -521,6 +523,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       members,
       memberCount,
       todos,
+      systemTodos,
+      persistedTodos,
       historyTodos,
       notifications,
       familyEvents,
@@ -564,6 +568,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       members,
       memberCount,
       todos,
+      systemTodos,
+      persistedTodos,
       historyTodos,
       notifications,
       familyEvents,

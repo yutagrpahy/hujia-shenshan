@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { URGENCY_LABELS } from '../../data/mockData'
+import { getTodoUrgencyChipClass } from '../../data/todoLabels'
 import type { TodoItem } from '../../types'
 import {
   CALENDAR_TODAY,
@@ -31,12 +32,6 @@ import {
 } from '../common/CardLayout'
 import { useApp } from '../../context/AppContext'
 import { TodoDetailFlow } from '../common/TodoDetailFlow'
-
-const URGENCY_STYLES = {
-  high: 'bg-red-50 text-red-600',
-  medium: 'bg-amber-50 text-amber-600',
-  low: 'bg-sand-100 text-gray-500',
-}
 
 const VIEW_MODES: { id: CalendarViewMode; label: string }[] = [
   { id: 'week', label: '週' },
@@ -288,7 +283,7 @@ export function TodoCalendarPanel({ todos }: { todos: TodoItem[] }) {
                           {todo.memberName}
                         </CardItemSubtitle>
                         <CardItemDetail>
-                          <span className={`m3-chip ${URGENCY_STYLES[todo.urgency] ?? ''}`}>
+                          <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(todo.urgency)}`}>
                             {URGENCY_LABELS[todo.urgency]}
                           </span>
                         </CardItemDetail>

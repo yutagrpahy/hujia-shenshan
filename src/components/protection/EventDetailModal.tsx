@@ -7,14 +7,9 @@ import {
   URGENCY_LABELS,
 } from '../../data/mockData'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
+import { getTodoSourceChipClass, getTodoUrgencyChipClass, TODO_SOURCE_LABELS } from '../../data/todoLabels'
 import { formatCurrency } from '../../utils/calculations'
 import type { FamilyEvent, FamilyMember } from '../../types'
-
-const URGENCY_STYLES = {
-  high: 'bg-red-50 text-red-600',
-  medium: 'bg-amber-50 text-amber-600',
-  low: 'bg-sand-100 text-gray-500',
-}
 
 export function EventDetailModal({
   event,
@@ -79,8 +74,11 @@ export function EventDetailModal({
                       {EVENT_TYPE_LABELS[event.type]}
                     </span>
                   )}
-                  <span className={`m3-chip ${URGENCY_STYLES[event.urgency]}`}>
+                  <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(event.urgency)}`}>
                     {URGENCY_LABELS[event.urgency]}
+                  </span>
+                  <span className={`m3-chip shrink-0 ${getTodoSourceChipClass()}`}>
+                    {TODO_SOURCE_LABELS.event}
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-400">建立者：{event.createdBy}</p>

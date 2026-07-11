@@ -2,13 +2,8 @@ import { Button, Modal } from '@heroui/react'
 import { StackForm } from './CardLayout'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
+import { getTodoUrgencyChipClass } from '../../data/todoLabels'
 import type { TodoItem } from '../../types'
-
-const URGENCY_STYLES = {
-  high: 'bg-red-50 text-red-600',
-  medium: 'bg-amber-50 text-amber-600',
-  low: 'bg-sand-100 text-gray-500',
-}
 
 export function TodoCompleteConfirmModal({
   todo,
@@ -42,7 +37,7 @@ export function TodoCompleteConfirmModal({
                 <div className="m3-card-filled p-3.5">
                   <p className="text-sm font-medium text-gray-800">{todo.title}</p>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <span className={`m3-chip ${URGENCY_STYLES[todo.urgency]}`}>
+                    <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(todo.urgency)}`}>
                       {URGENCY_LABELS[todo.urgency]}
                     </span>
                     {todo.dueDate && (

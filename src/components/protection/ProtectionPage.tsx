@@ -13,6 +13,7 @@ import {
   STAGE_LABELS,
 } from '../../data/mockData'
 import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
+import { countMemberReminders, getTodoCountChipClass } from '../../data/todoLabels'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import {
   CardItem,
@@ -93,6 +94,8 @@ export function ProtectionPage() {
   const {
     members,
     todos,
+    systemTodos,
+    persistedTodos,
     familyEvents,
     documents,
     currentUserId,
@@ -433,10 +436,12 @@ export function ProtectionPage() {
         <section className="w-full max-w-full min-w-0">
           <StackList className="protection-grid">
             {members.map((member) => {
-              const memberTodoCount = todos.filter((todo) => todo.memberId === member.id).length
-              const urgentTodoCount = todos.filter(
-                (todo) => todo.memberId === member.id && todo.urgency === 'high',
-              ).length
+              const { total: memberTodoCount, hasUrgent } = countMemberReminders(
+                member.id,
+                systemTodos,
+                persistedTodos,
+                familyEvents,
+              )
 
               return (
                 <CardItem
@@ -462,13 +467,7 @@ export function ProtectionPage() {
                       </CardItemSubtitle>
                       {memberTodoCount > 0 ? (
                         <CardItemTags>
-                          <span
-                            className={`m3-chip ${
-                              urgentTodoCount > 0
-                                ? 'bg-red-50 text-red-600'
-                                : 'bg-amber-50 text-amber-600'
-                            }`}
-                          >
+                          <span className={`m3-chip shrink-0 ${getTodoCountChipClass(hasUrgent)}`}>
                             {memberTodoCount} 項待辦
                           </span>
                         </CardItemTags>
