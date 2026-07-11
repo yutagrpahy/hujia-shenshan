@@ -47,7 +47,7 @@ export function TodoListCard({
             <CardItemTags>{tags}</CardItemTags>
           </CardItemMain>
         </CardItemTriMain>
-        <CardItemTriIndicator>{leading}</CardItemTriIndicator>
+        {leading ? <CardItemTriIndicator>{leading}</CardItemTriIndicator> : null}
         <CardItemTriAction>
           <CardItemChevron />
         </CardItemTriAction>

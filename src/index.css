@@ -1074,6 +1074,11 @@ body {
   padding-top: 1px;
 }
 
+/* 無指標內容時不佔欄位，避免箭頭被擠到下一列（個人待辦等） */
+.m3-card-item__tri-indicator:not(:has(*)) {
+  display: none;
+}
+
 .m3-card-item__tri-action {
   display: flex;
   align-items: flex-start;
