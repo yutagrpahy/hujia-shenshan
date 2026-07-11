@@ -17,11 +17,14 @@ import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import {
   CardItem,
   CardItemChevron,
-  CardItemMain,
-  CardItemRow,
+  CardItemMeta,
+  CardItemMetaLabel,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
   CardItemSubtitle,
   CardItemTags,
-  CardItemTitle,
   CardSectionTitle,
   FormLabel,
   PageStack,
@@ -342,7 +345,8 @@ export function ProtectionPage() {
                             memberName={selectedMember.name}
                             memberId={selectedMember.id}
                             members={members}
-                            showMember={false}
+                            showMember
+                            avatarSeed={selectedMember.avatarSeed}
                             highlighted={highlightedPolicyId === p.id}
                             onClick={() =>
                               setSelectedPolicy({
@@ -445,16 +449,17 @@ export function ProtectionPage() {
                   className="m3-card-item--lg active:bg-sand-50"
                   onClick={() => setSelectedMemberId(member.id)}
                 >
-                  <CardItemRow className="items-center">
-                    <div className="m3-card-item__media">
-                      <MemberAvatar
-                        name={member.name}
-                        seed={member.avatarSeed}
-                        index={members.indexOf(member)}
-                      />
-                    </div>
-                    <CardItemMain>
-                      <CardItemTitle className="font-semibold">{member.name}</CardItemTitle>
+                  <CardItemTriRow>
+                    <CardItemTriMain>
+                      <CardItemMeta>
+                        <MemberAvatar
+                          name={member.name}
+                          seed={member.avatarSeed}
+                          index={members.indexOf(member)}
+                          size="xs"
+                        />
+                        <CardItemMetaLabel>{member.name}</CardItemMetaLabel>
+                      </CardItemMeta>
                       <CardItemSubtitle>
                         {member.age} 歲 · {ROLE_LABELS[member.role]} · {member.policies.length} 張保單
                       </CardItemSubtitle>
@@ -471,12 +476,14 @@ export function ProtectionPage() {
                           </span>
                         </CardItemTags>
                       ) : null}
-                    </CardItemMain>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Shield className="w-4 h-4 text-teal-400" />
+                    </CardItemTriMain>
+                    <CardItemTriIndicator>
+                      <Shield className="w-5 h-5 text-teal-400" />
+                    </CardItemTriIndicator>
+                    <CardItemTriAction>
                       <CardItemChevron />
-                    </div>
-                  </CardItemRow>
+                    </CardItemTriAction>
+                  </CardItemTriRow>
                 </CardItem>
               )
             })}

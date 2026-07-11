@@ -18,8 +18,11 @@ import {
   CardItem,
   CardItemChevron,
   CardItemDetail,
-  CardItemMain,
-  CardItemRow,
+
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
   CardItemSubtitle,
   CardItemTitle,
   CardSectionTitle,
@@ -282,11 +285,8 @@ export function TodoCalendarPanel({
                     interactive
                     onClick={() => setSelectedTodo(todo)}
                   >
-                    <CardItemRow className="gap-2">
-                      <span
-                        className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${URGENCY_DOT[todo.urgency]}`}
-                      />
-                      <CardItemMain>
+                    <CardItemTriRow>
+                      <CardItemTriMain>
                         <CardItemTitle>{todo.title}</CardItemTitle>
                         <CardItemSubtitle className="text-caption">
                           {todo.memberName}
@@ -296,9 +296,17 @@ export function TodoCalendarPanel({
                             {URGENCY_LABELS[todo.urgency]}
                           </span>
                         </CardItemDetail>
-                      </CardItemMain>
-                      <CardItemChevron className="mt-0.5" />
-                    </CardItemRow>
+                      </CardItemTriMain>
+                      <CardItemTriIndicator>
+                        <span
+                          className={`w-2.5 h-2.5 rounded-full ${URGENCY_DOT[todo.urgency]}`}
+                          aria-hidden
+                        />
+                      </CardItemTriIndicator>
+                      <CardItemTriAction>
+                        <CardItemChevron />
+                      </CardItemTriAction>
+                    </CardItemTriRow>
                   </CardItem>
                 ))}
               </StackList>

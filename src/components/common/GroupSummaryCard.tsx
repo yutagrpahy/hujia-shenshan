@@ -4,6 +4,10 @@ import {
   CardItemChevron,
   CardItemSubtitle,
   CardItemTitle,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
 } from './CardLayout'
 
 export function GroupSummaryCard({
@@ -29,18 +33,20 @@ export function GroupSummaryCard({
       className={className}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0 flex-1">
+      <CardItemTriRow>
+        <CardItemTriMain>
           <CardItemTitle>{title}</CardItemTitle>
           <CardItemSubtitle className="text-[10px] text-gray-400">
             {subtitle}
           </CardItemSubtitle>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <CardItemAmount>{amount}</CardItemAmount>
+        </CardItemTriMain>
+        <CardItemTriIndicator>
+          <CardItemAmount className="text-center">{amount}</CardItemAmount>
+        </CardItemTriIndicator>
+        <CardItemTriAction>
           <CardItemChevron />
-        </div>
-      </div>
+        </CardItemTriAction>
+      </CardItemTriRow>
     </CardItem>
   )
 }

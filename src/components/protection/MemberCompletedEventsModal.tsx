@@ -6,9 +6,11 @@ import {
   StackList,
   CardItem,
   CardItemDetail,
-  CardItemMain,
-  CardItemRow,
   CardItemTitle,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
 } from '../common/CardLayout'
 import type { TodoItem } from '../../types'
 
@@ -40,13 +42,8 @@ export function MemberCompletedEventsModal({
               <StackList>
                 {items.map((todo) => (
                   <CardItem key={todo.id} className="opacity-80">
-                    <CardItemRow>
-                      <div className="m3-card-item__media">
-                        <div className="m3-icon-wrap m3-icon-wrap--xs bg-teal-100">
-                          <Check className="w-3.5 h-3.5 text-teal-600" />
-                        </div>
-                      </div>
-                      <CardItemMain>
+                    <CardItemTriRow>
+                      <CardItemTriMain>
                         <CardItemTitle className="text-gray-600 line-through">
                           {todo.title}
                         </CardItemTitle>
@@ -57,8 +54,14 @@ export function MemberCompletedEventsModal({
                             {todo.urgency ? ` · ${URGENCY_LABELS[todo.urgency]}` : ''}
                           </span>
                         </CardItemDetail>
-                      </CardItemMain>
-                    </CardItemRow>
+                      </CardItemTriMain>
+                      <CardItemTriIndicator>
+                        <div className="m3-icon-wrap m3-icon-wrap--xs bg-teal-100">
+                          <Check className="w-3.5 h-3.5 text-teal-600" />
+                        </div>
+                      </CardItemTriIndicator>
+                      <CardItemTriAction />
+                    </CardItemTriRow>
                   </CardItem>
                 ))}
               </StackList>

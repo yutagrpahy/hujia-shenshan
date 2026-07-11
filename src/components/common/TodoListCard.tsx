@@ -3,11 +3,13 @@ import {
   CardItem,
   CardItemChevron,
   CardItemDetail,
-  CardItemHead,
   CardItemMain,
-  CardItemRow,
   CardItemTags,
   CardItemTitle,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
 } from './CardLayout'
 
 export function TodoListCard({
@@ -26,17 +28,17 @@ export function TodoListCard({
   className?: string
 }) {
   return (
-    <CardItem variant="muted" className={`m3-card-item--lg ${className}`.trim()}>
-      <CardItemRow>
-        {leading}
-        <button type="button" onClick={onClick} className="flex-1 min-w-0 text-left">
+    <CardItem
+      as="button"
+      interactive
+      variant="muted"
+      className={`m3-card-item--lg ${className}`.trim()}
+      onClick={onClick}
+    >
+      <CardItemTriRow>
+        <CardItemTriMain>
           <CardItemMain>
-            <CardItemHead>
-              <CardItemTitle className="font-semibold text-gray-700">
-                {title}
-              </CardItemTitle>
-              <CardItemChevron className="mt-0.5" />
-            </CardItemHead>
+            <CardItemTitle className="font-semibold text-gray-700">{title}</CardItemTitle>
             {detail ? (
               <CardItemDetail className="text-gray-500 text-xs mb-2 line-clamp-2">
                 {detail}
@@ -44,8 +46,12 @@ export function TodoListCard({
             ) : null}
             <CardItemTags>{tags}</CardItemTags>
           </CardItemMain>
-        </button>
-      </CardItemRow>
+        </CardItemTriMain>
+        <CardItemTriIndicator>{leading}</CardItemTriIndicator>
+        <CardItemTriAction>
+          <CardItemChevron />
+        </CardItemTriAction>
+      </CardItemTriRow>
     </CardItem>
   )
 }
@@ -60,8 +66,11 @@ export function TodoCompleteButton({
   return (
     <button
       type="button"
-      onClick={onClick}
-      className="w-6 h-6 rounded-full border-2 border-teal-400 flex items-center justify-center shrink-0 mt-0.5 active:bg-teal-50"
+      onClick={(event) => {
+        event.stopPropagation()
+        onClick()
+      }}
+      className="w-6 h-6 rounded-full border-2 border-teal-400 flex items-center justify-center shrink-0 active:bg-teal-50"
       aria-label={label}
     />
   )

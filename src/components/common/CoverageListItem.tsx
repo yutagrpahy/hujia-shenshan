@@ -1,6 +1,10 @@
 import type { ClaimRecord, FamilyMember, PolicyWithMember } from '../../types'
 import { CLAIM_STATUS_GROUP } from '../../data/claims'
-import { POLICY_STATUS_BADGES, POLICY_STATUS_LABELS } from '../../data/policyLabels'
+import {
+  POLICY_STATUS_BADGES,
+  POLICY_STATUS_LABELS,
+  POLICY_TYPE_LABELS,
+} from '../../data/policyLabels'
 import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
 import {
   CardItem,
@@ -100,6 +104,10 @@ export function CoverageListItem({
             size={40}
             label={`${claim.progress}%`}
           />
+        ) : policy ? (
+          <span className="m3-chip bg-teal-50 text-teal-600 text-center leading-tight">
+            {POLICY_TYPE_LABELS[policy.type]}
+          </span>
         ) : null}
       </CardItemTriIndicator>
 

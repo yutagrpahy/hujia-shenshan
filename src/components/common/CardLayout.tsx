@@ -244,7 +244,7 @@ export function CardItemTriRow({
   className?: string
 }) {
   return (
-    <div className={`m3-card-item__row m3-card-item__row--tri ${className}`.trim()}>
+    <div className={`m3-card-item__row--tri ${className}`.trim()}>
       {children}
     </div>
   )
@@ -276,7 +276,7 @@ export function CardItemTriAction({
   children,
   className = '',
 }: {
-  children: ReactNode
+  children?: ReactNode
   className?: string
 }) {
   return <div className={`m3-card-item__tri-action ${className}`.trim()}>{children}</div>

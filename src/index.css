@@ -967,14 +967,15 @@ body {
   gap: var(--ds-card-gap);
 }
 
-/* 三欄卡片：內容 80% · 進度／指標 15% · 箭頭 5% */
+/* 三欄卡片：內容 80% · 進度／指標 15% · 箭頭 5%（8:1.5:0.5） */
 .m3-card-item__row--tri {
   display: grid;
-  grid-template-columns: minmax(0, 80%) minmax(0, 15%) minmax(0, 5%);
+  grid-template-columns: minmax(0, 8fr) minmax(0, 1.5fr) minmax(0, 0.5fr);
   align-items: center;
   column-gap: var(--ds-space-tight);
   width: 100%;
   min-width: 0;
+  box-sizing: border-box;
 }
 
 .m3-card-item__tri-main {

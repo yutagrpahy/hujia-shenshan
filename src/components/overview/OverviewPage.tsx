@@ -1,4 +1,3 @@
-import { Button } from '@heroui/react'
 import {
   AlertCircle,
   ArrowRight,
@@ -25,9 +24,12 @@ import {
 import {
   CardItem,
   CardItemDetail,
-  CardItemMain,
+
   CardItemMetaLabel,
-  CardItemRow,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
   CardItemTitle,
   PageSection,
 } from '../common/CardLayout'
@@ -325,21 +327,21 @@ export function OverviewPage() {
         <div className="education-grid">
           {education.map((item) => (
             <CardItem key={item.id} className="m3-card-item--lg">
-              <CardItemRow className="items-center">
-                <div className="m3-card-item__media">
-                  <div className="m3-icon-wrap m3-icon-wrap--md">
-                    <BookOpen className="w-5 h-5 text-teal-500" />
-                  </div>
-                </div>
-                <CardItemMain>
+              <CardItemTriRow>
+                <CardItemTriMain>
                   <CardItemMetaLabel className="text-[10px]">{item.stage}</CardItemMetaLabel>
                   <CardItemTitle>{item.title}</CardItemTitle>
                   <CardItemDetail>{item.duration}</CardItemDetail>
-                </CardItemMain>
-                <Button isIconOnly variant="ghost" size="sm" className="text-teal-600 shrink-0">
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </CardItemRow>
+                </CardItemTriMain>
+                <CardItemTriIndicator>
+                  <div className="m3-icon-wrap m3-icon-wrap--md">
+                    <BookOpen className="w-5 h-5 text-teal-500" />
+                  </div>
+                </CardItemTriIndicator>
+                <CardItemTriAction>
+                  <ArrowRight className="w-4 h-4 text-teal-600" aria-hidden />
+                </CardItemTriAction>
+              </CardItemTriRow>
             </CardItem>
           ))}
         </div>

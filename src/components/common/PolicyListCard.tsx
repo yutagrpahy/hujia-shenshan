@@ -1,3 +1,4 @@
+import { getClaimByPolicyId, CLAIM_STATUS_GROUP } from '../../data/claims'
 import {
   POLICY_STATUS_BADGES,
   POLICY_STATUS_LABELS,
@@ -6,18 +7,20 @@ import {
 import { getPolicyParties } from '../../data/policyDetails'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
+import { ClaimProgressRing, claimRingTone } from './ClaimProgressRing'
 import {
   CardItem,
   CardItemChevron,
   CardItemDetail,
-  CardItemHead,
-  CardItemMain,
   CardItemMeta,
   CardItemMetaLabel,
-  CardItemRow,
   CardItemSubtitle,
   CardItemTags,
   CardItemTitle,
+  CardItemTriAction,
+  CardItemTriIndicator,
+  CardItemTriMain,
+  CardItemTriRow,
 } from './CardLayout'
 import { MemberAvatar } from './MemberAvatar'
 
@@ -44,31 +47,34 @@ export function PolicyListCard({
   id?: string
   className?: string
 }) {
+  const claim = members ? getClaimByPolicyId(members, policy.id) : undefined
+  const hasClaim = !!claim
+  const statusTone = hasClaim ? CLAIM_STATUS_GROUP[claim.claimStatus].tone : null
   const parties =
     members && memberId
       ? getPolicyParties(members, memberId)
       : memberName
         ? { proposer: memberName, insured: memberName }
         : null
+  const resolvedAvatarSeed = avatarSeed ?? memberName
+  const showIdentity = showMember && memberName && resolvedAvatarSeed
 
   const content = (
-    <CardItemRow>
-      <CardItemMain>
-        {showMember && memberName && avatarSeed ? (
+    <CardItemTriRow>
+      <CardItemTriMain>
+        {showIdentity ? (
           <CardItemMeta>
-            <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
+            <MemberAvatar name={memberName} seed={resolvedAvatarSeed} size="xs" />
             <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
+            {hasClaim ? (
+              <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
+                {claim.statusLabel}
+              </span>
+            ) : null}
           </CardItemMeta>
         ) : null}
-        <CardItemHead>
-          <div className="min-w-0 flex-1">
-            <CardItemTitle>{policy.name}</CardItemTitle>
-            <CardItemSubtitle>{policy.insurer}</CardItemSubtitle>
-          </div>
-          <span className="m3-chip bg-teal-50 text-teal-600 shrink-0">
-            {POLICY_TYPE_LABELS[policy.type]}
-          </span>
-        </CardItemHead>
+        <CardItemTitle>{policy.name}</CardItemTitle>
+        <CardItemSubtitle>{policy.insurer}</CardItemSubtitle>
         {parties ? (
           <CardItemDetail>
             要保人 {parties.proposer} · 被保人 {parties.insured}
@@ -76,15 +82,31 @@ export function PolicyListCard({
         ) : null}
         <CardItemTags>
           <PolicySourceLabel source={policy.source} />
-          {policy.status !== 'active' && POLICY_STATUS_BADGES[policy.status] && (
+          {!hasClaim && policy.status !== 'active' && POLICY_STATUS_BADGES[policy.status] ? (
             <span className={`m3-chip ${POLICY_STATUS_BADGES[policy.status]}`}>
               {POLICY_STATUS_LABELS[policy.status]}
             </span>
-          )}
+          ) : null}
         </CardItemTags>
-      </CardItemMain>
-      {onClick ? <CardItemChevron className="mt-1" /> : null}
-    </CardItemRow>
+      </CardItemTriMain>
+
+      <CardItemTriIndicator>
+        {hasClaim ? (
+          <ClaimProgressRing
+            progress={claim.progress}
+            tone={claimRingTone(claim.claimStatus, claim.isError)}
+            size={40}
+            label={`${claim.progress}%`}
+          />
+        ) : (
+          <span className="m3-chip bg-teal-50 text-teal-600 text-center leading-tight">
+            {POLICY_TYPE_LABELS[policy.type]}
+          </span>
+        )}
+      </CardItemTriIndicator>
+
+      <CardItemTriAction>{onClick ? <CardItemChevron /> : null}</CardItemTriAction>
+    </CardItemTriRow>
   )
 
   if (!onClick) {
@@ -100,7 +122,7 @@ export function PolicyListCard({
       id={id}
       className={`mb-2 scroll-mt-28 ${
         highlighted ? 'member-policy-card--highlight' : ''
-      } ${className}`.trim()}
+      } ${hasClaim ? `claim-card claim-card--${statusTone}` : ''} ${className}`.trim()}
       onClick={onClick}
     >
       {content}
