@@ -79,12 +79,18 @@ export function HealthProfileHeroSummary({
           type="button"
           onClick={onOpenCurrent}
           className="inline-flex items-center gap-1 m3-chip health-hero-summary__tier"
+          aria-label={`查看第 ${profile.tier} 級 ${profile.tierLabel} 分級詳情`}
         >
-          <ClipboardList className="w-3 h-3" />
+          <ClipboardList className="w-3 h-3" aria-hidden />
           第 {profile.tier} 級 · {profile.tierLabel}
-          <ChevronRight className="w-3 h-3" />
+          <ChevronRight className="w-3 h-3" aria-hidden />
         </button>
-        <button type="button" onClick={onOpenCompare} className="health-hero-summary__link">
+        <button
+          type="button"
+          onClick={onOpenCompare}
+          className="health-hero-summary__link"
+          aria-label="查看其他家庭保險健康分級"
+        >
           查看其他分級
         </button>
       </div>

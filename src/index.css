@@ -2016,15 +2016,34 @@ button.m3-chip {
 }
 
 .health-hero-summary__link {
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--a11y-touch-min);
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: var(--a11y-text-caption);
   font-weight: 600;
-  color: #0f766e;
-  transition: color 0.15s ease;
+  line-height: 1.5;
+  color: var(--color-a11y-link);
+  background: transparent;
+  border: none;
+  border-radius: var(--ds-radius-control);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  appearance: none;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .health-hero-summary__link:hover {
-  color: #115e59;
-  text-decoration: underline;
+  color: var(--color-a11y-focus);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.health-hero-summary__link:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
 }
 
 /* ── Responsive grids ── */
