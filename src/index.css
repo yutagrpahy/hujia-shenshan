@@ -698,7 +698,13 @@ body {
 .policy-filter-chips {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--ds-space-inline);
+  background: var(--color-sand-100);
+  border-radius: var(--ds-radius-segment);
+  padding: var(--ds-segment-inset);
+  border: 1px solid color-mix(in srgb, var(--color-outline) 72%, transparent);
+  box-shadow: 0 1px 3px rgba(45, 122, 112, 0.04);
 }
 
 .member-policies-section {
