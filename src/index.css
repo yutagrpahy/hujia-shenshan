@@ -767,6 +767,14 @@ body {
   line-height: 1.5;
 }
 
+.gap-member-chips {
+  gap: 6px;
+}
+
+.gap-member-chip {
+  gap: 4px;
+}
+
 .gap-urgent-badge {
   background: linear-gradient(135deg, #fff0e8, #ffe4d6);
   color: #9a3d28;
@@ -2625,6 +2633,22 @@ button.m3-chip {
 
   .m3-chip {
     font-size: 0.9375rem;
+  }
+
+  .gap-member-chips {
+    gap: 4px;
+  }
+
+  .gap-member-chip.m3-chip {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    gap: 3px;
+    line-height: 1.25;
+  }
+
+  .gap-member-chip .member-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   .claim-chip,

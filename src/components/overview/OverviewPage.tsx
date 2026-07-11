@@ -231,7 +231,7 @@ export function OverviewPage() {
                     <>達成率 {pct}%</>
                   )}
                 </p>
-                <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="gap-member-chips flex items-center flex-wrap">
                   {gap.gapMembers.map((entry) => {
                     const member = members.find((m) => m.id === entry.memberId)
                     const tone = entry.hasCoverage ? 'covered' : 'uncovered'
@@ -258,7 +258,7 @@ export function OverviewPage() {
                         key={entry.memberId}
                         type="button"
                         onClick={() => navigateGapMember(gap, entry)}
-                        className={`inline-flex items-center gap-1 m3-chip transition-colors ${chipClass}`}
+                        className={`gap-member-chip inline-flex items-center m3-chip transition-colors ${chipClass}`}
                         title={
                           entry.hasCoverage
                             ? '點擊前往成員保單詳情'
