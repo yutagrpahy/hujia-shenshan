@@ -266,7 +266,7 @@ export function ProtectionPage() {
             className="member-detail-back__btn"
           >
             <ChevronLeft className="w-4 h-4 shrink-0" aria-hidden />
-            返回保障成員
+            返回家庭成員
           </button>
         </header>
 
@@ -426,7 +426,7 @@ export function ProtectionPage() {
       <div className="m3-segment">
         <SegmentTab
           active={subTab === 'members'}
-          label="保障成員"
+          label="家庭成員"
           onClick={() => setSubTab('members')}
         />
         <SegmentTab
