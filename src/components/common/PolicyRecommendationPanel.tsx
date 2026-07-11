@@ -87,7 +87,7 @@ export function PolicyRecommendationPanel({
         <img
           src={getAdvisorAvatarUrl()}
           alt={recommendedAdvisor.name}
-          className="w-12 h-12 rounded-2xl ring-2 ring-white shrink-0"
+          className="member-avatar member-avatar--default w-12 h-12 shrink-0"
         />
         <div>
           <p className="text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">

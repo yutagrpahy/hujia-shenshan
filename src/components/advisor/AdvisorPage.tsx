@@ -230,7 +230,7 @@ export function AdvisorPage() {
           <AdvisorWelcome onEnterChat={enterChat} onEnterSimulate={enterSimulate} />
         ) : dockMode === 'simulate' && !hasUserMessages && !isWelcomeTyping ? (
           <div className="flex flex-col items-center justify-center py-10 px-4 text-center min-h-[40dvh]">
-            <div className="w-12 h-12 rounded-2xl bg-coral-500/10 flex items-center justify-center mb-3">
+            <div className="m3-icon-wrap m3-icon-wrap--md bg-coral-500/10 mb-3">
               <FlaskConical className="w-6 h-6 text-coral-500" />
             </div>
             <p className="text-sm font-semibold text-gray-700">設定模擬條件</p>
@@ -245,9 +245,9 @@ export function AdvisorPage() {
                 <img
                   src={getAdvisorAvatarUrl()}
                   alt="AI 顧問"
-                  className="w-8 h-8 rounded-full shrink-0 mr-2 mt-1 ring-2 ring-teal-100"
+                  className="advisor-avatar advisor-avatar--ring w-8 h-8 shrink-0 mr-2 mt-1"
                 />
-                <div className="max-w-[80%] px-3.5 py-2.5 text-sm leading-relaxed m3-chat-ai">
+                <div className="max-w-[80%] text-sm leading-relaxed m3-chat-ai">
                   {welcomeTypedText}
                   <span className="advisor-typing-cursor" aria-hidden />
                 </div>
@@ -262,11 +262,11 @@ export function AdvisorPage() {
                   <img
                     src={getAdvisorAvatarUrl()}
                     alt="AI 顧問"
-                    className="w-8 h-8 rounded-full shrink-0 mr-2 mt-1 ring-2 ring-teal-100"
+                    className="advisor-avatar advisor-avatar--ring w-8 h-8 shrink-0 mr-2 mt-1"
                   />
                 )}
                 <div
-                  className={`max-w-[80%] px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line ${
+                  className={`max-w-[80%] text-sm leading-relaxed whitespace-pre-line ${
                     msg.role === 'user' ? 'm3-chat-user' : 'm3-chat-ai'
                   }`}
                 >
@@ -279,9 +279,9 @@ export function AdvisorPage() {
                 <img
                   src={getAdvisorAvatarUrl()}
                   alt=""
-                  className="w-8 h-8 rounded-full shrink-0 mr-2 mt-1 ring-2 ring-teal-100"
+                  className="advisor-avatar advisor-avatar--ring w-8 h-8 shrink-0 mr-2 mt-1"
                 />
-                <div className="m3-chat-ai px-3.5 py-2.5 flex items-center gap-2">
+                <div className="m3-chat-ai flex items-center gap-2">
                   <Spinner size="sm" />
                   <span className="text-xs text-gray-400">思考中...</span>
                 </div>
@@ -345,7 +345,7 @@ export function AdvisorPage() {
                   key={suggestion}
                   type="button"
                   onClick={() => sendMessage(suggestion)}
-                  className="shrink-0 text-[10px] px-2.5 py-1.5 bg-sand-100 rounded-full text-gray-600 whitespace-nowrap hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                  className="m3-chip m3-chip--muted shrink-0 whitespace-nowrap hover:bg-teal-50 hover:text-teal-700 transition-colors"
                 >
                   <Sparkles className="w-2.5 h-2.5 inline mr-0.5" />
                   {suggestion.length > 18 ? `${suggestion.slice(0, 18)}…` : suggestion}
@@ -369,7 +369,7 @@ export function AdvisorPage() {
                   }, 320)
                 }}
                 placeholder="詢問保障規劃..."
-                className="flex-1 min-w-0 px-3.5 py-2.5 border border-sand-200 rounded-2xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-300"
+                className="m3-field flex-1 min-w-0"
               />
               <Button
                 isIconOnly

@@ -87,7 +87,7 @@ export function PolicyDetailModal({
                 </div>
               </div>
 
-              <div className={`rounded-2xl border p-3.5 ${STATUS_STYLES[detail.statusTone]}`}>
+              <div className={`m3-panel border p-3.5 ${STATUS_STYLES[detail.statusTone]}`}>
                 <div className="flex items-center gap-2 mb-1.5">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <p className="text-sm font-semibold">{detail.situationTitle}</p>
@@ -117,7 +117,7 @@ export function PolicyDetailModal({
                     <button
                       key={cta.id}
                       type="button"
-                      className={`w-full text-left rounded-2xl border p-3.5 transition-colors ${
+                      className={`w-full text-left m3-panel border p-3.5 transition-colors ${
                         cta.variant === 'primary'
                           ? 'bg-teal-50 border-teal-100 hover:bg-teal-100/70'
                           : 'bg-white border-sand-200 hover:bg-sand-50'
@@ -151,7 +151,7 @@ export function PolicyDetailModal({
                   <img
                     src={getAdvisorAvatarUrl()}
                     alt={agent.name}
-                    className="w-12 h-12 rounded-2xl ring-2 ring-white shrink-0"
+                    className="member-avatar member-avatar--default w-12 h-12 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-800">{agent.name}</p>

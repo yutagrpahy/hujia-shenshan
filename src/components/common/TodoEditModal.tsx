@@ -56,7 +56,7 @@ export function TodoEditModal({
                 <input
                   value={form.title}
                   onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -65,7 +65,7 @@ export function TodoEditModal({
                   type="date"
                   value={form.dueDate ?? ''}
                   onChange={(e) => setForm((prev) => ({ ...prev, dueDate: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -76,10 +76,8 @@ export function TodoEditModal({
                       key={urgency}
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, urgency }))}
-                      className={`m3-chip flex-1 py-2 text-center ${
-                        form.urgency === urgency
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-sand-100 text-gray-600'
+                      className={`m3-chip m3-chip-btn ${
+                        form.urgency === urgency ? 'm3-chip--selected' : 'm3-chip--muted'
                       }`}
                     >
                       {URGENCY_LABELS[urgency]}

@@ -59,7 +59,7 @@ export function TodoDetailModal({
                   <span className={`m3-chip ${URGENCY_STYLES[todo.urgency]}`}>
                     {URGENCY_LABELS[todo.urgency]}
                   </span>
-                  <span className="m3-chip bg-sand-100 text-gray-500">
+                  <span className="m3-chip m3-chip--muted">
                     {SOURCE_LABELS[todo.source]}
                   </span>
                 </div>

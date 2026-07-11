@@ -49,7 +49,7 @@ function PayoutItemRow({
         ) : member ? (
           <MemberAvatar name={member.name} seed={member.avatarSeed} size="sm" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-teal-50 shrink-0" />
+          <div className="m3-icon-wrap m3-icon-wrap--sm shrink-0" />
         )}
       </div>
       <div className="flex-1 min-w-0">

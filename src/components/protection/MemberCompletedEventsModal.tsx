@@ -32,7 +32,7 @@ export function MemberCompletedEventsModal({
               <div className="space-y-2">
                 {items.map((todo) => (
                   <div key={todo.id} className="m3-card p-3.5 flex items-start gap-3 opacity-80">
-                    <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center shrink-0">
+                    <div className="m3-icon-wrap m3-icon-wrap--xs bg-teal-100 shrink-0">
                       <Check className="w-3.5 h-3.5 text-teal-600" />
                     </div>
                     <div className="flex-1 min-w-0">

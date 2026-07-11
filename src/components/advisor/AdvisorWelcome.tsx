@@ -25,7 +25,7 @@ export function AdvisorWelcome({
       <img
         src={getAdvisorAvatarUrl()}
         alt="AI 顧問"
-        className="w-12 h-12 rounded-2xl ring-4 ring-teal-50 mb-3"
+        className="advisor-avatar advisor-avatar--hero w-12 h-12 mb-3"
       />
       <h3 className="text-base font-bold text-gray-800 mb-1">護家神山 AI 保障顧問</h3>
       <p className="advisor-landing-intro text-center leading-relaxed mb-5 px-2">

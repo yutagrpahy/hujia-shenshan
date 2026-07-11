@@ -34,7 +34,7 @@ export function ScenarioOptionList({
           key={ev}
           type="button"
           onClick={() => onSelect(ev)}
-          className={`w-full text-left rounded-xl border p-3 transition-colors ${
+          className={`w-full text-left m3-panel border p-3 transition-colors ${
             selected === ev
               ? 'bg-teal-50 border-teal-200'
               : 'bg-white border-sand-200 hover:border-teal-100 hover:bg-sand-50/80'

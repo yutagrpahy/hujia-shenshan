@@ -57,7 +57,7 @@ function CoverageItemRow({
         ) : member ? (
           <MemberAvatar name={member.name} seed={member.avatarSeed} size="sm" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-teal-50 shrink-0" />
+          <div className="m3-icon-wrap m3-icon-wrap--sm shrink-0" />
         )}
       </div>
       <div className="flex-1 min-w-0">
@@ -168,7 +168,7 @@ export function NonAccidentCoveragePanel({
           <button
             type="button"
             onClick={() => setTypesRevealed((value) => !value)}
-            className="w-full mt-3 py-2.5 text-xs font-medium text-teal-600 flex items-center justify-center gap-1.5 rounded-xl border border-teal-100 bg-white/60 hover:bg-white transition-colors"
+            className="m3-soft-btn m3-soft-btn--teal mt-3"
           >
             {typesRevealed ? (
               <>

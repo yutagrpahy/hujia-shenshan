@@ -168,7 +168,7 @@ export function AppShell({ children }: AppShellProps) {
       <img
         src={getMemberAvatarUrl(currentUser.avatarSeed, 0)}
         alt={currentUser.name}
-        className={isMobile ? 'w-8 h-8 rounded-full ring-2 ring-white shadow-sm' : 'w-10 h-10 rounded-2xl ring-2 ring-white shadow-sm'}
+        className={`member-avatar member-avatar--default ${isMobile ? 'w-8 h-8' : 'w-10 h-10'}`}
       />
     </button>
   ) : null

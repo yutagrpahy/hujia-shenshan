@@ -541,7 +541,7 @@ export function ProtectionPage() {
                           [key]: type === 'number' ? Number(e.target.value) : e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                      className="m3-field"
                     />
                   </div>
                 ))}
@@ -555,7 +555,7 @@ export function ProtectionPage() {
                         role: e.target.value as MemberRole,
                       }))
                     }
-                    className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                    className="m3-field"
                   >
                     {Object.entries(ROLE_LABELS).map(([k, v]) => (
                       <option key={k} value={k}>{v}</option>
@@ -603,7 +603,7 @@ function AddPolicyModal({
           <Modal.CloseTrigger />
           <Modal.Header><Modal.Heading>自行登載保單</Modal.Heading></Modal.Header>
           <Modal.Body>
-            <div className="flex items-start gap-2 p-2.5 mb-3 rounded-xl bg-sand-50 border border-dashed border-sand-300">
+            <div className="m3-callout flex items-start gap-2 mb-3">
               <PenLine className="w-3.5 h-3.5 text-gray-500 shrink-0 mt-0.5" />
               <p className="text-[10px] text-gray-500 leading-relaxed">
                 {`自行登載的保單不會與${UNION_INFO_SYSTEM_NAME}同步，請確認資料正確後再新增`}
@@ -616,7 +616,7 @@ function AddPolicyModal({
                   value={newPolicy.name}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, name: e.target.value }))}
                   placeholder="例：旅平險、實支實付醫療險"
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -625,7 +625,7 @@ function AddPolicyModal({
                   value={newPolicy.insurer}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, insurer: e.target.value }))}
                   placeholder="例：國泰人壽、富邦人壽"
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -638,7 +638,7 @@ function AddPolicyModal({
                       type: e.target.value as Policy['type'],
                     }))
                   }
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 >
                   {Object.entries(POLICY_TYPE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -651,7 +651,7 @@ function AddPolicyModal({
                   value={newPolicy.beneficiary ?? ''}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, beneficiary: e.target.value }))}
                   placeholder="預設為本人"
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -660,7 +660,7 @@ function AddPolicyModal({
                   type="date"
                   value={newPolicy.expiryDate ?? ''}
                   onChange={(e) => setNewPolicy((p) => ({ ...p, expiryDate: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -672,7 +672,7 @@ function AddPolicyModal({
                     setNewPolicy((p) => ({ ...p, coverage: Number(e.target.value) }))
                   }
                   placeholder="0"
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field"
                 />
               </div>
             </div>

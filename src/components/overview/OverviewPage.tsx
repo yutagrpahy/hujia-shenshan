@@ -324,7 +324,7 @@ export function OverviewPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 education-grid">
           {education.map((item) => (
             <div key={item.id} className="m3-card p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
+              <div className="m3-icon-wrap m3-icon-wrap--md shrink-0">
                 <BookOpen className="w-5 h-5 text-teal-500" />
               </div>
               <div className="flex-1 min-w-0">

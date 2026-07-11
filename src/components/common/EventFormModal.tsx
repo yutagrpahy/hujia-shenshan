@@ -43,7 +43,7 @@ export function EventFormModal({
                   value={eventInput.name}
                   onChange={(e) => setEventInput((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder={EVENT_FORM_PLACEHOLDERS.name}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -56,7 +56,7 @@ export function EventFormModal({
                       type: (e.target.value || undefined) as EventType | undefined,
                     }))
                   }
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 >
                   <option value="">不指定</option>
                   {Object.entries(EVENT_TYPE_LABELS).map(([key, label]) => (
@@ -72,7 +72,7 @@ export function EventFormModal({
                   type="date"
                   value={eventInput.date ?? ''}
                   onChange={(e) => setEventInput((prev) => ({ ...prev, date: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -85,7 +85,7 @@ export function EventFormModal({
                       frequency: e.target.value as EventFrequency,
                     }))
                   }
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                  className="m3-field"
                 >
                   {Object.entries(FREQUENCY_LABELS).map(([key, label]) => (
                     <option key={key} value={key}>
@@ -103,7 +103,7 @@ export function EventFormModal({
                     setEventInput((prev) => ({ ...prev, fundsNeeded: Number(e.target.value) }))
                   }
                   placeholder={EVENT_FORM_PLACEHOLDERS.fundsNeeded}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field"
                 />
               </div>
               <div>
@@ -114,10 +114,8 @@ export function EventFormModal({
                       key={urgency}
                       type="button"
                       onClick={() => setEventInput((prev) => ({ ...prev, urgency }))}
-                      className={`m3-chip flex-1 py-2 text-center ${
-                        eventInput.urgency === urgency
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-sand-100 text-gray-600'
+                      className={`m3-chip m3-chip-btn ${
+                        eventInput.urgency === urgency ? 'm3-chip--selected' : 'm3-chip--muted'
                       }`}
                     >
                       {URGENCY_LABELS[urgency]}
@@ -134,7 +132,7 @@ export function EventFormModal({
                   }
                   placeholder={EVENT_FORM_PLACEHOLDERS.description}
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm resize-none placeholder:text-gray-400 placeholder:text-xs"
+                  className="m3-field resize-none"
                 />
               </div>
               <div>
@@ -150,10 +148,10 @@ export function EventFormModal({
                           : [...eventInput.memberIds, member.id]
                         setEventInput((prev) => ({ ...prev, memberIds }))
                       }}
-                      className={`m3-chip px-3 py-1.5 ${
+                      className={`m3-chip ${
                         eventInput.memberIds.includes(member.id)
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-sand-100 text-gray-600'
+                          ? 'm3-chip--selected'
+                          : 'm3-chip--muted'
                       }`}
                     >
                       {member.name}

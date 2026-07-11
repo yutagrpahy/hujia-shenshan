@@ -28,9 +28,9 @@ export function DocumentVault({
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-warm-50 transition-colors"
+              className="m3-list-item flex items-center gap-3 py-2.5 px-2 hover:bg-warm-50 transition-colors"
             >
-              <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
+              <div className="m3-icon-wrap m3-icon-wrap--lg shrink-0">
                 <FileText className="w-4 h-4 text-teal-600" />
               </div>
               <div className="flex-1 min-w-0">
@@ -41,7 +41,7 @@ export function DocumentVault({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 {!canUpload && (
-                  <span className="m3-chip bg-sand-100 text-gray-500 flex items-center gap-0.5">
+                  <span className="m3-chip m3-chip--muted flex items-center gap-0.5">
                     <Eye className="w-3 h-3" />
                     僅供瀏覽
                   </span>

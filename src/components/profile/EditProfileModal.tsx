@@ -75,7 +75,7 @@ export function EditProfileModal({
                           field.type === 'number' ? Number(e.target.value) : e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2.5 border border-sand-200 rounded-xl text-sm"
+                    className="m3-field"
                   />
                 </div>
               ))}

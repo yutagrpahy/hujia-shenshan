@@ -19,9 +19,9 @@ const SIZES = {
 }
 
 const TONE_CLASSES = {
-  default: 'bg-teal-50 ring-2 ring-white',
-  covered: 'bg-emerald-50 ring-2 ring-emerald-400 ring-offset-1',
-  uncovered: 'bg-gray-100 ring-2 ring-gray-300 grayscale opacity-60',
+  default: 'member-avatar--default',
+  covered: 'member-avatar--covered',
+  uncovered: 'member-avatar--uncovered',
 }
 
 export function MemberAvatar({
@@ -36,7 +36,7 @@ export function MemberAvatar({
     <img
       src={getMemberAvatarUrl(seed, index)}
       alt={`${name} 的頭像`}
-      className={`${SIZES[size]} rounded-2xl object-cover shadow-sm ${TONE_CLASSES[tone]} ${className}`}
+      className={`member-avatar ${SIZES[size]} ${TONE_CLASSES[tone]} ${className}`}
       loading="lazy"
     />
   )

@@ -46,7 +46,7 @@ export function EmptyState({ onSetup }: EmptyStateProps) {
 
 export function LoadingOverlay({ message = 'AI 模擬計算中...' }: { message?: string }) {
   return (
-    <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 rounded-2xl">
+    <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 m3-panel">
       <Spinner size="lg" />
       <p className="text-sm font-medium text-teal-600">{message}</p>
     </div>

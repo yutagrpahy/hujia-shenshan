@@ -108,9 +108,7 @@ export function TodoCalendarPanel({
                 key={id}
                 type="button"
                 onClick={() => setViewMode(id)}
-                className={`m3-chip px-2.5 py-1 text-[10px] font-medium ${
-                  viewMode === id ? 'bg-teal-500 text-white' : 'bg-sand-100 text-gray-500'
-                }`}
+                className={`m3-chip ${viewMode === id ? 'm3-chip--selected' : 'm3-chip--muted'}`}
               >
                 {label}
               </button>
@@ -120,7 +118,7 @@ export function TodoCalendarPanel({
             <button
               type="button"
               onClick={() => setAnchor((a) => shiftAnchor(a, viewMode, -1))}
-              className="w-7 h-7 shrink-0 rounded-lg flex items-center justify-center hover:bg-sand-100"
+              className="m3-icon-btn"
               aria-label="上一段"
             >
               <ChevronLeft className="w-4 h-4 text-gray-500" />
@@ -131,7 +129,7 @@ export function TodoCalendarPanel({
             <button
               type="button"
               onClick={() => setAnchor((a) => shiftAnchor(a, viewMode, 1))}
-              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-sand-100"
+              className="m3-icon-btn"
               aria-label="下一段"
             >
               <ChevronRight className="w-4 h-4 text-gray-500" />
