@@ -239,7 +239,7 @@ export function AdvisorPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3 pt-2">
+          <div className="ds-stack-list-loose pt-2">
             {isWelcomeTyping && (
               <div className="flex justify-start">
                 <img

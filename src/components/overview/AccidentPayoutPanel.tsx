@@ -10,6 +10,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 import { formatCurrency, groupAccidentPayouts } from '../../utils/calculations'
+import { StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { GroupSummaryCard } from '../common/GroupSummaryCard'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
@@ -67,7 +68,7 @@ export function AccidentPayoutPanel({
             </span>
           )}
         </div>
-        <div className="space-y-2">
+        <StackList>
           {visibleGroups.map((group) => {
             const groupClaims = group.items.filter((item) =>
               getClaimByPolicyId(members, item.id),
@@ -84,7 +85,7 @@ export function AccidentPayoutPanel({
               />
             )
           })}
-        </div>
+        </StackList>
         {hasMore && (
           <button
             type="button"
@@ -118,13 +119,13 @@ export function AccidentPayoutPanel({
             </Modal.Header>
             <Modal.Body>
               {selectedGroup && (
-                <div className="space-y-3">
+                <div className="ds-stack-block">
                   <p className="text-xs text-gray-500">
                     合計 {formatCurrency(selectedGroup.totalAmount)} ·{' '}
                     {selectedGroup.items.length} 張保單 · {selectedGroup.memberNames.length}{' '}
                     位成員
                   </p>
-                  <div className="space-y-2">
+                  <StackList>
                     {selectedGroup.items.map((item) => {
                       const member = findMemberByPolicyId(members, item.id)
                       const claim = getClaimByPolicyId(members, item.id)
@@ -139,7 +140,7 @@ export function AccidentPayoutPanel({
                         />
                       )
                     })}
-                  </div>
+                  </StackList>
                 </div>
               )}
             </Modal.Body>

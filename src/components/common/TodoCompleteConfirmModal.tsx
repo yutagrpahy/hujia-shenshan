@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { StackForm } from './CardLayout'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
 import type { TodoItem } from '../../types'
@@ -36,7 +37,7 @@ export function TodoCompleteConfirmModal({
           </Modal.Header>
           <Modal.Body>
             {todo && (
-              <div className="space-y-3">
+              <StackForm>
                 <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
                 <div className="m3-card-filled p-3.5">
                   <p className="text-sm font-medium text-gray-800">{todo.title}</p>
@@ -49,7 +50,7 @@ export function TodoCompleteConfirmModal({
                     )}
                   </div>
                 </div>
-              </div>
+              </StackForm>
             )}
           </Modal.Body>
           <Modal.Footer>

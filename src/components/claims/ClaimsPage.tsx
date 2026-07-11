@@ -13,6 +13,8 @@ import {
 import type { ClaimRecord, PolicyWithMember } from '../../types'
 import { formatCurrency } from '../../utils/calculations'
 import {
+  PageStack,
+  StackList,
   CardItem,
   CardItemChevron,
   CardItemDetail,
@@ -136,7 +138,7 @@ export function ClaimsPage() {
   }
 
   return (
-    <div className="space-y-4 w-full max-w-full min-w-0">
+    <PageStack>
       <div className="m3-segment">
         {(Object.keys(CLAIM_TAB_LABELS) as ClaimTab[]).map((tab) => (
           <SegmentTab
@@ -157,11 +159,11 @@ export function ClaimsPage() {
           <p className="text-sm text-gray-500">{tabEmptyMessage[activeTab]}</p>
         </div>
       ) : (
-        <div className="claims-list space-y-2">
+        <StackList className="claims-list">
           {tabClaims.map((claim) => (
             <ClaimCard key={claim.id} claim={claim} onSelect={openPolicyDetail} />
           ))}
-        </div>
+        </StackList>
       )}
 
       <PolicyDetailModal
@@ -170,6 +172,6 @@ export function ClaimsPage() {
         onOpenChange={(open) => !open && setSelectedPolicy(null)}
         isMobile={isMobile}
       />
-    </div>
+    </PageStack>
   )
 }

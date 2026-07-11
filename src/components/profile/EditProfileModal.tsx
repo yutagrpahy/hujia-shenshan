@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { StackForm } from '../common/CardLayout'
 import { useEffect, useState } from 'react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type { FamilyMember, UpdateMemberProfileInput } from '../../types'
@@ -53,7 +54,7 @@ export function EditProfileModal({
             <Modal.Heading>編輯基本資料</Modal.Heading>
           </Modal.Header>
           <Modal.Body>
-            <div className="space-y-3">
+            <StackForm>
               {[
                 { key: 'name', label: '姓名', type: 'text' },
                 { key: 'age', label: '年齡', type: 'number' },
@@ -79,7 +80,7 @@ export function EditProfileModal({
                   />
                 </div>
               ))}
-            </div>
+            </StackForm>
           </Modal.Body>
           <Modal.Footer>
             <Button slot="close" variant="secondary">

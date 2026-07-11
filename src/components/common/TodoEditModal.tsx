@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { StackForm } from './CardLayout'
 import { useEffect, useState } from 'react'
 import { URGENCY_LABELS } from '../../data/mockData'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
@@ -50,7 +51,7 @@ export function TodoEditModal({
             <Modal.Heading>編輯待辦</Modal.Heading>
           </Modal.Header>
           <Modal.Body>
-            <div className="space-y-3">
+            <StackForm>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">標題 *</label>
                 <input
@@ -85,7 +86,7 @@ export function TodoEditModal({
                   ))}
                 </div>
               </div>
-            </div>
+            </StackForm>
           </Modal.Body>
           <Modal.Footer>
             <Button slot="close" variant="secondary">

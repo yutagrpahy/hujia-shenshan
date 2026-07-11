@@ -1,3 +1,14 @@
+/**
+ * 全站間距佈局（M3 4dp grid，語意 token 定義於 index.css :root）
+ *
+ * PageStack      → --ds-space-page (16px)  頁面主區塊
+ * CardSectionTitle / ds-section-header → --ds-space-title-content (8px)  標題→內容
+ * StackList      → --ds-space-list (8px)   卡片列表
+ * StackList loose→ --ds-space-list-loose (12px) 模態內群組
+ * StackForm      → --ds-space-form (12px)  表單欄位
+ * StackBlock     → --ds-space-block (16px) 模態主段落
+ * ds-stack-tight → --ds-space-tight (4px)  極緊湊列
+ */
 import type { LucideIcon } from 'lucide-react'
 import { ChevronRight } from 'lucide-react'
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
@@ -19,32 +30,107 @@ const VARIANT_CLASSES = {
   nested: 'bg-white/70',
 }
 
+/** 頁面主區塊垂直節奏（16px） */
+export function PageStack({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`ds-page-stack ${className}`.trim()}>{children}</div>
+  )
+}
+
+/** 單一內容區段容器 */
+export function Section({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return <section className={`ds-section ${className}`.trim()}>{children}</section>
+}
+
+/** 卡片／列表項間距（8px） */
+export function StackList({
+  children,
+  loose = false,
+  className = '',
+}: {
+  children: ReactNode
+  loose?: boolean
+  className?: string
+}) {
+  return (
+    <div
+      className={`${loose ? 'ds-stack-list-loose' : 'ds-stack-list'} ${className}`.trim()}
+    >
+      {children}
+    </div>
+  )
+}
+
+/** 表單欄位間距（12px） */
+export function StackForm({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return <div className={`ds-stack-form ${className}`.trim()}>{children}</div>
+}
+
+/** 模態內主段落間距（16px） */
+export function StackBlock({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return <div className={`ds-stack-block ${className}`.trim()}>{children}</div>
+}
+
+/**
+ * 區域標題列：標題與下方內容固定 8px（--ds-space-title-content）
+ */
 export function CardSectionTitle({
   children,
   icon: Icon,
   count,
+  subtitle,
+  actions,
   className = '',
 }: {
   children: ReactNode
   icon?: LucideIcon
   count?: ReactNode
+  subtitle?: ReactNode
+  actions?: ReactNode
   className?: string
 }) {
   return (
     <div
-      className={`flex items-center justify-between gap-2 mb-2 px-1 ${className}`.trim()}
+      className={`ds-section-header flex items-center justify-between gap-2 ${className}`.trim()}
     >
-      <h3
-        className={`m3-card-section-title mb-0 px-0 ${
-          Icon ? 'm3-card-section-title--with-icon' : ''
-        }`}
-      >
-        {Icon ? <Icon className="w-3.5 h-3.5 text-teal-500 shrink-0" /> : null}
-        {children}
-      </h3>
-      {count != null ? (
+      <div className="min-w-0">
+        <h3
+          className={`m3-card-section-title ${
+            Icon ? 'm3-card-section-title--with-icon' : ''
+          }`}
+        >
+          {Icon ? <Icon className="w-3.5 h-3.5 text-teal-500 shrink-0" /> : null}
+          {children}
+        </h3>
+        {subtitle ? <p className="ds-section-subtitle">{subtitle}</p> : null}
+      </div>
+      {actions ?? (count != null ? (
         <span className="text-[10px] text-gray-400 shrink-0">{count}</span>
-      ) : null}
+      ) : null)}
     </div>
   )
 }

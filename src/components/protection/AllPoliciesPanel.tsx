@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
 import { groupPoliciesByGapCategory } from '../../utils/calculations'
 import type { FamilyMember, PolicyWithMember } from '../../types'
-import { CardEmptyState, CardSectionTitle } from '../common/CardLayout'
+import { CardEmptyState, CardSectionTitle, PageStack, Section } from '../common/CardLayout'
 import { PolicyListCardFromItem } from '../common/PolicyListCard'
 
 export function AllPoliciesPanel({
@@ -28,9 +28,9 @@ export function AllPoliciesPanel({
   }
 
   return (
-    <div className="space-y-4 w-full max-w-full min-w-0">
+    <PageStack>
       {groups.map((group) => (
-        <section key={group.gapKey} className="w-full max-w-full min-w-0">
+        <Section key={group.gapKey}>
           <CardSectionTitle count={`${group.policies.length} 張`}>
             {group.category}
           </CardSectionTitle>
@@ -45,8 +45,8 @@ export function AllPoliciesPanel({
               />
             ))
           )}
-        </section>
+        </Section>
       ))}
-    </div>
+    </PageStack>
   )
 }

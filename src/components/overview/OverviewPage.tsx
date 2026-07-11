@@ -30,6 +30,8 @@ import {
   CardItemRow,
   CardItemTitle,
   CardSectionTitle,
+  PageStack,
+  Section,
 } from '../common/CardLayout'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
@@ -87,7 +89,7 @@ export function OverviewPage() {
   }
 
   return (
-    <div className="space-y-4 overview-grid w-full max-w-full min-w-0">
+    <PageStack className="overview-grid">
       <div className="hero-banner overview-grid--hero">
         <div className="hero-banner__mask" aria-hidden>
           <img
@@ -118,7 +120,7 @@ export function OverviewPage() {
         </div>
       )}
 
-      <section className="w-full max-w-full min-w-0">
+      <Section>
         <CardSectionTitle>家庭保障總覽</CardSectionTitle>
 
         <div className="m3-card p-4 md:p-6 w-full max-w-full min-w-0">
@@ -170,9 +172,9 @@ export function OverviewPage() {
 
         <FamilyCoverageOverview members={members} />
         </div>
-      </section>
+      </Section>
 
-      <section className="w-full max-w-full min-w-0">
+      <Section>
         <CardSectionTitle>保障缺口</CardSectionTitle>
         <div className="gap-cards-list">
           {sortedGaps.map((gap) => {
@@ -315,16 +317,16 @@ export function OverviewPage() {
             )
           })}
         </div>
-      </section>
+      </Section>
 
       <TodoCalendarPanel
         todos={todos}
         onViewMember={(memberId) => navigateToMember(memberId)}
       />
 
-      <section className="overview-grid--full">
+      <Section className="overview-grid--full">
         <CardSectionTitle>推薦內容</CardSectionTitle>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 education-grid">
+        <div className="grid grid-cols-1 md:grid-cols-3 education-grid">
           {education.map((item) => (
             <CardItem key={item.id} className="m3-card-item--lg">
               <CardItemRow className="items-center">
@@ -345,7 +347,7 @@ export function OverviewPage() {
             </CardItem>
           ))}
         </div>
-      </section>
+      </Section>
 
       <HealthProfileModal
         isOpen={showHealthProfile}
@@ -361,6 +363,6 @@ export function OverviewPage() {
         onOpenChange={(open) => !open && setSelectedGap(null)}
       />
 
-    </div>
+    </PageStack>
   )
 }

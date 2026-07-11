@@ -22,6 +22,9 @@ import {
   CardItemRow,
   CardItemSubtitle,
   CardItemTitle,
+  CardSectionTitle,
+  Section,
+  StackList,
 } from '../common/CardLayout'
 import { TodoDetailModal } from './TodoDetailModal'
 
@@ -107,13 +110,10 @@ export function TodoCalendarPanel({
   }
 
   return (
-    <section className="overview-grid--full w-full max-w-full min-w-0">
-      <div className="flex items-center justify-between mb-2 px-1">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          待辦事件
-        </h3>
-        <span className="text-[10px] text-gray-400">{pending.length} 項待處理</span>
-      </div>
+    <Section className="overview-grid--full">
+      <CardSectionTitle count={`${pending.length} 項待處理`}>
+        待辦事件
+      </CardSectionTitle>
 
       <div className="m3-card p-4 w-full max-w-full min-w-0 overflow-hidden">
         <div className="flex flex-col gap-2 mb-3 min-w-0">
@@ -244,7 +244,7 @@ export function TodoCalendarPanel({
           {selectedDayTodos.length === 0 ? (
             <p className="text-xs text-gray-400 py-2">這天沒有待辦事項</p>
           ) : (
-            <div className="space-y-2">
+            <StackList>
               {selectedDayTodos.map((todo) => (
                 <CardItem
                   key={todo.id}
@@ -271,7 +271,7 @@ export function TodoCalendarPanel({
                   </CardItemRow>
                 </CardItem>
               ))}
-            </div>
+            </StackList>
           )}
         </div>
       </div>
@@ -286,6 +286,6 @@ export function TodoCalendarPanel({
             : undefined
         }
       />
-    </section>
+    </Section>
   )
 }

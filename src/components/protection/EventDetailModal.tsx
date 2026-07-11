@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { StackBlock, StackList } from '../common/CardLayout'
 import { Calendar, Pencil, RefreshCw, Users } from 'lucide-react'
 import {
   EVENT_TYPE_LABELS,
@@ -43,12 +44,12 @@ export function EventDetailModal({
           </Modal.Header>
           <Modal.Body>
             {event && (
-              <div className="space-y-4">
+              <StackBlock>
                 <p className="text-sm font-semibold text-gray-800 leading-relaxed">{event.name}</p>
                 {event.description && (
                   <p className="text-sm text-gray-600 leading-relaxed">{event.description}</p>
                 )}
-                <div className="space-y-2 text-sm text-gray-600">
+                <StackList className="text-sm text-gray-600">
                   {event.date && (
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-teal-500 shrink-0" />
@@ -66,7 +67,7 @@ export function EventDetailModal({
                     <Users className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" />
                     <span>{linkedMembers.map((member) => member.name).join('、') || '—'}</span>
                   </div>
-                </div>
+                </StackList>
                 <div className="flex flex-wrap gap-2">
                   {event.type && (
                     <span className="m3-chip bg-teal-50 text-teal-600">
@@ -78,7 +79,7 @@ export function EventDetailModal({
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-400">建立者：{event.createdBy}</p>
-              </div>
+              </StackBlock>
             )}
           </Modal.Body>
           <Modal.Footer>

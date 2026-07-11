@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { StackForm } from './CardLayout'
 import {
   EVENT_FORM_PLACEHOLDERS,
   EVENT_TYPE_LABELS,
@@ -36,7 +37,7 @@ export function EventFormModal({
             <Modal.Heading>{mode === 'edit' ? '編輯規劃事件' : '新增待辦事項'}</Modal.Heading>
           </Modal.Header>
           <Modal.Body>
-            <div className="space-y-3">
+            <StackForm>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">事件名稱 *</label>
                 <input
@@ -159,7 +160,7 @@ export function EventFormModal({
                   ))}
                 </div>
               </div>
-            </div>
+            </StackForm>
           </Modal.Body>
           <Modal.Footer>
             <Button fullWidth className="btn-accent" onPress={onSubmit}>

@@ -45,7 +45,7 @@ export function AdvisorWelcome({
           <p className="advisor-landing-card__desc mt-1 leading-relaxed">
             提問釐清保障
           </p>
-          <ul className="advisor-landing-card__features mt-3 space-y-2 flex-1">
+          <ul className="advisor-landing-card__features mt-3 ds-stack-list flex-1">
             {CHAT_FEATURES.map((feature) => (
               <li key={feature} className="advisor-landing-card__feature flex gap-1.5">
                 <span className="text-teal-500 shrink-0">·</span>
@@ -71,7 +71,7 @@ export function AdvisorWelcome({
           <p className="advisor-landing-card__desc mt-1 leading-relaxed">
             試算事件衝擊
           </p>
-          <ul className="advisor-landing-card__features mt-3 space-y-2 flex-1">
+          <ul className="advisor-landing-card__features mt-3 ds-stack-list flex-1">
             {SIMULATE_FEATURES.map((feature) => (
               <li key={feature} className="advisor-landing-card__feature flex gap-1.5">
                 <span className="text-coral-500 shrink-0">·</span>

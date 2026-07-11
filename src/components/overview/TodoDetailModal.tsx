@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { StackBlock, StackList } from '../common/CardLayout'
 import { Calendar, Pencil, User } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
@@ -41,9 +42,9 @@ export function TodoDetailModal({
           </Modal.Header>
           <Modal.Body>
             {todo && (
-              <div className="space-y-4">
+              <StackBlock>
                 <p className="text-sm font-semibold text-gray-800 leading-relaxed">{todo.title}</p>
-                <div className="space-y-2 text-sm">
+                <StackList className="text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
                     <User className="w-4 h-4 text-teal-500 shrink-0" />
                     <span>{todo.memberName}</span>
@@ -54,7 +55,7 @@ export function TodoDetailModal({
                       <span>到期日 {todo.dueDate}</span>
                     </div>
                   )}
-                </div>
+                </StackList>
                 <div className="flex flex-wrap gap-2">
                   <span className={`m3-chip ${URGENCY_STYLES[todo.urgency]}`}>
                     {URGENCY_LABELS[todo.urgency]}
@@ -63,7 +64,7 @@ export function TodoDetailModal({
                     {SOURCE_LABELS[todo.source]}
                   </span>
                 </div>
-              </div>
+              </StackBlock>
             )}
           </Modal.Body>
           <Modal.Footer>

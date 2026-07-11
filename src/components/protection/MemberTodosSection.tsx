@@ -7,6 +7,7 @@ import {
   FREQUENCY_LABELS,
   URGENCY_LABELS,
 } from '../../data/mockData'
+import { CardSectionTitle, StackList } from '../common/CardLayout'
 import { TodoCompleteButton, TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
 import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
@@ -177,12 +178,10 @@ export function MemberTodosSection({
 
   return (
     <section>
-      <div className="flex items-center justify-between gap-2 mb-1">
-        <div className="min-w-0">
-          <h4 className="text-xs font-semibold text-gray-400 uppercase">個人待辦</h4>
-          <p className="text-[10px] text-gray-400 mt-0.5">待辦提醒與保障規劃事件</p>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
+      <CardSectionTitle
+        subtitle="待辦提醒與保障規劃事件"
+        actions={
+          <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
             onClick={() => setShowCompleted(true)}
@@ -199,13 +198,16 @@ export function MemberTodosSection({
             <Plus className="w-3.5 h-3.5" />
             新增
           </Button>
-        </div>
-      </div>
+          </div>
+        }
+      >
+        個人待辦
+      </CardSectionTitle>
 
       {items.length === 0 ? (
         <p className="text-sm text-gray-400 m3-card p-4 bg-sand-50/80">尚無待辦或規劃事件</p>
       ) : (
-        <div className="space-y-2">
+        <StackList>
           {items.map((item) =>
             item.kind === 'todo' ? (
               <TodoListCard
@@ -270,7 +272,7 @@ export function MemberTodosSection({
               />
             ),
           )}
-        </div>
+        </StackList>
       )}
 
       <TodoCompleteConfirmModal

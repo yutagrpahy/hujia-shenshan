@@ -22,6 +22,10 @@ import {
   CardItemSubtitle,
   CardItemTags,
   CardItemTitle,
+  CardSectionTitle,
+  PageStack,
+  StackForm,
+  StackList,
 } from '../common/CardLayout'
 import { DocumentVault } from '../common/DocumentVault'
 import { EventFormModal } from '../common/EventFormModal'
@@ -326,7 +330,7 @@ export function ProtectionPage() {
                 id={`member-gap-section-${group.gapKey}`}
                 className="mb-4 scroll-mt-28"
               >
-                <p className="m3-card-section-title mb-2 px-0.5">{group.category}</p>
+                <CardSectionTitle className="px-0">{group.category}</CardSectionTitle>
                 {group.policies.map(({ policy: p }) => (
                   <PolicyListCard
                     key={p.id}
@@ -365,13 +369,9 @@ export function ProtectionPage() {
         </div>
 
         <section className="member-detail-follow-block">
-          <div className="mb-1">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-teal-500" />
-              安全文件庫
-            </h4>
-            <p className="text-[10px] text-gray-400 mt-0.5">加密儲存重要文件，僅授權家人瀏覽</p>
-          </div>
+          <CardSectionTitle icon={Lock} subtitle="加密儲存重要文件，僅授權家人瀏覽">
+            安全文件庫
+          </CardSectionTitle>
           <DocumentVault documents={memberDocs} canUpload={isSelf} />
         </section>
 
@@ -404,7 +404,7 @@ export function ProtectionPage() {
   }
 
   return (
-    <div className="space-y-4 w-full max-w-full min-w-0">
+    <PageStack>
       {uiState === 'success' && <SuccessBanner />}
 
       <div className="m3-segment">
@@ -422,7 +422,7 @@ export function ProtectionPage() {
 
       {subTab === 'members' && (
         <section className="w-full max-w-full min-w-0">
-          <div className="space-y-2 protection-grid">
+          <StackList className="protection-grid">
             {members.map((member) => {
               const memberTodoCount = todos.filter((todo) => todo.memberId === member.id).length
               const urgentTodoCount = todos.filter(
@@ -481,7 +481,7 @@ export function ProtectionPage() {
               <Plus className="w-5 h-5" />
               新增成員
             </Button>
-          </div>
+          </StackList>
         </section>
       )}
 
@@ -495,7 +495,7 @@ export function ProtectionPage() {
             <Modal.CloseTrigger />
             <Modal.Header><Modal.Heading>新增成員</Modal.Heading></Modal.Header>
             <Modal.Body>
-              <div className="space-y-3">
+              <StackForm>
                 {[
                   { key: 'name', label: '姓名', type: 'text' },
                   { key: 'age', label: '年齡', type: 'number' },
@@ -535,7 +535,7 @@ export function ProtectionPage() {
                     ))}
                   </select>
                 </div>
-              </div>
+              </StackForm>
             </Modal.Body>
             <Modal.Footer>
               <Button fullWidth className="btn-accent" onPress={handleAddMember}>確認新增</Button>
@@ -550,7 +550,7 @@ export function ProtectionPage() {
         onOpenChange={(open) => !open && setSelectedPolicy(null)}
         isMobile={isMobile}
       />
-    </div>
+    </PageStack>
   )
 }
 
@@ -582,7 +582,7 @@ function AddPolicyModal({
                 {`自行登載的保單不會與${UNION_INFO_SYSTEM_NAME}同步，請確認資料正確後再新增`}
               </p>
             </div>
-            <div className="space-y-3">
+            <StackForm>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">保單名稱 *</label>
                 <input
@@ -648,7 +648,7 @@ function AddPolicyModal({
                   className="m3-field"
                 />
               </div>
-            </div>
+            </StackForm>
           </Modal.Body>
           <Modal.Footer>
             <Button fullWidth className="btn-accent" onPress={onSubmit}>確認登載</Button>

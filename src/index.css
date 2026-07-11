@@ -79,6 +79,97 @@ body {
   --ds-card-p: 12px;
   --ds-card-p-lg: 16px;
   --ds-card-gap: 12px;
+
+  /* M3 間距尺度（4dp grid） */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+
+  /* 語意間距（全站請優先使用下列角色，勿混用任意 Tailwind 間距） */
+  --ds-space-page: var(--ds-space-4);           /* 頁面主區塊之間 */
+  --ds-space-section-major: var(--ds-space-6);  /* 成員詳情等大型分隔 */
+  --ds-space-title-content: var(--ds-space-2);  /* 區域標題 → 下方內容 ★ */
+  --ds-space-list: var(--ds-space-2);           /* 卡片／列表項 */
+  --ds-space-list-loose: var(--ds-space-3);     /* 模態內群組 */
+  --ds-space-form: var(--ds-space-3);           /* 表單欄位 */
+  --ds-space-block: var(--ds-space-4);        /* 模態內主段落 */
+  --ds-space-inline: var(--ds-space-2);         /* 標題列、chip 列 */
+  --ds-space-tight: var(--ds-space-1);          /* 極緊湊列 */
+  --ds-space-inset: var(--ds-space-4);          /* 面板內距 */
+  --ds-space-grid: var(--ds-space-3);           /* 網格 gap */
+}
+
+/* ── 間距佈局工具（對應 M3 語意角色）── */
+.ds-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-page);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.ds-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.ds-section-header {
+  margin-bottom: var(--ds-space-title-content);
+  padding-left: var(--ds-space-tight);
+  padding-right: var(--ds-space-tight);
+}
+
+.ds-section-subtitle {
+  font-size: 10px;
+  color: #9ca3af;
+  margin: var(--ds-space-tight) 0 0;
+  line-height: 1.35;
+}
+
+.ds-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-inline);
+  margin-bottom: var(--ds-space-inline);
+}
+
+.ds-stack-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-list);
+}
+
+.ds-stack-list-loose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-list-loose);
+}
+
+.ds-stack-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-form);
+}
+
+.ds-stack-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-block);
+}
+
+.ds-stack-tight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-tight);
 }
 
 /* ── 品牌標準字與標語 ── */
@@ -313,8 +404,8 @@ body {
 
 /* ── Content containers（舒適閱讀寬度）── */
 .main-content--mobile {
-  padding: 16px;
-  padding-top: 16px;
+  padding: var(--ds-space-inset);
+  padding-top: var(--ds-space-inset);
   padding-bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
@@ -338,7 +429,7 @@ body {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-on-surface);
-  margin: 0 0 20px;
+  margin: 0 0 var(--ds-space-5);
   min-height: 2rem;
 }
 
@@ -373,15 +464,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: var(--ds-space-inline);
+  margin-bottom: var(--ds-space-form);
   text-align: left;
 }
 
 .policy-source-legend__item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--ds-space-inline);
   width: 100%;
   min-width: 0;
 }
@@ -397,7 +488,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 28px;
+  gap: var(--ds-space-section-major);
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -439,7 +530,7 @@ body {
 }
 
 .member-policies-panel {
-  padding: 16px;
+  padding: var(--ds-space-inset);
   border-radius: var(--ds-radius-panel);
   background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);
   border: 1px solid rgba(139, 115, 85, 0.08);
@@ -447,12 +538,12 @@ body {
 }
 
 .member-detail-follow-block {
-  padding-top: 24px;
+  padding-top: var(--ds-space-section-major);
   border-top: 1px solid rgba(139, 115, 85, 0.12);
 }
 
 .member-detail-follow-block + .member-detail-follow-block {
-  margin-top: 4px;
+  margin-top: var(--ds-space-tight);
 }
 
 /* ── 保障缺口達標獎勵（無背景光暈，避免遮擋文字）── */
@@ -471,11 +562,11 @@ body {
 .gap-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--ds-space-list);
 }
 
 .gap-card {
-  padding: 12px;
+  padding: var(--ds-card-p);
 }
 
 .gap-card__title {
@@ -733,8 +824,8 @@ body {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: var(--ds-space-inline);
+  margin-bottom: var(--ds-space-tight);
 }
 
 .m3-card-item__meta-label {
@@ -769,8 +860,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
+  gap: var(--ds-space-inline);
+  margin-top: var(--ds-space-inline);
 }
 
 .m3-card-item__aside {
@@ -809,14 +900,14 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1.35;
-  margin: 0 0 8px;
-  padding: 0 4px;
+  margin: 0;
+  padding: 0;
 }
 
 .m3-card-section-title--with-icon {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--ds-space-inline);
 }
 
 .m3-card-empty {
@@ -1669,10 +1760,14 @@ button.m3-chip {
 /* ── Responsive grids ── */
 .overview-grid {
   display: grid;
-  gap: 16px;
+  gap: var(--ds-space-page);
   width: 100%;
   max-width: 100%;
   min-width: 0;
+}
+
+.education-grid {
+  gap: var(--ds-space-grid);
 }
 
 .calendar-grid-7 {
@@ -1775,7 +1870,7 @@ button.m3-chip {
   .content-container--overview { max-width: var(--content-wide); }
   .overview-grid { grid-template-columns: 1fr 1fr; }
   .overview-grid--full { grid-column: 1 / -1; }
-  .protection-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .protection-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ds-space-grid); }
   .protection-grid--full { grid-column: 1 / -1; }
 }
 
@@ -2025,11 +2120,11 @@ button.m3-chip {
   }
 
   .gap-cards-list {
-    gap: 14px;
+    gap: var(--ds-space-list-loose);
   }
 
   .gap-card {
-    padding: 14px;
+    padding: var(--ds-space-list-loose);
   }
 
   .gap-card__title {

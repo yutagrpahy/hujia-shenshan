@@ -9,6 +9,7 @@ import {
 } from '../../data/healthProfile'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type { ProtectionLifeProfile } from '../../types'
+import { CardSectionTitle, PageStack, StackBlock, StackList } from './CardLayout'
 
 const TARGET_LABELS: { key: keyof ProtectionLifeProfile['targets']; label: string; unit: string }[] =
   [
@@ -118,7 +119,7 @@ function CurrentTierDetail({ profile }: { profile: ProtectionLifeProfile }) {
   const currentTier = PROTECTION_TIER_OPTIONS.find((tier) => tier.tier === profile.tier)
 
   return (
-    <div className="space-y-4">
+    <PageStack>
       <div className="m3-card-filled p-4">
         <p className="text-xs text-teal-600 font-medium mb-1">目前分級</p>
         <p className="text-xl font-bold text-teal-700">
@@ -132,9 +133,7 @@ function CurrentTierDetail({ profile }: { profile: ProtectionLifeProfile }) {
       </div>
 
       <div>
-        <p className="text-xs font-semibold text-gray-400 uppercase mb-2 tracking-wider">
-          滿分保障目標（依此分級計算健康度）
-        </p>
+        <CardSectionTitle>滿分保障目標（依此分級計算健康度）</CardSectionTitle>
         <div className="grid grid-cols-2 gap-2">
           {TARGET_LABELS.map(({ key, label, unit }) => (
             <div key={key} className="m3-card p-3">
@@ -150,7 +149,7 @@ function CurrentTierDetail({ profile }: { profile: ProtectionLifeProfile }) {
       <p className="text-xs text-gray-500 leading-relaxed">
         此分級定義您家庭「期望的保障生活」，作為總覽保障健康度的滿分基準。若要與其他分級比較，請點選「查看家庭保險健康分級」。
       </p>
-    </div>
+    </PageStack>
   )
 }
 
@@ -209,7 +208,7 @@ export function HealthProfileModal({
             {!editing && viewScope === 'current' ? (
               <CurrentTierDetail profile={profile} />
             ) : !editing ? (
-              <div className="health-tier-overview space-y-4">
+              <StackBlock className="health-tier-overview">
                 <div className="health-tier-overview__intro m3-card-filled p-4">
                   <p className="text-sm font-semibold text-gray-800">什麼是家庭保險健康分級？</p>
                   <p className="text-xs text-gray-600 mt-2 leading-relaxed">
@@ -221,15 +220,12 @@ export function HealthProfileModal({
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      五級分類總覽
-                    </p>
-                    <span className="text-[10px] text-teal-600 font-medium shrink-0">
-                      第 {profile.tier} 級 · {profile.tierLabel}
-                    </span>
-                  </div>
-                  <div className="health-tier-overview__list space-y-3">
+                  <CardSectionTitle
+                    count={`第 ${profile.tier} 級 · ${profile.tierLabel}`}
+                  >
+                    五級分類總覽
+                  </CardSectionTitle>
+                  <StackList loose className="health-tier-overview__list">
                     {PROTECTION_TIER_OPTIONS.map((tier) => (
                       <TierOverviewCard
                         key={tier.tier}
@@ -237,15 +233,15 @@ export function HealthProfileModal({
                         isCurrent={tier.tier === profile.tier}
                       />
                     ))}
-                  </div>
+                  </StackList>
                 </div>
 
                 <p className="text-xs text-gray-500 leading-relaxed">
                   調整分級後，身故、醫療、重大疾病、長照與失能五類保障目標會同步更新，保障健康度分數亦會重新計算。
                 </p>
-              </div>
+              </StackBlock>
             ) : (
-              <div className="space-y-4">
+              <PageStack>
                 <div className="flex gap-1">
                   {questions.map((_, i) => (
                     <div
@@ -261,7 +257,7 @@ export function HealthProfileModal({
                   <p className="text-sm font-semibold text-gray-800 mb-3">
                     {currentQ.question}
                   </p>
-                  <div className="space-y-2">
+                  <StackList>
                     {currentQ.options.map((opt) => (
                       <button
                         key={opt.value}
@@ -277,7 +273,7 @@ export function HealthProfileModal({
                         {opt.label}
                       </button>
                     ))}
-                  </div>
+                  </StackList>
                 </div>
 
                 {step === questions.length - 1 && selectedTier && (
@@ -289,7 +285,7 @@ export function HealthProfileModal({
                     <p className="text-xs text-gray-500 mt-1">{selectedTier.description}</p>
                   </div>
                 )}
-              </div>
+              </PageStack>
             )}
           </Modal.Body>
           <Modal.Footer className="flex gap-2">

@@ -3,6 +3,7 @@ import { Check, History } from 'lucide-react'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { URGENCY_LABELS } from '../../data/mockData'
 import {
+  StackList,
   CardItem,
   CardItemDetail,
   CardItemMain,
@@ -36,7 +37,7 @@ export function MemberCompletedEventsModal({
             {items.length === 0 ? (
               <p className="text-sm text-gray-500 py-6 text-center">尚無已完成事項</p>
             ) : (
-              <div className="space-y-2">
+              <StackList>
                 {items.map((todo) => (
                   <CardItem key={todo.id} className="opacity-80">
                     <CardItemRow>
@@ -60,7 +61,7 @@ export function MemberCompletedEventsModal({
                     </CardItemRow>
                   </CardItem>
                 ))}
-              </div>
+              </StackList>
             )}
           </Modal.Body>
           <Modal.Footer>

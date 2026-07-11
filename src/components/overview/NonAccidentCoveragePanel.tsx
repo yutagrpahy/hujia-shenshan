@@ -9,6 +9,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 import { formatCurrency, formatWan, groupNonAccidentCoverage } from '../../utils/calculations'
+import { StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { GroupSummaryCard } from '../common/GroupSummaryCard'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
@@ -90,7 +91,7 @@ export function NonAccidentCoveragePanel({
         )}
 
         {typesRevealed && groups.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-teal-100/80 space-y-2">
+          <div className="mt-3 pt-3 border-t border-teal-100/80 ds-stack-list">
             {visibleGroups.map((group) => {
               const groupClaims = group.items.filter((item) => {
                 const claim = getClaimByPolicyId(members, item.id)
@@ -144,12 +145,12 @@ export function NonAccidentCoveragePanel({
             </Modal.Header>
             <Modal.Body>
               {selectedGroup && (
-                <div className="space-y-3">
+                <div className="ds-stack-block">
                   <p className="text-xs text-gray-500">
                     合計 {formatCoverageAmount(selectedGroup.totalAmount, selectedGroup.isMonthly)} ·{' '}
                     {selectedGroup.items.length} 張保單 · {selectedGroup.memberNames.length} 位成員
                   </p>
-                  <div className="space-y-2">
+                  <StackList>
                     {selectedGroup.items.map((item) => {
                       const member = findMemberByPolicyId(members, item.id)
                       const claim = getClaimByPolicyId(members, item.id)
@@ -166,7 +167,7 @@ export function NonAccidentCoveragePanel({
                         />
                       )
                     })}
-                  </div>
+                  </StackList>
                 </div>
               )}
             </Modal.Body>

@@ -10,6 +10,7 @@ import type {
   PolicyWithMember,
 } from '../../types'
 import { computeFamilyCoverageDomains, formatCurrency } from '../../utils/calculations'
+import { StackBlock, StackList } from '../common/CardLayout'
 import { CoverageListItem } from '../common/CoverageListItem'
 import { PolicyDetailModal } from '../protection/PolicyDetailModal'
 
@@ -132,7 +133,7 @@ function CoverageDetailModal({
               <Modal.Heading>{summary.label}</Modal.Heading>
             </Modal.Header>
             <Modal.Body>
-              <div className="space-y-4">
+              <StackBlock>
                 <div className={`family-coverage-modal-summary family-coverage-modal-summary--${variant}`}>
                   <p className="text-xs font-medium opacity-80">家庭合計</p>
                   <p className="text-lg font-bold mt-0.5">
@@ -155,7 +156,7 @@ function CoverageDetailModal({
                         {formatItemAmount(group.totalAmount, group.isMonthly)}
                       </p>
                     </div>
-                    <div className="space-y-2">
+                    <StackList>
                       {group.items.map((item) => {
                         const member = findMemberByPolicyId(members, item.id)
                         const claim = getClaimByPolicyId(members, item.id)
@@ -173,10 +174,10 @@ function CoverageDetailModal({
                           />
                         )
                       })}
-                    </div>
+                    </StackList>
                   </section>
                 ))}
-              </div>
+              </StackBlock>
             </Modal.Body>
           </Modal.Dialog>
         </Modal.Container>
@@ -207,7 +208,7 @@ export function FamilyCoverageOverview({ members }: { members: FamilyMember[] })
 
   return (
     <>
-      <div className="family-coverage-overview space-y-3 mt-4">
+      <div className="family-coverage-overview ds-stack-list-loose mt-4">
         <CoverageEntryCard
           summary={domains.life}
           variant="life"

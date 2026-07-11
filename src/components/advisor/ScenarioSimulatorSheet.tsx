@@ -1,5 +1,6 @@
 import { Button, Modal, Spinner } from '@heroui/react'
 import { FlaskConical } from 'lucide-react'
+import { StackForm, StackList } from '../common/CardLayout'
 import { PolicyRecommendationPanel } from '../common/PolicyRecommendationPanel'
 import { SCENARIO_LABELS } from '../../data/mockData'
 import type { FamilyMember, ScenarioEventType, ScenarioResult } from '../../types'
@@ -28,7 +29,7 @@ export function ScenarioOptionList({
   onSelect: (event: ScenarioEventType) => void
 }) {
   return (
-    <div className="space-y-2">
+    <StackList>
       {SCENARIO_OPTIONS.map((ev) => (
         <button
           key={ev}
@@ -50,7 +51,7 @@ export function ScenarioOptionList({
           <p className="text-[10px] text-gray-400 mt-0.5">{SCENARIO_HINTS[ev]}</p>
         </button>
       ))}
-    </div>
+    </StackList>
   )
 }
 
@@ -80,7 +81,7 @@ export function ScenarioSimulatorForm({
   const selectedMember = members.find((member) => member.id === simMemberId)
 
   return (
-    <div className={`space-y-3 ${compact ? 'pt-0.5 px-1' : ''}`}>
+    <StackForm className={compact ? 'pt-0.5 px-1' : ''}>
       <div className="scenario-sim-controls">
         <div className="scenario-sim-controls__member min-w-0">
           <label
@@ -135,7 +136,7 @@ export function ScenarioSimulatorForm({
         <FlaskConical className="w-4 h-4 mr-1.5" />
         {isSimulating ? '計算中...' : '開始模擬'}
       </Button>
-    </div>
+    </StackForm>
   )
 }
 

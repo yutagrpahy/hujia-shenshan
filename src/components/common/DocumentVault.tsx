@@ -24,7 +24,7 @@ export function DocumentVault({
       {documents.length === 0 ? (
         <p className="text-sm text-gray-400 py-4 text-center">尚無上傳文件</p>
       ) : (
-        <div className="space-y-1">
+        <div className="ds-stack-tight">
           {documents.map((doc) => (
             <div
               key={doc.id}

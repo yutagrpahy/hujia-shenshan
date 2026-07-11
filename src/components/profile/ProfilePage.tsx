@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { DocumentVault } from '../common/DocumentVault'
 import { HealthProfileEntry, HealthProfileModal } from '../common/HealthProfilePanel'
+import { CardSectionTitle, PageStack, Section } from '../common/CardLayout'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
 import {
@@ -43,7 +44,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="space-y-4">
+    <PageStack>
       <button
         onClick={closeProfileView}
         className="text-sm text-teal-600 font-medium"
@@ -67,9 +68,9 @@ export function ProfilePage() {
       </div>
 
       <div className="m3-card p-4">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1.5">
-            <User className="w-3.5 h-3.5" />
+        <div className="ds-card-header">
+          <h4 className="m3-card-section-title m3-card-section-title--with-icon">
+            <User className="w-3.5 h-3.5 text-teal-500 shrink-0" />
             個人基本資料
           </h4>
           <Button
@@ -137,18 +138,16 @@ export function ProfilePage() {
         onOpen={() => setShowHealthProfile(true)}
       />
 
-      <section>
-        <div className="mb-1">
-          <h4 className="text-xs font-semibold text-gray-400 uppercase">我的安全文件庫</h4>
-        </div>
+      <Section>
+        <CardSectionTitle>我的安全文件庫</CardSectionTitle>
         <DocumentVault
           documents={documents.filter((document) => document.ownerMemberId === currentUserId)}
           canUpload
         />
-      </section>
+      </Section>
 
       <div className="m3-card p-4">
-        <p className="text-xs text-gray-400 mb-3">
+        <p className="text-xs text-gray-400 ds-section-header">
           此 App 依登入帳號顯示您的家庭與保單資料。以下為登出示意。
         </p>
         <Button
@@ -231,6 +230,6 @@ export function ProfilePage() {
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>
-    </div>
+    </PageStack>
   )
 }
