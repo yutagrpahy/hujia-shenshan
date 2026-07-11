@@ -2054,6 +2054,41 @@ button.m3-chip {
   filter: drop-shadow(0 2px 10px rgba(45, 122, 112, 0.18));
 }
 
+.hero-banner__member-stack {
+  margin-top: 10px;
+}
+
+.member-avatar-stack {
+  display: inline-flex;
+  align-items: center;
+}
+
+.member-avatar-stack__item + .member-avatar-stack__item,
+.member-avatar-stack__item + .member-avatar-stack__overflow {
+  margin-left: -12px;
+}
+
+.member-avatar-stack__item {
+  position: relative;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.member-avatar-stack__overflow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--color-sand-100);
+  color: var(--color-on-surface-variant);
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: 0 0 0 2px #fff;
+}
+
 .health-hero-summary {
   margin-top: 10px;
 }

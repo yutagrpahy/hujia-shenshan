@@ -29,7 +29,7 @@ import {
   CardItemTitle,
   PageSection,
 } from '../common/CardLayout'
-import { MemberAvatar } from '../common/MemberAvatar'
+import { MemberAvatar, MemberAvatarStack } from '../common/MemberAvatar'
 import { SuccessBanner } from '../common/StateViews'
 import type { CoverageGap } from '../../types'
 import { formatGapAmount } from '../../utils/calculations'
@@ -100,6 +100,7 @@ export function OverviewPage() {
         <div className="hero-banner__content">
           <p className="text-xs font-medium text-teal-600 mb-1">👋 早安，建國</p>
           <h3 className="text-lg font-bold text-gray-800">今天也要為家人守住幸福</h3>
+          <MemberAvatarStack members={members} className="hero-banner__member-stack" />
           <HealthProfileHeroSummary
             profile={protectionProfile}
             onOpenCurrent={() => openHealthProfile('current')}

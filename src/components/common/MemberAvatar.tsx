@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+import type { FamilyMember } from '../../types'
 import { getMemberAvatarUrl } from '../../utils/avatars'
 
 interface MemberAvatarProps {
@@ -31,13 +33,56 @@ export function MemberAvatar({
   size = 'md',
   tone = 'default',
   className = '',
-}: MemberAvatarProps) {
+  style,
+}: MemberAvatarProps & { style?: CSSProperties }) {
   return (
     <img
       src={getMemberAvatarUrl(seed, index)}
       alt={`${name} 的頭像`}
       className={`member-avatar ${SIZES[size]} ${TONE_CLASSES[tone]} ${className}`}
+      style={style}
       loading="lazy"
     />
+  )
+}
+
+export function MemberAvatarStack({
+  members,
+  size = 'sm',
+  className = '',
+  maxVisible = 8,
+}: {
+  members: FamilyMember[]
+  size?: MemberAvatarProps['size']
+  className?: string
+  maxVisible?: number
+}) {
+  const visible = members.slice(0, maxVisible)
+  const overflow = members.length - visible.length
+
+  if (visible.length === 0) return null
+
+  return (
+    <div
+      className={`member-avatar-stack ${className}`.trim()}
+      role="group"
+      aria-label={`家庭成員 ${members.length} 人`}
+    >
+      {visible.map((member, index) => (
+        <MemberAvatar
+          key={member.id}
+          name={member.name}
+          seed={member.avatarSeed}
+          size={size}
+          className="member-avatar-stack__item"
+          style={{ zIndex: index + 1 }}
+        />
+      ))}
+      {overflow > 0 ? (
+        <span className="member-avatar-stack__overflow" style={{ zIndex: visible.length + 1 }}>
+          +{overflow}
+        </span>
+      ) : null}
+    </div>
   )
 }
