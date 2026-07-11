@@ -46,27 +46,33 @@ export function CoverageListItem({
   const hasClaim = !!claim
   const policy = member?.policies.find((entry) => entry.id === item.id)
   const isClickable = !!onOpenPolicy && !!member && !!policy
-  const avatarSeed = member?.avatarSeed ?? item.avatarSeed
   const memberName = member?.name ?? item.memberName
+  const avatarSeed =
+    member?.avatarSeed ??
+    item.avatarSeed ??
+    claim?.avatarSeed ??
+    item.memberName
   const statusTone = hasClaim ? CLAIM_STATUS_GROUP[claim.claimStatus].tone : null
   const amountLabel = item.isMonthly ? '月給付' : '保額'
   const formattedAmount = formatAmount(item.amount, item.isMonthly)
 
   const content = (
     <CardItemRow>
-      {hasClaim ? (
-        <CardItemMedia>
+      <CardItemMedia>
+        {hasClaim ? (
           <ClaimProgressRing
             progress={claim.progress}
             tone={claimRingTone(claim.claimStatus, claim.isError)}
             size={44}
             label={`${claim.progress}%`}
           />
-        </CardItemMedia>
-      ) : null}
+        ) : (
+          <MemberAvatar name={memberName} seed={avatarSeed} size="sm" />
+        )}
+      </CardItemMedia>
       <CardItemMain>
         <CardItemMeta>
-          {avatarSeed ? (
+          {hasClaim ? (
             <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
           ) : null}
           <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
@@ -110,6 +116,7 @@ export function CoverageListItem({
     <CardItem
       as="button"
       interactive
+      className={hasClaim ? `claim-card claim-card--${statusTone}` : ''}
       onClick={() =>
         onOpenPolicy({
           policy: policy!,

@@ -133,6 +133,7 @@ export function AccidentPayoutPanel({
                           item={{
                             ...item,
                             categoryLabel: item.eventLabel,
+                            avatarSeed: member?.avatarSeed,
                           }}
                           member={member}
                           claim={claim}

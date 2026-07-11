@@ -161,6 +161,7 @@ export function NonAccidentCoveragePanel({
                           item={{
                             ...item,
                             categoryLabel: item.categoryLabel,
+                            avatarSeed: member?.avatarSeed,
                           }}
                           member={member}
                           claim={claim}

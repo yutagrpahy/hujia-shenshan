@@ -164,6 +164,7 @@ function CoverageDetailModal({
                             item={{
                               ...item,
                               categoryLabel: item.subcategoryLabel,
+                              avatarSeed: member?.avatarSeed,
                             }}
                             member={member}
                             claim={claim}
