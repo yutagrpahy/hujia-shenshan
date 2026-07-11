@@ -1,7 +1,7 @@
-import { Button, Modal, Spinner } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { FlaskConical } from 'lucide-react'
 import { FormLabel, StackForm, StackList } from '../common/CardLayout'
-import { PolicyRecommendationPanel } from '../common/PolicyRecommendationPanel'
+import { RecommendationResultModal } from '../common/RecommendationResultModal'
 import { SCENARIO_LABELS } from '../../data/mockData'
 import type { FamilyMember, ScenarioEventType, ScenarioResult } from '../../types'
 
@@ -146,37 +146,14 @@ export function ScenarioResultModal({
   isSimulating: boolean
 }) {
   return (
-    <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Modal.Container size="lg" placement="bottom">
-        <Modal.Dialog>
-          <Modal.CloseTrigger />
-          <Modal.Header>
-            <Modal.Heading>情境模擬結果</Modal.Heading>
-          </Modal.Header>
-          <Modal.Body>
-            {isSimulating ? (
-              <div className="flex flex-col items-center py-10 gap-3">
-                <Spinner size="lg" />
-                <p className="text-sm text-teal-600">AI 模擬計算中...</p>
-              </div>
-            ) : simResult ? (
-              <PolicyRecommendationPanel
-                breakdown={simResult.breakdown}
-                narrative={simResult.narrative}
-                recommendations={simResult.recommendations}
-                recommendedAdvisor={simResult.recommendedAdvisor}
-              />
-            ) : null}
-          </Modal.Body>
-          {simResult && !isSimulating && (
-            <Modal.Footer>
-              <Button slot="close" fullWidth variant="secondary" onPress={() => onOpenChange(false)}>
-                關閉
-              </Button>
-            </Modal.Footer>
-          )}
-        </Modal.Dialog>
-      </Modal.Container>
-    </Modal.Backdrop>
+    <RecommendationResultModal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title={simResult ? `${simResult.breakdown.category} · AI 推薦` : '情境模擬 · AI 推薦'}
+      subtitle="依成員情境試算目標保障"
+      result={simResult}
+      isLoading={isSimulating}
+      loadingLabel="AI 模擬計算中..."
+    />
   )
 }

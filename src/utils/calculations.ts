@@ -759,10 +759,22 @@ function attachBoostLabels(
   })
 }
 
+function buildOverviewGapNarrative(gap: CoverageGap, contextNote: string): string {
+  const gapValue = Math.max(0, Math.round((gap.recommended - gap.current) * 10) / 10)
+  const targetLabel = formatGapAmount(gap.recommended, gap.unit)
+  const gapLabel = formatGapAmount(gapValue, gap.unit)
+  const lead =
+    gap.current === 0
+      ? `您的家庭在「${gap.category}」尚未投保，家庭目標 ${targetLabel}，尚待補足 ${gapLabel}。`
+      : `您的家庭在「${gap.category}」目前保障 ${formatGapAmount(gap.current, gap.unit)}，家庭目標 ${targetLabel}，尚待補足 ${gapLabel}。`
+
+  return `${lead}${contextNote}下方推薦保單專為補足此目標保障設計。`
+}
+
 const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> = {
   critical: {
     narrative:
-      '您的家庭目前尚無「重大疾病一次給付」保障。若家人罹患癌症、心肌梗塞等重大疾病，一次性理賠金可支應療養與收入中斷期間的開銷，建議優先為主要經濟支柱補強。',
+      '若家人罹患癌症、心肌梗塞等重大疾病，一次性理賠金可支應療養與收入中斷期間的開銷，建議優先為主要經濟支柱補強。',
     recommendations: [
       {
         name: '國泰人壽真好康重大疾病終身保險',
@@ -789,7 +801,7 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
     },
   },
   death: {
-    narrative: '身故保障尚未達標，建議提升壽險保額，確保家人生活無虞。',
+    narrative: '建議提升壽險保額，確保家人生活無虞。',
     recommendations: [
       {
         name: '富邦人壽樂齡終身壽險增額',
@@ -801,7 +813,7 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
     recommendedAdvisor: { ...DEFAULT_ADVISOR, reason: '擅長身故保障與受益人安排' },
   },
   medical: {
-    narrative: '醫療實支實付保障尚未達標，建議補強住院與手術理賠額度。',
+    narrative: '建議補強住院與手術實支實付理賠額度，降低自費醫療負擔。',
     recommendations: [
       {
         name: '國泰人壽新實支實付醫療險',
@@ -813,7 +825,7 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
     recommendedAdvisor: { ...DEFAULT_ADVISOR, reason: '醫療險與實支實付規劃經驗豐富' },
   },
   longterm: {
-    narrative: '長照月給付尚未達標，建議評估商業長照險搭配政府長照 2.0 資源。',
+    narrative: '建議評估商業長照險搭配政府長照 2.0 資源，補足照護月給付缺口。',
     recommendations: [
       {
         name: '新光人壽長照尊榮定期保險',
@@ -825,7 +837,7 @@ const GAP_RECOMMENDATIONS: Record<CoverageGap['gapKey'], GapRecommendationBase> 
     recommendedAdvisor: { ...DEFAULT_ADVISOR, reason: '熟悉長照 2.0 與商業長照險搭配' },
   },
   disability: {
-    narrative: '失能收入替代尚未達標，建議補強失能後每月固定給付。',
+    narrative: '建議補強失能後每月固定給付，維持家庭日常開銷。',
     recommendations: [
       {
         name: '國泰人壽樂活失能扶助保險',
@@ -849,6 +861,7 @@ export function getGapRecommendations(
 
   return {
     ...base,
+    narrative: buildOverviewGapNarrative(gap, base.narrative),
     breakdown,
     recommendations: attachBoostLabels(base.recommendations, gapTwd, isMonthly),
   }
