@@ -1,5 +1,5 @@
 import { getClaimByPolicyId, CLAIM_STATUS_GROUP } from '../../data/claims'
-import { getPolicyCardStatusChip } from '../../data/policyLabels'
+import { getPolicyCardStatusChip, isPolicyApplicationInProgress } from '../../data/policyLabels'
 import { getPolicyParties } from '../../data/policyDetails'
 import type { FamilyMember, Policy, PolicyWithMember } from '../../types'
 import { PolicySourceLabel } from './PolicySourceLabel'
@@ -44,6 +44,7 @@ export function PolicyListCard({
 }) {
   const claim = members ? getClaimByPolicyId(members, policy.id) : undefined
   const hasClaim = !!claim
+  const applicationInProgress = isPolicyApplicationInProgress(policy)
   const statusTone = hasClaim ? CLAIM_STATUS_GROUP[claim.claimStatus].tone : null
   const parties =
     members && memberId
@@ -79,7 +80,7 @@ export function PolicyListCard({
         </CardItemTags>
       </CardItemTriMain>
 
-      <ClaimProgressSlot claim={claim} />
+      <ClaimProgressSlot claim={claim} policy={policy} />
 
       {onClick ? (
         <CardItemTriAction>
@@ -102,7 +103,13 @@ export function PolicyListCard({
       id={id}
       className={`mb-2 scroll-mt-28 ${
         highlighted ? 'member-policy-card--highlight' : ''
-      } ${hasClaim ? `claim-card claim-card--${statusTone}` : ''} ${className}`.trim()}
+      } ${
+        hasClaim
+          ? `claim-card claim-card--${statusTone}`
+          : applicationInProgress
+            ? 'claim-card claim-card--success'
+            : ''
+      } ${className}`.trim()}
       onClick={onClick}
     >
       {content}

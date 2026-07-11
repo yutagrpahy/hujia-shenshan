@@ -187,8 +187,8 @@ export function isClaimInProgressStatus(claimStatus: ClaimStatus): boolean {
 }
 
 /**
- * 保單／理賠進度環：全站僅理賠「進行中」（申請中、核准待給付）顯示。
- * 待處理（待補件）、已結案（已給付、駁回）與無理賠紀錄皆不顯示。
+ * 理賠進度環：僅理賠「進行中」（申請中、核准待給付）顯示。
+ * 投保中進度環見 policyLabels.shouldShowPolicyApplicationProgressRing；統一由 ClaimProgressSlot 渲染。
  */
 export function shouldShowPolicyProgressRing(claimStatus: ClaimStatus): boolean {
   return isClaimInProgressStatus(claimStatus)

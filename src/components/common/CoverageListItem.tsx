@@ -1,6 +1,6 @@
 import type { ClaimRecord, FamilyMember, PolicyWithMember } from '../../types'
 import { CLAIM_STATUS_GROUP } from '../../data/claims'
-import { getPolicyCardStatusChip } from '../../data/policyLabels'
+import { getPolicyCardStatusChip, isPolicyApplicationInProgress } from '../../data/policyLabels'
 import { ClaimProgressSlot } from './ClaimProgressRing'
 import {
   CardItem,
@@ -45,6 +45,7 @@ export function CoverageListItem({
 }) {
   const hasClaim = !!claim
   const policy = member?.policies.find((entry) => entry.id === item.id)
+  const applicationInProgress = policy ? isPolicyApplicationInProgress(policy) : false
   const isClickable = !!onOpenPolicy && !!member && !!policy
   const memberName = member?.name ?? item.memberName
   const avatarSeed =
@@ -84,7 +85,7 @@ export function CoverageListItem({
         </CardItemDetail>
       </CardItemTriMain>
 
-      <ClaimProgressSlot claim={claim} />
+      <ClaimProgressSlot claim={claim} policy={policy} />
 
       {isClickable ? (
         <CardItemTriAction>
@@ -102,7 +103,13 @@ export function CoverageListItem({
     <CardItem
       as="button"
       interactive
-      className={hasClaim ? `claim-card claim-card--${statusTone}` : ''}
+      className={
+        hasClaim
+          ? `claim-card claim-card--${statusTone}`
+          : applicationInProgress
+            ? 'claim-card claim-card--success'
+            : ''
+      }
       onClick={() =>
         onOpenPolicy({
           policy: policy!,

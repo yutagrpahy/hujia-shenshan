@@ -23,6 +23,22 @@ export function isPolicyApplicationInProgress(policy: Policy): boolean {
   return isPolicyReapplication(policy)
 }
 
+/** 投保中進度（示範資料；對齊理賠進行中的進度環） */
+const POLICY_APPLICATION_PROGRESS: Partial<Record<string, number>> = {
+  p23: 52,
+}
+
+export function getPolicyApplicationProgress(policy: Policy): number {
+  return POLICY_APPLICATION_PROGRESS[policy.id] ?? 45
+}
+
+export function shouldShowPolicyApplicationProgressRing(
+  policy: Policy | null | undefined,
+): boolean {
+  if (!policy) return false
+  return isPolicyApplicationInProgress(policy)
+}
+
 export function isPolicyUnderwriting(policy: Policy): boolean {
   return policy.status === 'pending' && policy.coverage <= 0 && policy.type === 'life'
 }

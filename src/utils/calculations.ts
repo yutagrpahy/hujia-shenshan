@@ -327,6 +327,8 @@ function buildFamilyCoverageDomain(
 
   for (const member of members) {
     for (const policy of member.policies) {
+      if (policy.status === 'expired') continue
+
       const def = defs.find((entry) => entry.policyTypes.includes(policy.type))
       if (!def) continue
 

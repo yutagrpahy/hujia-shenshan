@@ -1,5 +1,9 @@
 import { CLAIM_STATUS_GROUP, shouldShowClaimProgressRing, type ClaimTab } from '../../data/claims'
-import type { ClaimRecord, ClaimStatus } from '../../types'
+import {
+  getPolicyApplicationProgress,
+  shouldShowPolicyApplicationProgressRing,
+} from '../../data/policyLabels'
+import type { ClaimRecord, ClaimStatus, Policy } from '../../types'
 import { CardItemTriIndicator } from './CardLayout'
 
 const TONE_STROKES = {
@@ -65,27 +69,45 @@ function ClaimProgressRing({
 
 /**
  * 全站保單／理賠進度環唯一入口。
- * 理賠頁請傳入 claimsTab；總覽／保單列表僅依理賠狀態判斷。
+ * 理賠頁請傳入 claimsTab；總覽／保單列表依理賠狀態或投保中狀態判斷。
  */
 export function ClaimProgressSlot({
   claim,
+  policy,
   size = 44,
   claimsTab,
 }: {
   claim?: ClaimRecord | null
+  policy?: Policy | null
   size?: number
   claimsTab?: ClaimTab
 }) {
-  if (!shouldShowClaimProgressRing(claim, { claimsTab })) return null
+  if (shouldShowClaimProgressRing(claim, { claimsTab })) {
+    return (
+      <CardItemTriIndicator>
+        <ClaimProgressRing
+          progress={claim!.progress}
+          tone={claimRingTone(claim!.claimStatus, claim!.isError)}
+          size={size}
+          label={`${claim!.progress}%`}
+        />
+      </CardItemTriIndicator>
+    )
+  }
 
-  return (
-    <CardItemTriIndicator>
-      <ClaimProgressRing
-        progress={claim!.progress}
-        tone={claimRingTone(claim!.claimStatus, claim!.isError)}
-        size={size}
-        label={`${claim!.progress}%`}
-      />
-    </CardItemTriIndicator>
-  )
+  if (shouldShowPolicyApplicationProgressRing(policy)) {
+    const progress = getPolicyApplicationProgress(policy!)
+    return (
+      <CardItemTriIndicator>
+        <ClaimProgressRing
+          progress={progress}
+          tone="success"
+          size={size}
+          label={`${progress}%`}
+        />
+      </CardItemTriIndicator>
+    )
+  }
+
+  return null
 }
