@@ -129,9 +129,11 @@ export function CardSectionTitle({
   className?: string
   as?: 'h2' | 'h3' | 'h4'
 }) {
+  const headerAlign = subtitle ? 'items-start' : 'items-end'
+
   return (
     <div
-      className={`ds-section-header flex items-start justify-between gap-2 ${className}`.trim()}
+      className={`ds-section-header flex ${headerAlign} justify-between gap-2 ${className}`.trim()}
     >
       <div className="min-w-0 flex-1">
         <Tag
