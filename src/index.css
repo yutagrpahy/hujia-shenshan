@@ -25,7 +25,13 @@
   --color-surface-container: #ffffff;
   --color-outline: #e8e4dd;
   --color-on-surface: #2c3338;
-  --color-on-surface-variant: #6b7280;
+  /* WCAG AA+ 次要文字（#fff 上 ≥4.5:1，#faf9f7 上 ≥4.5:1） */
+  --color-on-surface-variant: #4b5563;
+  --color-a11y-muted: #5c6570;
+  --color-a11y-subtle: #4b5563;
+  --color-a11y-link: #1f5f57;
+  --color-a11y-focus: #1a5c54;
+  --color-on-teal-container: #0a3d2e;
   --color-teal-50: #f0f9f8;
   --color-teal-100: #d4efec;
   --color-teal-500: #2d7a70;
@@ -41,19 +47,38 @@
   --font-brand: "Noto Serif TC", "Noto Sans TC", "PingFang TC", serif;
   --color-brand-wordmark: #0a3d2e;
   --color-brand-tagline: #1f5f57;
+  /* Tailwind 灰階對齊 WCAG AA（白底上 ≥4.5:1） */
+  --color-gray-400: #5c6570;
+  --color-gray-500: #4b5563;
+  --color-teal-600: #1f5f57;
+  --color-teal-700: #1a4f48;
 }
 
 * { box-sizing: border-box; }
 
-html { scrollbar-gutter: stable; }
+html {
+  scrollbar-gutter: stable;
+  font-size: 100%;
+}
 
 html, body, #root { min-height: 100dvh; margin: 0; }
 
 body {
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
   background: var(--color-surface);
   color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── 全站設計 token（標籤、控制項、頁籤、頭像）── */
@@ -61,7 +86,7 @@ body {
   --ds-chip-py: 4px;
   --ds-chip-px: 10px;
   --ds-radius-chip: 10px;
-  --ds-chip-font-size: 11px;
+  --ds-chip-font-size: 0.875rem;
   --ds-radius-control: 12px;
   --ds-control-py: 10px;
   --ds-control-px: 12px;
@@ -72,7 +97,7 @@ body {
   --ds-segment-btn-px: 12px;
   --ds-radius-avatar: 12px;
   --ds-avatar-ring: 2px;
-  --ds-icon-btn-size: 32px;
+  --ds-icon-btn-size: 44px;
   --ds-radius-icon-btn: 10px;
   --ds-radius-panel: 16px;
   --ds-logo-inset: 0px;
@@ -103,11 +128,14 @@ body {
   --ds-space-grid: var(--ds-space-3);           /* 網格 gap */
   --ds-space-section-inner: var(--ds-space-3);  /* 區塊卡片內群組 */
 
-  /* 區域標題字級（全站唯一標準） */
-  --ds-section-title-size: 0.75rem;   /* 12px */
-  --ds-section-meta-size: 0.625rem;    /* 10px */
-  --ds-card-eyebrow-size: 0.625rem;    /* 10px，卡片內輔助標籤 */
-  --ds-field-label-size: 0.75rem;      /* 12px，表單欄位 */
+  /* 字級（長輩友善：最小 14px，內文 16px，符合 WCAG 1.4.4） */
+  --a11y-text-caption: 0.875rem;
+  --a11y-text-body: 1rem;
+  --a11y-touch-min: 44px;
+  --ds-section-title-size: 0.875rem;
+  --ds-section-meta-size: 0.875rem;
+  --ds-card-eyebrow-size: 0.875rem;
+  --ds-field-label-size: 1rem;
 }
 
 /* ── 間距佈局工具（對應 M3 語意角色）── */
@@ -139,9 +167,9 @@ body {
 
 .ds-section-subtitle {
   font-size: var(--ds-section-meta-size);
-  color: #9ca3af;
+  color: var(--color-a11y-muted);
   margin: var(--ds-space-tight) 0 0;
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 .ds-section-inner {
@@ -153,11 +181,11 @@ body {
 .m3-section-title,
 .m3-card-section-title {
   font-size: var(--ds-section-title-size);
-  font-weight: 600;
-  color: #9ca3af;
+  font-weight: 700;
+  color: var(--color-a11y-subtle);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.35;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
   margin: 0;
   padding: 0;
 }
@@ -171,28 +199,29 @@ body {
 
 .m3-section-meta {
   font-size: var(--ds-section-meta-size);
-  font-weight: 500;
-  color: #9ca3af;
-  line-height: 1.35;
+  font-weight: 600;
+  color: var(--color-a11y-muted);
+  line-height: 1.5;
   flex-shrink: 0;
 }
 
 .m3-card-eyebrow {
   font-size: var(--ds-card-eyebrow-size);
-  font-weight: 600;
-  color: var(--color-teal-500);
+  font-weight: 700;
+  color: var(--color-a11y-link);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1.35;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
   margin: 0;
 }
 
 .m3-field-label {
   display: block;
   font-size: var(--ds-field-label-size);
-  color: var(--color-on-surface-variant);
+  font-weight: 600;
+  color: var(--color-a11y-subtle);
   margin-bottom: var(--ds-space-tight);
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 .m3-card--section {
@@ -297,7 +326,7 @@ body {
 }
 
 .brand-header--mobile .brand-tagline {
-  font-size: 0.6875rem;
+  font-size: var(--a11y-text-caption);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -329,9 +358,9 @@ body {
 }
 
 .user-header-meta__family {
-  font-size: 0.625rem;
+  font-size: var(--a11y-text-caption);
   color: var(--color-on-surface-variant);
-  line-height: 1.25;
+  line-height: 1.5;
 }
 
 .user-header-meta--compact {
@@ -339,11 +368,11 @@ body {
 }
 
 .user-header-meta--compact .user-header-meta__name {
-  font-size: 0.75rem;
+  font-size: var(--a11y-text-caption);
 }
 
 .user-header-meta--compact .user-header-meta__family {
-  font-size: 0.625rem;
+  font-size: var(--a11y-text-caption);
 }
 
 @media (max-width: 380px) {
@@ -406,8 +435,12 @@ body {
 }
 
 .m3-nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 8px 0 6px; font-size: 10px; font-weight: 500;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  min-height: var(--a11y-touch-min);
+  padding: 8px 4px 6px;
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
   color: var(--color-on-surface-variant);
   flex: 1; background: none; border: none; cursor: pointer;
   transition: color 0.2s;
@@ -453,10 +486,11 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: var(--a11y-touch-min);
   padding: 10px 18px;
   border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--a11y-text-body);
+  font-weight: 600;
   color: var(--color-on-surface-variant);
   background: none;
   border: none;
@@ -547,9 +581,9 @@ body {
 }
 
 .policy-source-legend__text {
-  font-size: 10px;
-  line-height: 1.3;
-  color: #9ca3af;
+  font-size: var(--a11y-text-caption);
+  line-height: 1.5;
+  color: var(--color-a11y-muted);
 }
 
 /* ── 成員詳情：保單區與後續區塊視覺分群 ── */
@@ -639,16 +673,16 @@ body {
 }
 
 .gap-card__title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.35;
+  font-size: var(--a11y-text-body);
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .gap-urgent-badge {
   background: linear-gradient(135deg, #fff0e8, #ffe4d6);
-  color: #c45a3f;
-  font-size: 10px;
-  font-weight: 600;
+  color: #9a3d28;
+  font-size: var(--a11y-text-caption);
+  font-weight: 700;
   gap: 4px;
 }
 
@@ -659,15 +693,16 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   width: 100%;
+  min-height: var(--a11y-touch-min);
   margin-top: 8px;
-  padding: var(--ds-chip-py) var(--ds-chip-px);
+  padding: 10px var(--ds-chip-px);
   border-radius: var(--ds-radius-control);
   background: rgba(45, 122, 112, 0.1);
   border: 1px solid rgba(45, 122, 112, 0.28);
   font-family: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-accent);
+  font-size: var(--a11y-text-caption);
+  font-weight: 700;
+  color: var(--color-a11y-link);
   cursor: pointer;
   text-align: left;
   appearance: none;
@@ -676,8 +711,8 @@ body {
 }
 
 .gap-urgent-cta:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(45, 122, 112, 0.25);
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
 }
 
 .gap-urgent-cta:hover {
@@ -691,9 +726,9 @@ body {
 
 .gap-achieved-badge {
   background: linear-gradient(135deg, #d4efec, #e8f5c3);
-  color: #1f5f57;
-  font-size: 10px;
-  font-weight: 600;
+  color: var(--color-on-teal-container);
+  font-size: var(--a11y-text-caption);
+  font-weight: 700;
   gap: 4px;
   animation: gap-badge-pop 0.5s ease-out;
 }
@@ -898,31 +933,31 @@ body {
 }
 
 .m3-card-item__meta-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-teal-500);
-  line-height: 1.35;
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
+  color: var(--color-a11y-link);
+  line-height: 1.5;
 }
 
 .m3-card-item__title {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--a11y-text-body);
+  font-weight: 600;
   color: var(--color-on-surface);
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 .m3-card-item__subtitle {
-  font-size: 0.75rem;
+  font-size: var(--a11y-text-caption);
   color: var(--color-on-surface-variant);
   margin-top: 2px;
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 .m3-card-item__detail {
-  font-size: 10px;
-  color: #9ca3af;
+  font-size: var(--a11y-text-caption);
+  color: var(--color-a11y-muted);
   margin-top: 4px;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .m3-card-item__tags {
@@ -950,9 +985,10 @@ body {
 }
 
 .m3-card-item__action {
-  font-size: 10px;
-  color: var(--color-teal-500);
-  line-height: 1.35;
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
+  color: var(--color-a11y-link);
+  line-height: 1.5;
 }
 
 .m3-card-item__chevron {
@@ -992,11 +1028,11 @@ body {
 .family-coverage-card--life .family-coverage-card__icon,
 .family-coverage-card--life .family-coverage-card__label,
 .family-coverage-card--life .family-coverage-card__amount {
-  color: var(--color-primary);
+  color: var(--color-on-teal-container);
 }
 
 .family-coverage-card--life .family-coverage-card__note {
-  color: rgba(45, 122, 112, 0.75);
+  color: var(--color-a11y-subtle);
 }
 
 .family-coverage-card--life .family-coverage-card__claim-badge {
@@ -1093,6 +1129,12 @@ body {
   opacity: 0.75;
 }
 
+.m3-icon-btn:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
+  background: var(--color-sand-100);
+}
+
 .member-avatar {
   border-radius: var(--ds-radius-avatar);
   object-fit: cover;
@@ -1118,24 +1160,31 @@ body {
 
 .m3-field {
   width: 100%;
+  min-height: var(--a11y-touch-min);
   padding: var(--ds-control-py) var(--ds-control-px);
   border: 1px solid var(--color-sand-200);
   border-radius: var(--ds-radius-control);
-  font-size: 0.875rem;
+  font-size: var(--a11y-text-body);
   font-family: inherit;
   color: var(--color-on-surface);
   background: #fff;
+  line-height: 1.5;
 }
 
 .m3-field::placeholder {
-  color: #9ca3af;
-  font-size: 0.75rem;
+  color: var(--color-a11y-muted);
+  font-size: var(--a11y-text-caption);
 }
 
 .m3-field:focus {
   outline: none;
   border-color: var(--color-teal-500);
-  box-shadow: 0 0 0 2px rgba(45, 122, 112, 0.2);
+  box-shadow: 0 0 0 3px rgba(45, 122, 112, 0.35);
+}
+
+.m3-field:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
 }
 
 .m3-panel {
@@ -1184,10 +1233,11 @@ body {
 
 .m3-soft-btn {
   width: 100%;
+  min-height: var(--a11y-touch-min);
   padding: var(--ds-control-py) var(--ds-control-px);
   border-radius: var(--ds-radius-control);
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   border: none;
@@ -1200,7 +1250,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: var(--color-teal-500);
+  color: var(--color-a11y-link);
   border: 1px solid var(--color-teal-100);
   background: rgba(255, 255, 255, 0.6);
 }
@@ -1213,12 +1263,14 @@ button.m3-chip {
   cursor: pointer;
   border: none;
   font: inherit;
+  min-height: var(--a11y-touch-min);
 }
 
 .m3-chip-btn {
   flex: 1;
   justify-content: center;
   padding: var(--ds-segment-btn-py) var(--ds-segment-btn-px);
+  min-height: var(--a11y-touch-min);
 }
 
 .advisor-avatar {
@@ -1255,16 +1307,22 @@ button.m3-chip {
 
 .m3-segment-btn {
   flex: 1;
+  min-height: var(--a11y-touch-min);
   padding: var(--ds-segment-btn-py) var(--ds-segment-btn-px);
   border-radius: var(--ds-radius-chip);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
   text-align: center;
   color: var(--color-on-surface-variant);
   background: none;
   border: none;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.m3-segment-btn:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
 }
 .m3-segment-btn.active {
   background: white;
@@ -1313,8 +1371,8 @@ button.m3-chip {
 
 .btn-cta {
   min-height: 48px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--a11y-text-body);
+  font-weight: 700;
 }
 
 .planning-future-divider {
@@ -1329,12 +1387,22 @@ button.m3-chip {
 }
 
 .avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--a11y-touch-min);
+  min-height: var(--a11y-touch-min);
   background: none;
   border: none;
-  padding: 0;
+  padding: 4px;
   cursor: pointer;
   border-radius: 9999px;
   transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.avatar-btn:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
 }
 .avatar-btn:hover {
   transform: scale(1.05);
@@ -1345,13 +1413,13 @@ button.m3-chip {
   position: absolute;
   top: -4px;
   right: -8px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
   border-radius: 9999px;
-  background: #e54d2e;
+  background: #c73e24;
   color: white;
-  font-size: 9px;
+  font-size: 0.75rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1359,9 +1427,9 @@ button.m3-chip {
 }
 .nav-badge--inline {
   position: static;
-  min-width: 18px;
-  height: 18px;
-  font-size: 10px;
+  min-width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
 }
 
 .m3-chat-user {
@@ -1858,9 +1926,10 @@ button.m3-chip {
 }
 
 .calendar-day-weekday {
-  font-size: 0.625rem;
+  font-size: var(--a11y-text-caption);
+  font-weight: 600;
   color: var(--color-on-surface-variant);
-  line-height: 1;
+  line-height: 1.25;
 }
 
 .calendar-day-circle {
@@ -1952,13 +2021,6 @@ button.m3-chip {
    10→14  11→15  12→17  14→20  16→22  18→25  20→28 (px)
 */
 @media (max-width: 599px) {
-  :root {
-    --ds-section-title-size: 0.875rem;
-    --ds-section-meta-size: 0.75rem;
-    --ds-card-eyebrow-size: 0.75rem;
-    --ds-field-label-size: 0.875rem;
-  }
-
   @theme {
     --text-xs: 0.875rem;
     --text-sm: 1.0625rem;
@@ -2243,5 +2305,74 @@ button.m3-chip {
     width: 2.5rem;
     height: 2.5rem;
     font-size: 1.0625rem;
+  }
+}
+
+/* ── 無障礙：全站字級底線、焦點環、輔助類別 ── */
+.text-\[10px\],
+.text-\[11px\] {
+  font-size: var(--a11y-text-caption) !important;
+  line-height: 1.5 !important;
+}
+
+.m3-nav-item:focus-visible,
+.top-nav-pill:focus-visible,
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
+}
+
+.m3-card-item--clickable:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px var(--color-outline);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 12px 20px;
+  font-size: var(--a11y-text-body);
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-a11y-focus);
+  border-radius: 0 0 12px 0;
+  text-decoration: none;
+  transform: translateY(-120%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .m3-nav-item.active,
+  .top-nav-pill.active,
+  .m3-segment-btn.active {
+    outline: 2px solid Highlight;
+  }
+
+  .m3-field:focus,
+  .m3-field:focus-visible {
+    outline: 2px solid Highlight;
   }
 }

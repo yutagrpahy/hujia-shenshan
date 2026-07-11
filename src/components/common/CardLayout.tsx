@@ -177,12 +177,16 @@ export function PageSection({
 export function FormLabel({
   children,
   className = '',
+  htmlFor,
 }: {
   children: ReactNode
   className?: string
+  htmlFor?: string
 }) {
   return (
-    <label className={`m3-field-label ${className}`.trim()}>{children}</label>
+    <label htmlFor={htmlFor} className={`m3-field-label ${className}`.trim()}>
+      {children}
+    </label>
   )
 }
 
@@ -370,8 +374,8 @@ export function CardEmptyState({
 }) {
   return (
     <CardItem className={`m3-card-empty ${className}`.trim()}>
-      <p className="text-sm text-gray-500">{title}</p>
-      {description ? <p className="text-xs text-gray-400 mt-1">{description}</p> : null}
+      <p className="text-base text-gray-700">{title}</p>
+      {description ? <p className="text-sm text-gray-500 mt-1">{description}</p> : null}
     </CardItem>
   )
 }

@@ -31,6 +31,14 @@ const TAB_TITLES: Record<AppTab, string> = {
   protection: '保障',
 }
 
+function SkipToMainLink() {
+  return (
+    <a href="#main-content" className="skip-link">
+      跳至主要內容
+    </a>
+  )
+}
+
 interface AppShellProps {
   children: React.ReactNode
 }
@@ -40,6 +48,8 @@ const MOBILE_HEADER_CONTENT_GAP = 12
 
 function MobileShell({
   scrollResetKey,
+  pageTitle,
+  hidePageTitle,
   currentUser,
   memberCount,
   avatarButton,
@@ -47,6 +57,8 @@ function MobileShell({
   children,
 }: {
   scrollResetKey: string
+  pageTitle: string
+  hidePageTitle: boolean
   currentUser: FamilyMember | undefined
   memberCount: number
   avatarButton: React.ReactNode
@@ -71,6 +83,7 @@ function MobileShell({
 
   return (
     <div className="app-layout app-layout--mobile min-h-dvh flex flex-col">
+      <SkipToMainLink />
       <header
         ref={headerRef}
         className={`m3-app-bar m3-app-bar--mobile-fixed warm-header w-full max-w-full min-w-0 ${
@@ -92,15 +105,20 @@ function MobileShell({
       </header>
 
       <main
+        id="main-content"
         ref={scrollRef}
+        tabIndex={-1}
         className="main-content main-content--mobile main-content--mobile-scroll flex-1 min-h-0 min-w-0 w-full"
       >
         <div className="content-container content-container--wide min-w-0 w-full">
+          {!hidePageTitle ? <h1 className="sr-only">{pageTitle}</h1> : null}
           {children}
         </div>
       </main>
 
-      <nav className="m3-bottom-nav">{navItems}</nav>
+      <nav className="m3-bottom-nav" aria-label="主要導覽">
+        {navItems}
+      </nav>
     </div>
   )
 }
@@ -131,9 +149,12 @@ export function AppShell({ children }: AppShellProps) {
     return (
       <button
         key={id}
+        type="button"
         onClick={() => setCurrentTab(id)}
         className={isMobile ? `m3-nav-item ${isActive ? 'active' : ''}` : `top-nav-pill ${isActive ? 'active' : ''}`}
         title={desc}
+        aria-label={`${label}：${desc}`}
+        aria-current={isActive ? 'page' : undefined}
       >
         {isMobile ? (
           <>
@@ -177,6 +198,8 @@ export function AppShell({ children }: AppShellProps) {
     return (
       <MobileShell
         scrollResetKey={`${currentTab}-${isProfileView}`}
+        pageTitle={pageTitle}
+        hidePageTitle={hidePageTitle}
         currentUser={currentUser}
         memberCount={memberCount}
         avatarButton={avatarButton}
@@ -189,6 +212,7 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="app-layout app-layout--desktop min-h-dvh">
+      <SkipToMainLink />
       <header className="desktop-top-nav warm-header">
         <div className="desktop-nav-inner">
           <div className="brand-header-cluster shrink-0">
@@ -196,7 +220,9 @@ export function AppShell({ children }: AppShellProps) {
             <BrandHeader variant="desktop" />
           </div>
 
-          <nav className="top-nav-pills">{navItems}</nav>
+          <nav className="top-nav-pills" aria-label="主要導覽">
+            {navItems}
+          </nav>
 
           <div className="flex items-center gap-3 shrink-0 min-w-0">
             {currentUser && (
@@ -207,9 +233,9 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </header>
 
-      <main className="main-content main-content--desktop">
+      <main id="main-content" tabIndex={-1} className="main-content main-content--desktop">
         <div className="content-container content-container--wide">
-          {!hidePageTitle && <h2 className="page-title">{pageTitle}</h2>}
+          {!hidePageTitle && <h1 className="page-title">{pageTitle}</h1>}
           {children}
         </div>
       </main>

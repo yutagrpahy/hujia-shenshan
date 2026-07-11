@@ -1,6 +1,6 @@
 import { Button, Modal, Spinner } from '@heroui/react'
 import { FlaskConical } from 'lucide-react'
-import { StackForm, StackList } from '../common/CardLayout'
+import { FormLabel, StackForm, StackList } from '../common/CardLayout'
 import { PolicyRecommendationPanel } from '../common/PolicyRecommendationPanel'
 import { SCENARIO_LABELS } from '../../data/mockData'
 import type { FamilyMember, ScenarioEventType, ScenarioResult } from '../../types'
@@ -35,20 +35,20 @@ export function ScenarioOptionList({
           key={ev}
           type="button"
           onClick={() => onSelect(ev)}
-          className={`w-full text-left m3-panel border p-3 transition-colors ${
+          className={`w-full min-h-[var(--a11y-touch-min)] text-left m3-panel border p-3 transition-colors ${
             selected === ev
               ? 'bg-teal-50 border-teal-200'
               : 'bg-white border-sand-200 hover:border-teal-100 hover:bg-sand-50/80'
           }`}
         >
           <p
-            className={`text-xs font-semibold ${
-              selected === ev ? 'text-teal-700' : 'text-gray-700'
+            className={`text-sm font-semibold ${
+              selected === ev ? 'text-teal-700' : 'text-gray-800'
             }`}
           >
             {SCENARIO_LABELS[ev]}
           </p>
-          <p className="text-[10px] text-gray-400 mt-0.5">{SCENARIO_HINTS[ev]}</p>
+          <p className="text-sm text-gray-500 mt-0.5">{SCENARIO_HINTS[ev]}</p>
         </button>
       ))}
     </StackList>
@@ -84,12 +84,9 @@ export function ScenarioSimulatorForm({
     <StackForm className={compact ? 'pt-0.5 px-1' : ''}>
       <div className="scenario-sim-controls">
         <div className="scenario-sim-controls__member min-w-0">
-          <label
-            htmlFor="scenario-member-select"
-            className="text-[10px] font-medium text-gray-500 mb-1 block px-0.5 truncate"
-          >
+          <FormLabel htmlFor="scenario-member-select" className="px-0.5 truncate">
             成員
-          </label>
+          </FormLabel>
           <select
             id="scenario-member-select"
             value={simMemberId}
@@ -105,12 +102,9 @@ export function ScenarioSimulatorForm({
           </select>
         </div>
         <div className="scenario-sim-controls__age min-w-0">
-          <label
-            htmlFor="scenario-age-slider"
-            className="text-[10px] font-medium text-gray-500 mb-1 block px-0.5"
-          >
+          <FormLabel htmlFor="scenario-age-slider" className="px-0.5">
             發生年齡 · <span className="text-teal-700 font-semibold">{simAge}</span> 歲
-          </label>
+          </FormLabel>
           <div className="scenario-age-slider-wrap">
             <input
               id="scenario-age-slider"
@@ -129,7 +123,7 @@ export function ScenarioSimulatorForm({
         </div>
       </div>
       <div>
-        <label className="text-[10px] font-medium text-gray-500 mb-1.5 block px-0.5">情境</label>
+        <FormLabel className="px-0.5">情境</FormLabel>
         <ScenarioOptionList selected={simEvent} onSelect={onEventChange} />
       </div>
       <Button fullWidth className="btn-accent mt-1" onPress={onRun} isPending={isSimulating}>

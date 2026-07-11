@@ -3,7 +3,7 @@ const TONE_STROKES = {
   warning: '#d97706',
   info: '#2d7a70',
   success: '#2d7a70',
-  muted: '#9ca3af',
+  muted: '#5c6570',
 }
 
 export function claimRingTone(
