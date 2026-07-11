@@ -637,7 +637,7 @@ body {
 
 .policy-source-legend__item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--ds-space-inline);
   width: 100%;
   min-width: 0;
