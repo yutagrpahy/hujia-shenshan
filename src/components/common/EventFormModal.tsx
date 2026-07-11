@@ -34,7 +34,7 @@ export function EventFormModal({
         <Modal.Dialog>
           <Modal.CloseTrigger />
           <Modal.Header>
-            <Modal.Heading>{mode === 'edit' ? '編輯規劃事件' : '新增待辦事項'}</Modal.Heading>
+            <Modal.Heading>{mode === 'edit' ? '編輯規劃事件' : '新增待辦'}</Modal.Heading>
           </Modal.Header>
           <Modal.Body>
             <StackForm>

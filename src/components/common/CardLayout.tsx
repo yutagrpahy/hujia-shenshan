@@ -17,10 +17,19 @@ import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
 export function TextModalLink({
   children,
   className = '',
+  variant = 'default',
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: 'default' | 'secondary'
+}) {
   return (
-    <button type="button" className={`m3-text-modal-link ${className}`.trim()} {...props}>
+    <button
+      type="button"
+      className={`m3-text-modal-link ${
+        variant === 'secondary' ? 'm3-text-modal-link--secondary' : ''
+      } ${className}`.trim()}
+      {...props}
+    >
       <span>{children}</span>
       <ChevronRight className="m3-text-modal-link__icon" aria-hidden />
     </button>

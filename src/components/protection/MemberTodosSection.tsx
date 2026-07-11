@@ -181,23 +181,15 @@ export function MemberTodosSection({
       <CardSectionTitle
         subtitle="待辦提醒與保障規劃事件"
         actions={
-          <div className="flex items-center gap-3 shrink-0">
-          <TextModalLink
-            onClick={() => setShowCompleted(true)}
-            aria-label="查看已完成事件"
-          >
-            已完成事件
-          </TextModalLink>
           <Button
             size="sm"
             variant="secondary"
             className="border-teal-200 text-teal-700 shrink-0"
             onPress={onAdd}
           >
-            <Plus className="w-3.5 h-3.5" />
-            新增
+            <Plus className="w-3.5 h-3.5" aria-hidden />
+            新增待辦
           </Button>
-          </div>
         }
       >
         個人待辦
@@ -273,6 +265,16 @@ export function MemberTodosSection({
           )}
         </StackList>
       )}
+
+      <div className="member-todos-footer">
+        <TextModalLink
+          variant="secondary"
+          onClick={() => setShowCompleted(true)}
+          aria-label="查看已完成事件"
+        >
+          已完成事件
+        </TextModalLink>
+      </div>
 
       <TodoCompleteConfirmModal
         todo={pendingCompleteTodo}

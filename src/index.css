@@ -700,11 +700,15 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--ds-space-inline);
-  background: var(--color-sand-100);
-  border-radius: var(--ds-radius-segment);
-  padding: var(--ds-segment-inset);
+}
+
+.policy-filter-chips .m3-chip {
   border: 1px solid color-mix(in srgb, var(--color-outline) 72%, transparent);
   box-shadow: 0 1px 3px rgba(45, 122, 112, 0.04);
+}
+
+.policy-filter-chips .m3-chip--selected {
+  border-color: transparent;
 }
 
 .member-policies-section {
@@ -2066,6 +2070,31 @@ button.m3-chip {
 .m3-text-modal-link:focus-visible {
   outline: 3px solid var(--color-a11y-focus);
   outline-offset: 2px;
+}
+
+.m3-text-modal-link--secondary {
+  justify-content: flex-start;
+  padding: 8px 4px;
+  font-size: var(--a11y-text-small);
+  font-weight: 500;
+  color: var(--color-a11y-muted);
+  text-decoration: none;
+}
+
+.m3-text-modal-link--secondary:hover {
+  color: var(--color-a11y-subtle);
+  background: transparent;
+  text-decoration: underline;
+}
+
+.m3-text-modal-link--secondary:focus-visible {
+  outline: 3px solid var(--color-a11y-focus);
+  outline-offset: 2px;
+}
+
+.member-todos-footer {
+  display: flex;
+  margin-top: var(--ds-space-block);
 }
 
 /* ── Responsive grids ── */

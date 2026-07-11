@@ -294,8 +294,8 @@ export function ProtectionPage() {
                 className="border-teal-200 text-teal-700 shrink-0"
                 onPress={() => setShowAddPolicy(true)}
               >
-                <Plus className="w-3.5 h-3.5" />
-                新增
+                <Plus className="w-3.5 h-3.5" aria-hidden />
+                新增保單
               </Button>
             }
           >
@@ -306,7 +306,7 @@ export function ProtectionPage() {
           {selectedMember.policies.length === 0 ? (
             <>
               <PolicySourceLegend />
-              <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增」自行登載</p>
+              <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增保單」自行登載</p>
             </>
           ) : (
             <>
