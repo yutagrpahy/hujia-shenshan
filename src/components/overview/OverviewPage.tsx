@@ -268,7 +268,7 @@ export function OverviewPage() {
                           <MemberAvatar
                             name={member.name}
                             seed={member.avatarSeed}
-                            size="xs"
+                            size="sm"
                             tone={tone}
                           />
                         ) : null}

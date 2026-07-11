@@ -64,7 +64,7 @@ export function PolicyListCard({
       <CardItemTriMain>
         {showIdentity ? (
           <CardItemMeta>
-            <MemberAvatar name={memberName} seed={resolvedAvatarSeed} size="xs" />
+            <MemberAvatar name={memberName} seed={resolvedAvatarSeed} size="sm" />
             <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
             {hasClaim ? (
               <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
@@ -95,7 +95,7 @@ export function PolicyListCard({
           <ClaimProgressRing
             progress={claim.progress}
             tone={claimRingTone(claim.claimStatus, claim.isError)}
-            size={40}
+            size={44}
             label={`${claim.progress}%`}
           />
         ) : (

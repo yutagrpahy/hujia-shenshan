@@ -456,7 +456,7 @@ export function ProtectionPage() {
                           name={member.name}
                           seed={member.avatarSeed}
                           index={members.indexOf(member)}
-                          size="xs"
+                          size="sm"
                         />
                         <CardItemMetaLabel>{member.name}</CardItemMetaLabel>
                       </CardItemMeta>

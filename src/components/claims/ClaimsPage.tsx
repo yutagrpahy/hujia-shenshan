@@ -71,7 +71,7 @@ function ClaimCard({
       <CardItemTriRow>
         <CardItemTriMain>
           <CardItemMeta>
-            <MemberAvatar name={claim.memberName} seed={claim.avatarSeed} size="xs" />
+            <MemberAvatar name={claim.memberName} seed={claim.avatarSeed} size="sm" />
             <CardItemMetaLabel>{claim.memberName}</CardItemMetaLabel>
             <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
               {claim.statusLabel}
@@ -94,7 +94,7 @@ function ClaimCard({
           <ClaimProgressRing
             progress={claim.progress}
             tone={ringTone}
-            size={40}
+            size={44}
             label={`${claim.progress}%`}
           />
         </CardItemTriIndicator>

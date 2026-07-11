@@ -65,7 +65,7 @@ export function CoverageListItem({
     <CardItemTriRow>
       <CardItemTriMain>
         <CardItemMeta>
-          <MemberAvatar name={memberName} seed={avatarSeed} size="xs" />
+          <MemberAvatar name={memberName} seed={avatarSeed} size="sm" />
           <CardItemMetaLabel>{memberName}</CardItemMetaLabel>
           {hasClaim ? (
             <span className={`m3-chip claim-chip claim-chip--${statusTone} shrink-0`}>
@@ -101,7 +101,7 @@ export function CoverageListItem({
           <ClaimProgressRing
             progress={claim.progress}
             tone={claimRingTone(claim.claimStatus, claim.isError)}
-            size={40}
+            size={44}
             label={`${claim.progress}%`}
           />
         ) : policy ? (

@@ -971,7 +971,7 @@ body {
 .m3-card-item__row--tri {
   display: grid;
   grid-template-columns: minmax(0, 8fr) minmax(0, 1.5fr) minmax(0, 0.5fr);
-  align-items: center;
+  align-items: start;
   column-gap: var(--ds-space-tight);
   width: 100%;
   min-width: 0;
@@ -980,23 +980,22 @@ body {
 
 .m3-card-item__tri-main {
   min-width: 0;
-  align-self: start;
 }
 
 .m3-card-item__tri-indicator {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-width: 0;
-  align-self: center;
+  padding-top: 1px;
 }
 
 .m3-card-item__tri-action {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-width: 0;
-  align-self: stretch;
+  padding-top: 6px;
 }
 
 .m3-card-item__tri-action .m3-card-item__chevron {
