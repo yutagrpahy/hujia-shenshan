@@ -1,7 +1,7 @@
 import { Button, Modal } from '@heroui/react'
 import {
+  ChevronLeft,
   ChevronRight,
-  Link2,
   Lock,
   PenLine,
   Plus,
@@ -14,6 +14,7 @@ import {
   STAGE_LABELS,
 } from '../../data/mockData'
 import {
+  MANUAL_POLICY_CHIP_LABEL,
   UNION_INFO_SYSTEM_NAME,
   UNION_POLICY_CHIP_LABEL,
 } from '../../data/policySourceLabels'
@@ -258,20 +259,22 @@ export function ProtectionPage() {
     const memberDocs = documents.filter((d) => d.ownerMemberId === selectedMember.id)
     const memberEvents = familyEvents.filter((e) => e.memberIds.includes(selectedMember.id))
     const isSelf = selectedMember.id === currentUserId
-    const hasUnionPolicies = selectedMember.policies.some((p) => p.source === 'union')
-
     return (
       <div className="member-detail-page">
         {uiState === 'success' && (
           <SuccessBanner title="事項已完成" message="已移至已完成事件，並通知相關家人。" />
         )}
 
-        <button
-          onClick={() => setSelectedMemberId(null)}
-          className="text-sm text-teal-600 font-medium"
-        >
-          ← 返回保障成員
-        </button>
+        <header className="member-detail-back">
+          <button
+            type="button"
+            onClick={() => setSelectedMemberId(null)}
+            className="member-detail-back__btn"
+          >
+            <ChevronLeft className="w-4 h-4 shrink-0" aria-hidden />
+            返回保障成員
+          </button>
+        </header>
 
         <div className="m3-card-warm p-4 flex items-center gap-4">
           <MemberAvatar
@@ -289,6 +292,10 @@ export function ProtectionPage() {
         </div>
 
         <section className="member-policies-panel">
+          <p className="member-policies-panel__note">
+            「{UNION_POLICY_CHIP_LABEL}」保單由成員透過{UNION_INFO_SYSTEM_NAME}登入後自動同步；「
+            {MANUAL_POLICY_CHIP_LABEL}」為家人手動新增的保單紀錄。
+          </p>
           <div className="flex justify-end mb-3">
             <Button
               size="sm"
@@ -300,15 +307,6 @@ export function ProtectionPage() {
               新增
             </Button>
           </div>
-
-          {hasUnionPolicies && (
-            <div className="flex items-start gap-2 p-2.5 mb-2 rounded-xl bg-teal-50/70 border border-teal-100">
-              <Link2 className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-teal-700 leading-relaxed">
-                {`標示「${UNION_POLICY_CHIP_LABEL}」的保單資料來自${UNION_INFO_SYSTEM_NAME}，為成員本人登入後自動取得`}
-              </p>
-            </div>
-          )}
 
           {selectedMember.policies.length === 0 ? (
             <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增」自行登載</p>
