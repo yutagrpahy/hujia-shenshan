@@ -199,7 +199,8 @@ export function deriveSystemTodos(
   const { gaps } = computeCoverageSummary(members, profile)
   for (const gap of gaps) {
     const achievement = calculateGapPercent(gap.current, gap.recommended)
-    if (achievement >= GAP_TODO_THRESHOLD_PERCENT) continue
+    // 達成率 > 50% 才略過；剛好 50% 仍產生補強待辦（王建國長照缺口等）
+    if (achievement > GAP_TODO_THRESHOLD_PERCENT) continue
 
     const ruleId = `gap:${gap.gapKey}`
     if (dismissedRuleIds.has(ruleId)) continue
