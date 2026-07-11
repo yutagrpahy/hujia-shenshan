@@ -35,7 +35,7 @@ import { DocumentVault } from '../common/DocumentVault'
 import { EventFormModal } from '../common/EventFormModal'
 import { MemberAvatar } from '../common/MemberAvatar'
 import { PolicyListCard } from '../common/PolicyListCard'
-import { PolicySourceLegend } from '../common/PolicySourceLabel'
+
 import { POLICY_TYPE_LABELS } from '../../data/policyLabels'
 import { SuccessBanner } from '../common/StateViews'
 import {
@@ -304,10 +304,7 @@ export function ProtectionPage() {
 
           <div className="member-policies-panel">
           {selectedMember.policies.length === 0 ? (
-            <>
-              <PolicySourceLegend />
-              <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增保單」自行登載</p>
-            </>
+            <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增保單」自行登載</p>
           ) : (
             <>
               <div className="m3-segment grid grid-cols-2 gap-1">
@@ -322,8 +319,6 @@ export function ProtectionPage() {
                   onClick={() => setMemberPolicyTab('expired')}
                 />
               </div>
-
-              <PolicySourceLegend />
 
               {filteredMemberPolicyGroups.length === 0 ? (
                 <p className="text-sm text-gray-400 m3-card p-4">

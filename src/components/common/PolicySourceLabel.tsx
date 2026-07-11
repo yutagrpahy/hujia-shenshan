@@ -1,11 +1,15 @@
+import { Tooltip } from '@heroui/react'
 import { Link2 } from 'lucide-react'
+import { useState } from 'react'
 import {
+  getPolicySourceDescription,
   MANUAL_POLICY_CHIP_LABEL,
   UNION_POLICY_CHIP_LABEL,
 } from '../../data/policySourceLabels'
+import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import type { PolicySource } from '../../types'
 
-export function PolicySourceLabel({ source }: { source: PolicySource }) {
+function PolicySourceTag({ source }: { source: PolicySource }) {
   if (source === 'union') {
     return (
       <span className="policy-source-tag policy-source-tag--union">
@@ -22,20 +26,36 @@ export function PolicySourceLabel({ source }: { source: PolicySource }) {
   )
 }
 
-/** 成員詳情保單區：與卡片標籤同風格的來源說明 */
-export function PolicySourceLegend() {
+export function PolicySourceLabel({ source }: { source: PolicySource }) {
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
+  const [open, setOpen] = useState(false)
+  const description = getPolicySourceDescription(source)
+
   return (
-    <div className="policy-source-legend">
-      <span className="policy-source-legend__item">
-        <PolicySourceLabel source="union" />
-        <span className="policy-source-legend__text">
-          保單資料來自定中華民國保險業同業公會之系統
-        </span>
-      </span>
-      <span className="policy-source-legend__item">
-        <PolicySourceLabel source="manual" />
-        <span className="policy-source-legend__text">該成員自行登載之保單</span>
-      </span>
-    </div>
+    <Tooltip
+      delay={isMobile ? 0 : 250}
+      closeDelay={isMobile ? 0 : 100}
+      isOpen={isMobile ? open : undefined}
+      onOpenChange={isMobile ? setOpen : undefined}
+    >
+      <Tooltip.Trigger
+        role="presentation"
+        className="policy-source-tag__trigger"
+        onClick={(event) => {
+          if (!isMobile) return
+          event.preventDefault()
+          event.stopPropagation()
+          setOpen((value) => !value)
+        }}
+        onPointerDown={(event) => {
+          if (isMobile) event.stopPropagation()
+        }}
+      >
+        <PolicySourceTag source={source} />
+      </Tooltip.Trigger>
+      <Tooltip.Content placement="top" offset={8} className="policy-source-tooltip">
+        {description}
+      </Tooltip.Content>
+    </Tooltip>
   )
 }

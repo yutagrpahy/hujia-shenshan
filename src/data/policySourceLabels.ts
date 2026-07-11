@@ -11,3 +11,15 @@ export const MANUAL_POLICY_CHIP_LABEL = '自行登載'
 export function getPolicySourceChipLabel(source: PolicySource): string {
   return source === 'union' ? UNION_POLICY_CHIP_LABEL : MANUAL_POLICY_CHIP_LABEL
 }
+
+/** 保單來源標籤 Tooltip 說明（對照原 legend 文案） */
+export const UNION_POLICY_SOURCE_DESCRIPTION =
+  '保單資料來自定中華民國保險業同業公會之系統'
+
+export const MANUAL_POLICY_SOURCE_DESCRIPTION = '該成員自行登載之保單'
+
+export function getPolicySourceDescription(source: PolicySource): string {
+  return source === 'union'
+    ? UNION_POLICY_SOURCE_DESCRIPTION
+    : MANUAL_POLICY_SOURCE_DESCRIPTION
+}

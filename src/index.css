@@ -622,31 +622,30 @@ body {
   border: 1px solid rgba(139, 115, 85, 0.12);
 }
 
-.policy-source-legend {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ds-space-3);
-  margin: 0;
+.policy-source-tag__trigger {
+  display: inline-flex;
+  max-width: 100%;
+  cursor: help;
+}
+
+@media (hover: none) {
+  .policy-source-tag__trigger {
+    cursor: pointer;
+  }
+}
+
+.policy-source-tooltip {
+  max-width: min(16rem, calc(100vw - 2rem));
   padding: var(--ds-space-3);
-  text-align: left;
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid var(--color-outline);
   border-radius: var(--ds-radius-control);
-}
-
-.policy-source-legend__item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--ds-space-inline);
-  width: 100%;
-  min-width: 0;
-}
-
-.policy-source-legend__text {
   font-size: var(--a11y-text-caption);
   line-height: 1.5;
-  color: var(--color-a11y-muted);
+  color: var(--color-on-surface);
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline);
+  box-shadow: 0 4px 16px rgba(45, 122, 112, 0.1);
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 /* ── 成員詳情：保單區與後續區塊視覺分群 ── */
