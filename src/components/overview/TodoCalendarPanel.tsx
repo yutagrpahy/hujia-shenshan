@@ -29,7 +29,8 @@ import {
   PageSection,
   StackList,
 } from '../common/CardLayout'
-import { TodoDetailModal } from './TodoDetailModal'
+import { useApp } from '../../context/AppContext'
+import { TodoDetailFlow } from '../common/TodoDetailFlow'
 
 const URGENCY_STYLES = {
   high: 'bg-red-50 text-red-600',
@@ -51,13 +52,8 @@ const URGENCY_DOT: Record<string, string> = {
 
 const SWIPE_THRESHOLD_PX = 48
 
-export function TodoCalendarPanel({
-  todos,
-  onViewMember,
-}: {
-  todos: TodoItem[]
-  onViewMember: (memberId: string) => void
-}) {
+export function TodoCalendarPanel({ todos }: { todos: TodoItem[] }) {
+  const { completeTodo } = useApp()
   const [viewMode, setViewMode] = useState<CalendarViewMode>('week')
   const [anchor, setAnchor] = useState(CALENDAR_TODAY)
   const [selectedDay, setSelectedDay] = useState(CALENDAR_TODAY)
@@ -315,15 +311,11 @@ export function TodoCalendarPanel({
         </div>
       </div>
 
-      <TodoDetailModal
+      <TodoDetailFlow
         todo={selectedTodo}
         isOpen={!!selectedTodo}
         onOpenChange={(open) => !open && setSelectedTodo(null)}
-        onViewMember={
-          selectedTodo
-            ? () => onViewMember(selectedTodo.memberId)
-            : undefined
-        }
+        onCompleteTodo={completeTodo}
       />
     </PageSection>
   )

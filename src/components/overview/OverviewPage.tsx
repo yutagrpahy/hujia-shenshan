@@ -296,10 +296,7 @@ export function OverviewPage() {
         </div>
       </PageSection>
 
-      <TodoCalendarPanel
-        todos={todos}
-        onViewMember={(memberId) => navigateToMember(memberId)}
-      />
+      <TodoCalendarPanel todos={todos} />
 
       <PageSection title="推薦內容" fullWidth>
         <div className="education-grid">

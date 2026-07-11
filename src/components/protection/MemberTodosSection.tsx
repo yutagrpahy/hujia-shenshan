@@ -11,8 +11,7 @@ import { CardSectionTitle, StackList, TextModalLink } from '../common/CardLayout
 import { TodoListCard } from '../common/TodoListCard'
 import { EventFormModal } from '../common/EventFormModal'
 import { TodoCompleteConfirmModal } from '../common/TodoCompleteConfirmModal'
-import { TodoEditModal } from '../common/TodoEditModal'
-import { TodoDetailModal } from '../overview/TodoDetailModal'
+import { TodoDetailFlow } from '../common/TodoDetailFlow'
 import { formatCurrency } from '../../utils/calculations'
 import type { FamilyEvent, FamilyMember, NewEventInput, TodoItem, TodoUrgency } from '../../types'
 import { EventDetailModal } from './EventDetailModal'
@@ -113,48 +112,22 @@ export function MemberTodosSection({
   onAdd: () => void
   onCompleteTodo: (id: string) => void
 }) {
-  const {
-    members: allMembers,
-    familyEvents,
-    updateFamilyEvent,
-    updateTodo,
-    completeFamilyEvent,
-  } = useApp()
+  const { members: allMembers, updateFamilyEvent, completeFamilyEvent } = useApp()
 
   const memberHistory = historyTodos.filter((todo) => todo.memberId === member.id)
   const items = useMemo(() => buildPlanningItems(todos, events), [todos, events])
 
-  const [pendingCompleteTodo, setPendingCompleteTodo] = useState<TodoItem | null>(null)
   const [pendingCompleteEvent, setPendingCompleteEvent] = useState<FamilyEvent | null>(null)
   const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<FamilyEvent | null>(null)
   const [showCompleted, setShowCompleted] = useState(false)
   const [editingEventId, setEditingEventId] = useState<string | null>(null)
-  const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null)
   const [eventFormInput, setEventFormInput] = useState<NewEventInput>(EMPTY_EVENT_INPUT)
-
-  const handleConfirmCompleteTodo = () => {
-    if (!pendingCompleteTodo) return
-    onCompleteTodo(pendingCompleteTodo.id)
-    setPendingCompleteTodo(null)
-  }
 
   const handleConfirmCompleteEvent = () => {
     if (!pendingCompleteEvent) return
     completeFamilyEvent(pendingCompleteEvent.id)
     setPendingCompleteEvent(null)
-  }
-
-  const openEditForTodo = (todo: TodoItem) => {
-    setSelectedTodo(null)
-    if (todo.eventId) {
-      const event = familyEvents.find((item) => item.id === todo.eventId)
-      if (!event) return
-      setEditingEventId(event.id)
-      setEventFormInput(eventToInput(event))
-      return
-    }
-    setEditingTodo(todo)
   }
 
   const openEditForEvent = (event: FamilyEvent) => {
@@ -168,12 +141,6 @@ export function MemberTodosSection({
     updateFamilyEvent(editingEventId, eventFormInput)
     setEditingEventId(null)
     setEventFormInput(EMPTY_EVENT_INPUT)
-  }
-
-  const handleSaveTodo = (input: Parameters<typeof updateTodo>[1]) => {
-    if (!editingTodo) return
-    updateTodo(editingTodo.id, input)
-    setEditingTodo(null)
   }
 
   return (
@@ -265,13 +232,6 @@ export function MemberTodosSection({
       </div>
 
       <TodoCompleteConfirmModal
-        todo={pendingCompleteTodo}
-        isOpen={!!pendingCompleteTodo}
-        onOpenChange={(open) => !open && setPendingCompleteTodo(null)}
-        onConfirm={handleConfirmCompleteTodo}
-      />
-
-      <TodoCompleteConfirmModal
         todo={
           pendingCompleteEvent
             ? {
@@ -293,24 +253,11 @@ export function MemberTodosSection({
         onConfirm={handleConfirmCompleteEvent}
       />
 
-      <TodoDetailModal
+      <TodoDetailFlow
         todo={selectedTodo}
         isOpen={!!selectedTodo}
         onOpenChange={(open) => !open && setSelectedTodo(null)}
-        onEdit={
-          selectedTodo
-            ? () => openEditForTodo(selectedTodo)
-            : undefined
-        }
-        onComplete={
-          selectedTodo
-            ? () => {
-                const todo = selectedTodo
-                setSelectedTodo(null)
-                setPendingCompleteTodo(todo)
-              }
-            : undefined
-        }
+        onCompleteTodo={onCompleteTodo}
       />
 
       <EventDetailModal
@@ -356,12 +303,6 @@ export function MemberTodosSection({
         mode="edit"
       />
 
-      <TodoEditModal
-        todo={editingTodo}
-        isOpen={!!editingTodo}
-        onOpenChange={(open) => !open && setEditingTodo(null)}
-        onSave={handleSaveTodo}
-      />
     </section>
   )
 }
