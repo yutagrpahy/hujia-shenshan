@@ -13,8 +13,6 @@ import { FamilyCoverageOverview } from './FamilyCoverageOverview'
 import { GapRecommendationModal } from './GapRecommendationModal'
 import { TodoCalendarPanel } from './TodoCalendarPanel'
 import { useApp } from '../../context/AppContext'
-import { ROLE_LABELS } from '../../data/mockData'
-
 import {
   HealthProfileHeroSummary,
   HealthProfileModal,
@@ -42,14 +40,11 @@ export function OverviewPage() {
     todos,
     education,
     members,
-    currentUserId,
     navigateToMember,
     uiState,
     protectionProfile,
     updateProtectionProfile,
   } = useApp()
-  const currentUser = members.find((m) => m.id === currentUserId)
-  const roleLabel = ROLE_LABELS[currentUser?.role ?? 'owner'] ?? '家庭管理者'
   const [showHealthProfile, setShowHealthProfile] = useState(false)
   const [healthProfileScope, setHealthProfileScope] =
     useState<HealthProfileViewScope>('current')
@@ -105,7 +100,6 @@ export function OverviewPage() {
         <div className="hero-banner__content">
           <p className="text-xs font-medium text-teal-600 mb-1">👋 早安，建國</p>
           <h3 className="text-lg font-bold text-gray-800">今天也要為家人守住幸福</h3>
-          <p className="text-xs text-gray-500 mt-1">{roleLabel}</p>
           <HealthProfileHeroSummary
             profile={protectionProfile}
             onOpenCurrent={() => openHealthProfile('current')}
