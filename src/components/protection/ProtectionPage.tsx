@@ -13,16 +13,12 @@ import {
   ROLE_LABELS,
   STAGE_LABELS,
 } from '../../data/mockData'
-import {
-  MANUAL_POLICY_CHIP_LABEL,
-  UNION_INFO_SYSTEM_NAME,
-  UNION_POLICY_CHIP_LABEL,
-} from '../../data/policySourceLabels'
+import { UNION_INFO_SYSTEM_NAME } from '../../data/policySourceLabels'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
 import { DocumentVault } from '../common/DocumentVault'
 import { EventFormModal } from '../common/EventFormModal'
 import { MemberAvatar } from '../common/MemberAvatar'
-import { PolicySourceLabel } from '../common/PolicySourceLabel'
+import { PolicySourceLabel, PolicySourceLegend } from '../common/PolicySourceLabel'
 import { SuccessBanner } from '../common/StateViews'
 import {
   countMemberPolicies,
@@ -292,10 +288,6 @@ export function ProtectionPage() {
         </div>
 
         <section className="member-policies-panel">
-          <p className="member-policies-panel__note">
-            「{UNION_POLICY_CHIP_LABEL}」保單由成員透過{UNION_INFO_SYSTEM_NAME}登入後自動同步；「
-            {MANUAL_POLICY_CHIP_LABEL}」為家人手動新增的保單紀錄。
-          </p>
           <div className="flex justify-end mb-3">
             <Button
               size="sm"
@@ -309,7 +301,10 @@ export function ProtectionPage() {
           </div>
 
           {selectedMember.policies.length === 0 ? (
-            <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增」自行登載</p>
+            <>
+              <PolicySourceLegend />
+              <p className="text-sm text-gray-400 m3-card p-4">尚無保單，可點「新增」自行登載</p>
+            </>
           ) : (
             <>
               <div className="m3-segment mb-3 grid grid-cols-2 gap-1">
@@ -324,6 +319,8 @@ export function ProtectionPage() {
                   onClick={() => setMemberPolicyTab('expired')}
                 />
               </div>
+
+              <PolicySourceLegend />
 
               {filteredMemberPolicyGroups.length === 0 ? (
                 <p className="text-sm text-gray-400 m3-card p-4">

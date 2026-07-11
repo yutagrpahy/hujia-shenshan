@@ -21,3 +21,19 @@ export function PolicySourceLabel({ source }: { source: PolicySource }) {
     </span>
   )
 }
+
+/** 成員詳情保單區：與卡片標籤同風格的來源說明 */
+export function PolicySourceLegend() {
+  return (
+    <div className="policy-source-legend">
+      <span className="policy-source-legend__item">
+        <PolicySourceLabel source="union" />
+        <span className="policy-source-legend__text">登入後自動同步</span>
+      </span>
+      <span className="policy-source-legend__item">
+        <PolicySourceLabel source="manual" />
+        <span className="policy-source-legend__text">家人手動新增</span>
+      </span>
+    </div>
+  )
+}
