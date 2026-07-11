@@ -1,9 +1,9 @@
 import {
   AlertCircle,
-  ArrowRight,
   BookOpen,
   ChevronRight,
   Sparkles,
+  SquareArrowOutUpRight,
   Trophy,
   Users,
 } from 'lucide-react'
@@ -286,7 +286,13 @@ export function OverviewPage() {
                   </div>
                 </CardItemTriIndicator>
                 <CardItemTriAction>
-                  <ArrowRight className="w-4 h-4 text-teal-600" aria-hidden />
+                  <span className="education-external-icon-wrap" title="將開啟外部網站">
+                    <SquareArrowOutUpRight
+                      className="education-external-icon w-4 h-4 text-gray-400"
+                      aria-hidden
+                    />
+                    <span className="sr-only">將開啟外部網站</span>
+                  </span>
                 </CardItemTriAction>
               </CardItemTriRow>
             </CardItem>

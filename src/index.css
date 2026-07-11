@@ -2111,6 +2111,24 @@ button.m3-chip {
   gap: var(--ds-space-grid);
 }
 
+.education-external-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.education-external-icon {
+  flex-shrink: 0;
+  opacity: 0.72;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.m3-card-item:hover .education-external-icon,
+.m3-card-item:focus-within .education-external-icon {
+  color: var(--color-teal-600);
+  opacity: 1;
+}
+
 .calendar-grid-7 {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
