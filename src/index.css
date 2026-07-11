@@ -75,7 +75,7 @@ body {
   --ds-icon-btn-size: 32px;
   --ds-radius-icon-btn: 10px;
   --ds-radius-panel: 16px;
-  --ds-logo-inset: 4px;
+  --ds-logo-inset: 0px;
 }
 
 /* ── 品牌標準字與標語 ── */
