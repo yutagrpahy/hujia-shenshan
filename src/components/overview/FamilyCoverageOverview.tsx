@@ -163,11 +163,11 @@ function CoverageDetailModal({
                             key={item.id}
                             item={{
                               ...item,
-                              categoryLabel: item.subcategoryLabel,
                               avatarSeed: member?.avatarSeed,
                             }}
                             member={member}
                             claim={claim}
+                            showTypeLabel={false}
                             formatAmount={(amount, isMonthly) =>
                               formatItemAmount(amount, isMonthly ?? false)
                             }

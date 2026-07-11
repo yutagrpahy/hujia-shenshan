@@ -35,6 +35,7 @@ export function CoverageListItem({
   claim,
   formatAmount,
   amountClassName = 'text-teal-700',
+  showTypeLabel = true,
   onOpenPolicy,
 }: {
   item: CoverageListItemData
@@ -42,6 +43,8 @@ export function CoverageListItem({
   claim?: ClaimRecord
   formatAmount: (amount: number, isMonthly?: boolean | undefined) => string
   amountClassName?: string
+  /** 右側險種標籤（如醫療、壽險）；分類已在區塊標題呈現時可關閉 */
+  showTypeLabel?: boolean
   onOpenPolicy?: (payload: PolicyWithMember) => void
 }) {
   const hasClaim = !!claim
@@ -97,7 +100,7 @@ export function CoverageListItem({
             size={44}
             label={`${claim.progress}%`}
           />
-        ) : policy ? (
+        ) : policy && showTypeLabel ? (
           <span className="m3-chip bg-teal-50 text-teal-600 text-center leading-tight">
             {POLICY_TYPE_LABELS[policy.type]}
           </span>
