@@ -5,8 +5,9 @@ import {
 } from '../data/claims'
 import {
   getPolicyStatusLabel,
-  isPolicyReapplication,
+  isPolicyApplicationInProgress,
   isPolicyUnderwriting,
+  POLICY_APPLICATION_IN_PROGRESS_LABEL,
   resolvePolicySystemTodoTrigger,
 } from '../data/policyLabels'
 import { calculateGapPercent, computeCoverageSummary } from '../utils/calculations'
@@ -168,16 +169,13 @@ export function deriveSystemTodos(
       if (trigger.kind === 'pending') {
         const ruleId = `pending:${policy.id}`
         if (dismissedRuleIds.has(ruleId)) continue
-        const isReapply = isPolicyReapplication(policy)
-        const needsDocs = !isReapply && !isPolicyUnderwriting(policy)
+        const needsDocs = !isPolicyUnderwriting(policy)
         todos.push({
           id: `sys-${ruleId}`,
           ruleId,
-          title: isReapply
-            ? `追蹤重新投保「${policy.name}」核保進度`
-            : isPolicyUnderwriting(policy)
-              ? `追蹤「${policy.name}」核保進度`
-              : `補齊「${policy.name}」申請文件`,
+          title: isPolicyUnderwriting(policy)
+            ? `追蹤「${policy.name}」核保進度`
+            : `補齊「${policy.name}」申請文件`,
           memberId: member.id,
           memberName: member.name,
           policyId: policy.id,
@@ -278,18 +276,18 @@ export function deriveNotifications(members: FamilyMember[]): AppNotification[] 
       }
 
       if (policy.status === 'pending') {
-        const isReapply = isPolicyReapplication(policy)
+        const inProgress = isPolicyApplicationInProgress(policy)
         const isUnderwriting = isPolicyUnderwriting(policy)
         notifications.push({
           id: `notif:policy-pending:${policy.id}`,
           type: 'policy-purchase',
-          title: isReapply
-            ? '重新投保申請中'
+          title: inProgress
+            ? POLICY_APPLICATION_IN_PROGRESS_LABEL
             : isUnderwriting
               ? '保單核保中'
               : '保單申請待補件',
-          message: isReapply
-            ? `${member.name}的「${policy.name}」重新投保申請已送件，核保審查中`
+          message: inProgress
+            ? `${member.name}的「${policy.name}」投保申請審查中，通過後將自動更新`
             : isUnderwriting
               ? `${member.name}的「${policy.name}」核保進行中，保額通過後將自動更新`
               : `${member.name}的「${policy.name}」申請需補齊文件，請儘快處理`,

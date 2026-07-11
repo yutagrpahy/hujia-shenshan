@@ -12,8 +12,15 @@ export type PolicySystemTodoTrigger =
   | { kind: 'pending'; policy: Policy }
   | { kind: 'claim_docs'; claim: ClaimRecord }
 
+/** 與理賠「申請中」同定位：進行中、綠色標籤、不產生系統待辦 */
+export const POLICY_APPLICATION_IN_PROGRESS_LABEL = '投保中'
+
 export function isPolicyReapplication(policy: Policy): boolean {
   return policy.status === 'pending' && !!policy.reapplyOf
+}
+
+export function isPolicyApplicationInProgress(policy: Policy): boolean {
+  return isPolicyReapplication(policy)
 }
 
 export function isPolicyUnderwriting(policy: Policy): boolean {
@@ -57,11 +64,11 @@ export function getPolicyStatusChip(policy: Policy): PolicyStatusChip | null {
   if (policy.status === 'active') return null
 
   if (policy.status === 'pending') {
-    if (isPolicyReapplication(policy)) {
+    if (isPolicyApplicationInProgress(policy)) {
       return {
-        label: '重新投保申請中',
-        className: 'policy-status-chip policy-status-chip--pending-reapply',
-        tone: 'warning',
+        label: POLICY_APPLICATION_IN_PROGRESS_LABEL,
+        className: 'claim-chip claim-chip--success',
+        tone: 'success',
       }
     }
     if (isPolicyUnderwriting(policy)) {
@@ -128,7 +135,7 @@ export function getPolicyCardStatusChip(
 
 /**
  * 依保單卡片標籤判斷是否產生系統待辦。
- * 有效／到期自動續保／理賠進行中／理賠已結案 → 不產生。
+ * 有效／到期自動續保／投保中／理賠進行中／理賠已結案 → 不產生。
  * 即將到期、已失效、核保中／申請待補件、理賠待補件 → 產生。
  */
 export function resolvePolicySystemTodoTrigger(
@@ -143,6 +150,7 @@ export function resolvePolicySystemTodoTrigger(
   }
 
   if (policy.status === 'pending') {
+    if (isPolicyApplicationInProgress(policy)) return null
     return { kind: 'pending', policy }
   }
 

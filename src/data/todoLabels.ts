@@ -116,7 +116,7 @@ export function buildMemberPlanningItems(
  * 2. 手動／事件 persisted 待辦（未完成）
  * 3. 尚未連結待辦的獨立規劃事件
  *
- * 不計入的系統狀態：有效保單、到期自動續保、理賠進行中／已結案、缺口達成率 >50% 等。
+ * 不計入的系統狀態：有效保單、到期自動續保、投保中、理賠進行中／已結案、缺口達成率 >50% 等。
  */
 export function countMemberReminders(
   memberId: string,

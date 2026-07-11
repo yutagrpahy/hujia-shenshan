@@ -105,7 +105,7 @@ export interface Policy {
   status: 'active' | 'expiring' | 'expired' | 'pending'
   /** 僅 status 為 expiring 時有效：true＝到期自動續保 */
   autoRenew?: boolean
-  /** 重新投保申請中：指向已失效的原保單 id */
+  /** 投保中（重新投保）：指向已失效的原保單 id */
   reapplyOf?: string
   source: PolicySource
 }

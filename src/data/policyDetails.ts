@@ -1,8 +1,9 @@
 import { getClaimByPolicyId } from './claims'
 import {
   getPolicyStatusLabel,
-  isPolicyReapplication,
+  isPolicyApplicationInProgress,
   isPolicyUnderwriting,
+  POLICY_APPLICATION_IN_PROGRESS_LABEL,
   POLICY_TYPE_LABELS,
 } from './policyLabels'
 import {
@@ -364,16 +365,16 @@ function buildScenario(
   }
 
   if (policy.status === 'pending') {
-    if (isPolicyReapplication(policy)) {
+    if (isPolicyApplicationInProgress(policy)) {
       const payoutLine =
         policy.monthlyPayout > 0
           ? `預計月給付 ${formatCurrency(policy.monthlyPayout)}`
           : '月給付尚待核保核定'
       return {
-        statusLabel: '重新投保申請中',
-        statusTone: 'warning',
-        situationTitle: '長照保單重新投保核保中',
-        situationSummary: `原保單保障已終止，重新投保申請已送件，核保單位審查中。${payoutLine}，通過後將自動恢復至家庭保障地圖。`,
+        statusLabel: POLICY_APPLICATION_IN_PROGRESS_LABEL,
+        statusTone: 'success',
+        situationTitle: '長照保單投保審查中',
+        situationSummary: `原保單保障已終止，投保申請已送件，核保單位審查中。${payoutLine}，通過後將自動恢復至家庭保障地圖。`,
         ctas: [
           {
             id: 'track-underwriting',
