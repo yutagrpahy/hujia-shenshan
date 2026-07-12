@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <title>提醒 · 護家神山 v0.5 舊版原型</title>
+    <link rel="icon" type="image/png" href="../../app-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2d7a70;
+        --primary-container: #d4efec;
+        --surface: #faf9f7;
+        --surface-container: #ffffff;
+        --outline: #e8e4dd;
+        --on-surface: #2c3338;
+        --on-surface-variant: #4b5563;
+        --sand-100: #f3f1ed;
+        --header-h: 56px;
+        --nav-h: 64px;
+        --archive-h: 36px;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Noto Sans TC', 'PingFang TC', system-ui, sans-serif;
+        background: var(--surface);
+        color: var(--on-surface);
+        min-height: 100dvh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .archive-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        height: var(--archive-h);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #78350f;
+        color: #fffbeb;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        padding: 0 12px;
+      }
+
+      .archive-bar a {
+        color: #fde68a;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .app-layout {
+        min-height: 100dvh;
+        padding-top: var(--archive-h);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .warm-header {
+        background: linear-gradient(135deg, #f0f9f8 0%, #fdf8f3 50%, #fff 100%);
+        border-bottom: 1px solid var(--outline);
+      }
+
+      .m3-app-bar {
+        position: sticky;
+        top: var(--archive-h);
+        z-index: 40;
+        padding: 8px 16px;
+        padding-top: max(8px, env(safe-area-inset-top));
+      }
+
+      .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+
+      .brand-cluster {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .brand-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(45, 122, 112, 0.15);
+        flex-shrink: 0;
+      }
+
+      .brand-text h1 {
+        font-family: 'Noto Serif TC', serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #0a3d2e;
+        line-height: 1.2;
+      }
+
+      .brand-text p {
+        font-size: 10px;
+        color: #1f5f57;
+        margin-top: 1px;
+      }
+
+      .avatar-btn {
+        border: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .avatar-btn img {
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);
+      }
+
+      .content-container {
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+
+      .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 16px;
+      }
+
+      .m3-segment {
+        display: flex;
+        background: var(--sand-100);
+        border-radius: 14px;
+        padding: 4px;
+        gap: 4px;
+        border: 1px solid rgba(232, 228, 221, 0.85);
+        box-shadow: 0 1px 3px rgba(45, 122, 112, 0.04);
+        margin-bottom: 16px;
+      }
+
+      .m3-segment-btn {
+        flex: 1;
+        min-height: 40px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        color: var(--on-surface-variant);
+        background: none;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      }
+
+      .m3-segment-btn.active {
+        background: white;
+        color: var(--primary);
+        box-shadow: 0 2px 6px rgba(45, 122, 112, 0.12);
+      }
+
+      .seg-dot {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #dc2626;
+        border: 1.5px solid var(--sand-100);
+      }
+
+      .panel { display: none; }
+      .panel.active { display: block; }
+
+      .stack { display: flex; flex-direction: column; gap: 8px; }
+
+      .m3-card {
+        background: var(--surface-container);
+        border-radius: 20px;
+        border: 1px solid var(--outline);
+        box-shadow: 0 2px 8px rgba(45, 122, 112, 0.05);
+        padding: 16px;
+      }
+
+      .notif-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        position: relative;
+      }
+
+      .notif-card.unread { background: rgba(240, 249, 248, 0.65); }
+      .notif-card.read { opacity: 0.72; }
+
+      .notif-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: #f0f9f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--primary);
+      }
+
+      .notif-body { flex: 1; min-width: 0; padding-right: 4px; }
+      .notif-title { font-size: 14px; font-weight: 600; line-height: 1.35; }
+      .notif-card.unread .notif-title { color: #111827; }
+      .notif-card.read .notif-title { color: #4b5563; }
+      .notif-msg { font-size: 12px; color: #6b7280; margin-top: 3px; line-height: 1.45; }
+      .notif-date { font-size: 10px; color: #9ca3af; margin-top: 6px; }
+
+      .unread-dot {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #dc2626;
+      }
+
+      .read-btn {
+        border: none;
+        background: none;
+        color: var(--primary);
+        cursor: pointer;
+        padding: 4px;
+        flex-shrink: 0;
+        border-radius: 8px;
+      }
+
+      .read-btn:hover { background: rgba(45, 122, 112, 0.08); }
+
+      .todo-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .todo-check {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #4a9b8f;
+        background: none;
+        flex-shrink: 0;
+        margin-top: 2px;
+        cursor: pointer;
+      }
+
+      .todo-check:hover { background: #f0f9f8; }
+
+      .todo-title { font-size: 14px; font-weight: 600; color: #1f2937; line-height: 1.35; }
+      .todo-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .m3-chip {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 8px;
+        line-height: 1.2;
+      }
+
+      .chip-high { background: #fef2f2; color: #b91c1c; }
+      .chip-medium { background: #fffbeb; color: #b45309; }
+      .chip-low { background: #f3f1ed; color: #6b7280; }
+      .meta-text { font-size: 12px; color: #9ca3af; }
+
+      .hist-check {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary-container);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--primary);
+      }
+
+      .hist-title {
+        font-size: 14px;
+        color: #6b7280;
+        text-decoration: line-through;
+        line-height: 1.35;
+      }
+
+      .empty {
+        text-align: center;
+        padding: 36px 20px;
+      }
+
+      .empty svg { color: #4a9b8f; margin-bottom: 8px; }
+      .empty p { font-size: 14px; color: #6b7280; }
+
+      .success-banner {
+        display: none;
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        border: 1px solid rgba(5, 150, 105, 0.2);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: #047857;
+      }
+
+      .success-banner.show { display: block; }
+      .success-banner strong { display: block; margin-bottom: 2px; }
+
+      .m3-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid var(--outline);
+        padding-bottom: env(safe-area-inset-bottom);
+        box-shadow: 0 -4px 20px rgba(45, 122, 112, 0.08);
+        display: flex;
+      }
+
+      .m3-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        flex: 1;
+        min-height: 56px;
+        padding: 8px 4px 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--on-surface-variant);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .m3-nav-item.active { color: var(--primary); }
+
+      .m3-nav-indicator {
+        width: 56px;
+        height: 28px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .m3-nav-item.active .m3-nav-indicator { background: var(--primary-container); }
+
+      .nav-badge {
+        position: absolute;
+        top: -2px;
+        right: 6px;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        border-radius: 99px;
+        background: #dc2626;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+      }
+
+      .desktop-only { display: none; }
+
+      @media (min-width: 600px) {
+        :root { --nav-h: 0px; }
+        .m3-bottom-nav { display: none; }
+        .desktop-only {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 20px;
+          max-width: 960px;
+          margin: 0 auto;
+        }
+        .top-nav-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: 999px;
+          border: none;
+          background: none;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--on-surface-variant);
+          cursor: pointer;
+        }
+        .top-nav-pill.active {
+          background: var(--primary-container);
+          color: var(--primary);
+        }
+        .main-content { padding-bottom: 32px; }
+        .m3-app-bar { padding: 12px 24px; }
+        .main-content { padding-left: 24px; padding-right: 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="archive-bar">
+      <span>v0.5 舊版原型 · 獨立封存區</span>
+      <a href="../../">最新版 App →</a>
+    </div>
+
+    <div class="app-layout">
+      <header class="warm-header m3-app-bar">
+        <div class="header-row">
+          <div class="brand-cluster">
+            <img class="brand-logo" src="../../app-icon.png" width="36" height="36" alt="" />
+            <div class="brand-text">
+              <h1>護家神山</h1>
+              <p>6 位家人 · 王建國的家庭</p>
+            </div>
+          </div>
+          <button class="avatar-btn" type="button" aria-label="個人資料">
+            <img
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=wang-jianguo&backgroundColor=d4efec"
+              alt="王建國"
+            />
+          </button>
+        </div>
+        <nav class="desktop-only" aria-label="主要導覽（桌面）">
+          <button class="top-nav-pill" type="button">總覽</button>
+          <button class="top-nav-pill active" type="button">
+            提醒
+            <span class="nav-badge" id="desk-badge">3</span>
+          </button>
+          <button class="top-nav-pill" type="button">AI 顧問</button>
+          <button class="top-nav-pill" type="button">保障</button>
+        </nav>
+      </header>
+
+      <main class="main-content">
+        <div class="content-container">
+          <h2 class="page-title">提醒</h2>
+
+          <div class="success-banner" id="success-banner">
+            <strong>事項已完成</strong>
+            已移至歷史事件，並通知相關家人。
+          </div>
+
+          <div class="m3-segment" role="tablist">
+            <button
+              class="m3-segment-btn active"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-tab="notifications"
+            >
+              通知
+              <span class="seg-dot" id="seg-dot"></span>
+            </button>
+            <button class="m3-segment-btn" type="button" role="tab" data-tab="todos">
+              待辦 (4)
+            </button>
+            <button class="m3-segment-btn" type="button" role="tab" data-tab="history">
+              歷史
+            </button>
+          </div>
+
+          <!-- 通知 -->
+          <div class="panel active" id="panel-notifications" role="tabpanel">
+            <div class="stack" id="notif-list"></div>
+          </div>
+
+          <!-- 待辦 -->
+          <div class="panel" id="panel-todos" role="tabpanel">
+            <div class="stack" id="todo-list"></div>
+          </div>
+
+          <!-- 歷史 -->
+          <div class="panel" id="panel-history" role="tabpanel">
+            <div class="stack" id="history-list"></div>
+          </div>
+        </div>
+      </main>
+
+      <nav class="m3-bottom-nav" aria-label="主要導覽">
+        <button class="m3-nav-item" type="button">
+          <div class="m3-nav-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="9" rx="1" />
+              <rect x="14" y="3" width="7" height="5" rx="1" />
+              <rect x="14" y="12" width="7" height="9" rx="1" />
+              <rect x="3" y="16" width="7" height="5" rx="1" />
+            </svg>
+          </div>
+          <span>總覽</span>
+        </button>
+        <button class="m3-nav-item active" type="button" aria-current="page">
+          <div class="m3-nav-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="nav-badge" id="mob-badge">3</span>
+          </div>
+          <span>提醒</span>
+        </button>
+        <button class="m3-nav-item" type="button">
+          <div class="m3-nav-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 8V4H8" />
+              <rect x="4" y="8" width="16" height="12" rx="2" />
+              <path d="M2 14h2M20 14h2M15 13v2M9 13v2" />
+            </svg>
+          </div>
+          <span>AI 顧問</span>
+        </button>
+        <button class="m3-nav-item" type="button">
+          <div class="m3-nav-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <span>保障</span>
+        </button>
+      </nav>
+    </div>
+
+    <script>
+      const ICONS = {
+        'policy-update': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
+        'policy-expiry': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+        'policy-purchase': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>',
+        'claim-progress': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg>',
+      }
+
+      let notifications = [
+        {
+          id: 'n1',
+          type: 'policy-purchase',
+          title: '保單申購完成',
+          message: '王阿公的「富邦人壽長照月給付保險」已於 2026/07/12 生效，月給付 NT$ 20,000 已同步至家庭保障地圖。',
+          date: '2026-07-12',
+          read: false,
+        },
+        {
+          id: 'n2',
+          type: 'claim-progress',
+          title: '待補件',
+          message: '王美玲的「國泰人壽金醫療住院醫療」理賠需補齊診斷證明與費用明細，請於 14 天內完成。',
+          date: '2026-07-09',
+          read: false,
+        },
+        {
+          id: 'n3',
+          type: 'policy-expiry',
+          title: '已失效',
+          message: '王阿公的「銀髮醫療附約」已失效，建議重新投保避免保障空窗。',
+          date: '2025-12-31',
+          read: false,
+        },
+        {
+          id: 'n4',
+          type: 'claim-progress',
+          title: '理賠申請中',
+          message: '王美玲：長照給付申請已受理，照護機構評估報告審核中，預估 10 個工作天內通知結果。',
+          date: '2026-07-06',
+          read: true,
+        },
+        {
+          id: 'n5',
+          type: 'policy-update',
+          title: '保單更新提醒',
+          message: '王雅婷於 2026/02/15 更新了意外險受益人為「配偶 陳志明」。',
+          date: '2026-02-15',
+          read: true,
+        },
+        {
+          id: 'n6',
+          type: 'policy-purchase',
+          title: '保單申購完成',
+          message: '王子安的「台灣人壽定期壽險」已生效，受益人目前為王建國。',
+          date: '2026-02-28',
+          read: true,
+        },
+      ]
+
+      const todos = [
+        {
+          id: 't1',
+          title: '補齊「金醫療住院醫療」理賠文件',
+          memberName: '王美玲',
+          urgency: 'high',
+          dueDate: '2026-07-23',
+        },
+        {
+          id: 't2',
+          title: '補強家庭長照月給付（目前 4 萬元/月）',
+          memberName: '家庭',
+          urgency: 'medium',
+        },
+        {
+          id: 't3',
+          title: '補強家庭重大疾病（目前 0 萬元）',
+          memberName: '家庭',
+          urgency: 'high',
+        },
+        {
+          id: 't4',
+          title: '王子安新婚後檢視定期壽險受益人',
+          memberName: '王子安',
+          urgency: 'medium',
+          dueDate: '2026-04-15',
+        },
+      ]
+
+      const history = [
+        {
+          id: 'h1',
+          title: '完成醫療指示書上傳',
+          memberName: '王阿公',
+          completedAt: '2025-09-20',
+        },
+        {
+          id: 'h2',
+          title: '已送件王阿公長照月給付重新投保申請',
+          memberName: '王阿公',
+          completedAt: '2026-07-08',
+        },
+        {
+          id: 'h3',
+          title: '王阿公長照月給付保險核保通過並生效',
+          memberName: '王阿公',
+          completedAt: '2026-07-12',
+        },
+        {
+          id: 'h4',
+          title: '補齊「新實支實付醫療險」理賠文件',
+          memberName: '王雅婷',
+          completedAt: '2026-07-10',
+        },
+      ]
+
+      const urgencyLabels = { high: '緊急', medium: '一般', low: '低' }
+      const urgencyClass = { high: 'chip-high', medium: 'chip-medium', low: 'chip-low' }
+
+      function unreadCount() {
+        return notifications.filter((n) => !n.read).length
+      }
+
+      function updateBadges() {
+        const count = unreadCount()
+        document.getElementById('mob-badge').textContent = count
+        document.getElementById('desk-badge').textContent = count
+        document.getElementById('seg-dot').style.display = count > 0 ? 'block' : 'none'
+        document.getElementById('mob-badge').style.display = count > 0 ? 'flex' : 'none'
+        document.getElementById('desk-badge').style.display = count > 0 ? 'flex' : 'none'
+      }
+
+      function renderNotifications() {
+        const list = document.getElementById('notif-list')
+        list.innerHTML = notifications
+          .map((n) => {
+            const unread = !n.read
+            return `
+              <div class="m3-card notif-card ${unread ? 'unread' : 'read'}" data-id="${n.id}">
+                ${unread ? '<span class="unread-dot" aria-hidden="true"></span>' : ''}
+                <div class="notif-icon">${ICONS[n.type] || ICONS['policy-update']}</div>
+                <div class="notif-body">
+                  <div class="notif-title">${n.title}</div>
+                  <div class="notif-msg">${n.message}</div>
+                  <div class="notif-date">${n.date}</div>
+                </div>
+                ${
+                  unread
+                    ? `<button class="read-btn" type="button" aria-label="標記為已讀" data-read="${n.id}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                  </button>`
+                    : ''
+                }
+              </div>`
+          })
+          .join('')
+
+        list.querySelectorAll('[data-read]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.read
+            const item = notifications.find((n) => n.id === id)
+            if (item) item.read = true
+            renderNotifications()
+            updateBadges()
+          })
+        })
+      }
+
+      function renderTodos() {
+        const list = document.getElementById('todo-list')
+        list.innerHTML = todos
+          .map(
+            (t) => `
+            <div class="m3-card todo-card" data-todo="${t.id}">
+              <button class="todo-check" type="button" aria-label="標記完成"></button>
+              <div>
+                <div class="todo-title">${t.title}</div>
+                <div class="todo-meta">
+                  <span class="meta-text">${t.memberName}</span>
+                  <span class="m3-chip ${urgencyClass[t.urgency]}">${urgencyLabels[t.urgency]}</span>
+                  ${t.dueDate ? `<span class="meta-text">${t.dueDate}</span>` : ''}
+                </div>
+              </div>
+            </div>`
+          )
+          .join('')
+
+        list.querySelectorAll('.todo-check').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const card = e.target.closest('[data-todo]')
+            const id = card.dataset.todo
+            const idx = todos.findIndex((t) => t.id === id)
+            if (idx === -1) return
+            const done = todos.splice(idx, 1)[0]
+            history.unshift({
+              id: 'h-' + Date.now(),
+              title: done.title,
+              memberName: done.memberName,
+              completedAt: '2026-07-12',
+            })
+            document.querySelector('[data-tab="todos"]').textContent = `待辦 (${todos.length})`
+            renderTodos()
+            renderHistory()
+            document.getElementById('success-banner').classList.add('show')
+            setTimeout(() => document.getElementById('success-banner').classList.remove('show'), 2800)
+          })
+        })
+      }
+
+      function renderHistory() {
+        const list = document.getElementById('history-list')
+        list.innerHTML = history
+          .map(
+            (h) => `
+            <div class="m3-card todo-card">
+              <div class="hist-check">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              </div>
+              <div>
+                <div class="hist-title">${h.title}</div>
+                <div class="todo-meta">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v5h5"/></svg>
+                  <span class="meta-text">${h.memberName} · 完成於 ${h.completedAt}</span>
+                </div>
+              </div>
+            </div>`
+          )
+          .join('')
+      }
+
+      document.querySelectorAll('.m3-segment-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.m3-segment-btn').forEach((b) => {
+            b.classList.remove('active')
+            b.setAttribute('aria-selected', 'false')
+          })
+          document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'))
+          btn.classList.add('active')
+          btn.setAttribute('aria-selected', 'true')
+          document.getElementById('panel-' + btn.dataset.tab).classList.add('active')
+        })
+      })
+
+      renderNotifications()
+      renderTodos()
+      renderHistory()
+      updateBadges()
+    </script>
+  </body>
+</html>
