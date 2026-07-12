@@ -382,6 +382,16 @@
 
       .desktop-only { display: none; }
 
+      @media (max-width: 599px) {
+        .m3-nav-item {
+          font-size: 10px;
+          padding: 8px 2px 6px;
+        }
+        .m3-nav-indicator {
+          width: 48px;
+        }
+      }
+
       @media (min-width: 600px) {
         :root { --nav-h: 0px; }
         .m3-bottom-nav { display: none; }
@@ -439,6 +449,10 @@
           <button class="top-nav-pill active" type="button">
             提醒
             <span class="nav-badge" id="desk-badge">3</span>
+          </button>
+          <button class="top-nav-pill" type="button">
+            理賠
+            <span class="nav-badge" id="desk-claims-badge">1</span>
           </button>
           <button class="top-nav-pill" type="button">AI 顧問</button>
           <button class="top-nav-pill" type="button">保障</button>
@@ -511,6 +525,17 @@
             <span class="nav-badge" id="mob-badge">3</span>
           </div>
           <span>提醒</span>
+        </button>
+        <button class="m3-nav-item" type="button">
+          <div class="m3-nav-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="M9 15l2 2 4-4" />
+            </svg>
+            <span class="nav-badge" id="mob-claims-badge">1</span>
+          </div>
+          <span>理賠</span>
         </button>
         <button class="m3-nav-item" type="button">
           <div class="m3-nav-indicator">
