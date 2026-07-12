@@ -1,13 +1,16 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { URGENCY_LABELS } from '../../data/mockData'
 import { getTodoUrgencyChipClass } from '../../data/todoLabels'
 import type { TodoItem } from '../../types'
 import {
   CALENDAR_TODAY,
+  clampDayToPeriod,
   formatPeriodLabel,
   getMonthGrid,
   getWeekDays,
+  isDateInMonth,
+  isDateInYear,
   isSameDay,
   parseDateKey,
   shiftAnchor,
@@ -68,12 +71,43 @@ export function TodoCalendarPanel({ todos }: { todos: TodoItem[] }) {
     return map
   }, [pending])
 
-  const selectedDayTodos = useMemo(() => {
-    const key = toDateKey(selectedDay)
-    return todosByDate.get(key) ?? []
-  }, [selectedDay, todosByDate])
-
   const weekDays = getWeekDays(anchor)
+
+  useEffect(() => {
+    setSelectedDay((current) => clampDayToPeriod(current, anchor, viewMode))
+  }, [anchor, viewMode])
+
+  const listTodos = useMemo(() => {
+    const dated = pending.filter((todo): todo is TodoItem & { dueDate: string } => !!todo.dueDate)
+
+    if (viewMode === 'week') {
+      const key = toDateKey(selectedDay)
+      return dated.filter((todo) => todo.dueDate === key)
+    }
+
+    if (viewMode === 'month') {
+      return dated
+        .filter((todo) => isDateInMonth(parseDateKey(todo.dueDate), anchor))
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    }
+
+    return dated
+      .filter((todo) => isDateInYear(parseDateKey(todo.dueDate), anchor))
+      .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+  }, [pending, viewMode, selectedDay, anchor])
+
+  const listTitle = useMemo(() => {
+    if (viewMode === 'week') {
+      return toDateKey(selectedDay) === toDateKey(CALENDAR_TODAY)
+        ? '今日'
+        : toDateKey(selectedDay)
+    }
+    if (viewMode === 'month') {
+      return `${anchor.getFullYear()} 年 ${anchor.getMonth() + 1} 月`
+    }
+    return `${anchor.getFullYear()} 年`
+  }, [viewMode, selectedDay, anchor])
+
   const monthGrid = getMonthGrid(anchor)
   const yearMonths = Array.from({ length: 12 }, (_, i) => new Date(anchor.getFullYear(), i, 1))
 
@@ -197,6 +231,7 @@ export function TodoCalendarPanel({ todos }: { todos: TodoItem[] }) {
               onClick={() => {
                 setViewMode('month')
                 setAnchor(monthStart)
+                setSelectedDay(clampDayToPeriod(selectedDay, monthStart, 'month'))
               }}
               className="m3-card p-3 text-left hover:bg-sand-50 transition-colors relative"
             >
@@ -262,14 +297,16 @@ export function TodoCalendarPanel({ todos }: { todos: TodoItem[] }) {
 
           <div className="ds-section-divider ds-section-inner">
             <CardSectionTitle as="h4">
-              {toDateKey(selectedDay) === toDateKey(CALENDAR_TODAY) ? '今日' : toDateKey(selectedDay)}{' '}
-              待辦
+              {listTitle} 待辦
+              {viewMode !== 'week' && listTodos.length > 0 ? `（${listTodos.length} 項）` : ''}
             </CardSectionTitle>
-            {selectedDayTodos.length === 0 ? (
-              <p className="text-caption py-1">這天沒有待辦事項</p>
+            {listTodos.length === 0 ? (
+              <p className="text-caption py-1">
+                {viewMode === 'week' ? '這天沒有待辦事項' : '這段期間沒有待辦事項'}
+              </p>
             ) : (
               <StackList>
-                {selectedDayTodos.map((todo) => (
+                {listTodos.map((todo) => (
                   <CardItem
                     key={todo.id}
                     as="button"
@@ -280,7 +317,7 @@ export function TodoCalendarPanel({ todos }: { todos: TodoItem[] }) {
                       <CardItemTriMain>
                         <CardItemTitle>{todo.title}</CardItemTitle>
                         <CardItemSubtitle className="text-caption">
-                          {todo.memberName}
+                          {viewMode === 'week' ? todo.memberName : `${todo.dueDate} · ${todo.memberName}`}
                         </CardItemSubtitle>
                         <CardItemDetail>
                           <span className={`m3-chip shrink-0 ${getTodoUrgencyChipClass(todo.urgency)}`}>

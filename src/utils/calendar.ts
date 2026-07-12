@@ -58,7 +58,10 @@ export function getMonthGrid(anchor: Date): (Date | null)[][] {
       cursor.setDate(cursor.getDate() + 1)
     }
     weeks.push(row)
-    if (cursor.getMonth() > anchor.getMonth() && cursor.getDay() === 1) break
+    const crossedMonth =
+      cursor.getFullYear() > anchor.getFullYear() ||
+      (cursor.getFullYear() === anchor.getFullYear() && cursor.getMonth() > anchor.getMonth())
+    if (crossedMonth && cursor.getDay() === 1) break
   }
   return weeks
 }
@@ -83,3 +86,35 @@ export function formatPeriodLabel(anchor: Date, mode: CalendarViewMode): string 
 }
 
 export const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日']
+
+export function isDateInMonth(date: Date, anchor: Date): boolean {
+  return (
+    date.getFullYear() === anchor.getFullYear() && date.getMonth() === anchor.getMonth()
+  )
+}
+
+export function isDateInYear(date: Date, anchor: Date): boolean {
+  return date.getFullYear() === anchor.getFullYear()
+}
+
+/** 將選取日限制在 anchor 所屬週／月／年內 */
+export function clampDayToPeriod(
+  day: Date,
+  anchor: Date,
+  mode: CalendarViewMode,
+): Date {
+  if (mode === 'week') {
+    const days = getWeekDays(anchor)
+    const key = toDateKey(day)
+    const inWeek = days.find((d) => toDateKey(d) === key)
+    return inWeek ?? days[0]
+  }
+  if (mode === 'month') {
+    if (isDateInMonth(day, anchor)) return day
+    const todayInMonth = isDateInMonth(CALENDAR_TODAY, anchor) ? CALENDAR_TODAY : null
+    return todayInMonth ?? startOfMonth(anchor)
+  }
+  if (isDateInYear(day, anchor)) return day
+  const todayInYear = isDateInYear(CALENDAR_TODAY, anchor) ? CALENDAR_TODAY : null
+  return todayInYear ?? new Date(anchor.getFullYear(), 0, 1)
+}
